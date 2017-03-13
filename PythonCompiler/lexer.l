@@ -30,6 +30,7 @@ del {printf("%s - ключевое слово\n", yytext);}
 not {printf("%s - ключевое слово\n", yytext);}
 and {printf("%s - ключевое слово\n", yytext);}
 or {printf("%s - ключевое слово\n", yytext);}
+#.* {printf("Комментарий\n", yytext);}
 >|<|<=|>= {printf("Нашел оператор сравнения: %s\n", yytext);}
 \[ {printf("%s - открывающаяся квадратная скобка\n", yytext);}
 \] {printf("%s - закрывающаяся квадратная скобка\n", yytext);}
