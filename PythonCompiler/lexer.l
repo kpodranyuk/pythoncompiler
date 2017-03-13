@@ -31,7 +31,7 @@ del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое сло
 not {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 and {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 or {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-#.* {printf("Комментарий\n");	fprintf(logFile,"Комментарий\n");}
+#[^\n]*\n {printf("Комментарий\n");	fprintf(logFile,"Комментарий\n");}
 >|<|<=|>= {printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 \[ {printf("%s - открывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся квадратная скобка\n", yytext);}
 \] {printf("%s - закрывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся квадратная скобка\n", yytext);}
