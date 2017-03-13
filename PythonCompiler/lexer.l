@@ -25,6 +25,8 @@ if {printf("%s - ключевое слово\n", yytext);}
 elif {printf("%s - ключевое слово\n", yytext);} 
 else {printf("%s - ключевое слово\n", yytext);} 
 : {printf("%s - ключевое слово\n", yytext);}
+def {printf("%s - ключевое слово\n", yytext);}
+del {printf("%s - ключевое слово\n", yytext);}
 not {printf("%s - ключевое слово\n", yytext);}
 and {printf("%s - ключевое слово\n", yytext);}
 or {printf("%s - ключевое слово\n", yytext);}
