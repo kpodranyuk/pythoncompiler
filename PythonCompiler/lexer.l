@@ -3,6 +3,9 @@
 #include <conio.h>	
 #include <locale.h>
 FILE* logFile;
+/* globals to track current indentation */
+int current_line_indent = 0;   /* indentation of the current line */
+int indent_level = 0;          /* indentation level passed to the parser */
 %}
 %option noyywrap 
 %option never-interactive
@@ -15,12 +18,28 @@ WHITE_SPACE[ \t]
 %x SINGLE_QUOTED_STRING
 %x MULTILINE_DOUBLE_QUOTED_STRING
 %x MULTILINE_SINGLE_QUOTED_STRING
+%x INDENT
 %%
 %{
 	char bufStr [1000] ="";
 %}
 <<EOF>> {puts("Нашел конец файла");				fprintf(logFile,"Нашел конец файла\n"); return 0;}
 #[^\n]*\n	{printf("Комментарий\n");	fprintf(logFile,"Комментарий\n");}
+<INDENT>" "      { current_line_indent++; }
+<INDENT>"\t"     { current_line_indent+=4;}
+<INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
+<INDENT>.        {
+                   unput(*yytext);
+                   if (current_line_indent > indent_level) {
+                       indent_level++;
+                       printf("УВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УВЕЛИЧЕНИЕ ОТСТУПА");
+                   } else if (current_line_indent < indent_level) {
+                       indent_level--;
+                       printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА");
+                   } else {
+                       BEGIN(INITIAL);
+                   }
+                 }
 **			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);} 
 *|\%|(//)	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);} 
 +|-			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
@@ -65,7 +84,7 @@ del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое сло
 {VAR}		{printf("Нашел вызов переменной: %s\n", yytext);	fprintf(logFile,"Нашел вызов переменной: %s\n", yytext);}
 {DIGIT}+	{printf("Нашел число: %s\n", yytext);			fprintf(logFile,"Нашел число: %s\n", yytext);}
 {WHITE_SPACE}+	{puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");}
-\n				{puts("Новая строка");								fprintf(logFile,"Новая строка\n");}
+\n				{puts("Новая строка");					fprintf(logFile,"Новая строка\n"); current_line_indent = 0; BEGIN(INDENT);}
 %%
 int main(int argc, char** argv) {
 	setlocale(LC_ALL, "RUS");
