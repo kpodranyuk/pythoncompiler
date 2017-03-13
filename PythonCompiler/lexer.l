@@ -61,6 +61,8 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING>\"	{ printf("Нашел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"Нашел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
 =|(\%=)|(/=)|(//=)|(-=)|(+=)|(*=)|(**=)			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
+True			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
+False			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 not			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 and			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 or			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
