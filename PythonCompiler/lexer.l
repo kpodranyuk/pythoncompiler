@@ -26,6 +26,14 @@ WHITE_SPACE[ \t]
 +|-			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
 >|<|(<=)|(>=)	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 (==)|(!=)		{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
+\'				{ printf("Нашел одинарную кавычку\n");	fprintf(logFile,"Нашел одинарную кавычку\n"); strcpy(bufStr,""); BEGIN(SINGLE_QUOTED_STRING);}
+<SINGLE_QUOTED_STRING>[^\\\n\']+	strcat(bufStr,yytext);
+<SINGLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
+<SINGLE_QUOTED_STRING>\"	strcat(bufStr,"\\\"");
+<SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
+<SINGLE_QUOTED_STRING>\\\'	strcat(bufStr,"\'");
+<SINGLE_QUOTED_STRING>\'	{ printf("Нашел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"Нашел строку в одинарных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<SINGLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \"				{ printf("Нашел кавычку\n");	fprintf(logFile,"Нашел кавычку\n"); strcpy(bufStr,""); BEGIN(DOUBLE_QUOTED_STRING);}
 <DOUBLE_QUOTED_STRING>[^\\\n\"]+	strcat(bufStr,yytext);
 <DOUBLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
