@@ -28,15 +28,16 @@ WHITE_SPACE[ \t]
 <INDENT>"\t"     { current_line_indent+=4;}
 <INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
 <INDENT>.        {
+					unput(*yytext);
                    if (current_line_indent > indent_level) 
 				   {
                        indent_level++;
-                       printf("УВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УВЕЛИЧЕНИЕ ОТСТУПА");
+                       printf("УВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УВЕЛИЧЕНИЕ ОТСТУПА\n");
                    }
 				   else if (current_line_indent < indent_level)
 				   {
                        indent_level--;
-                       printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА");
+                       printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА\n");
                    } else
 				   {
                        BEGIN(INITIAL);
@@ -62,8 +63,8 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING>\\\"	strcat(bufStr,"\"");
 <DOUBLE_QUOTED_STRING>\"	{ printf("Нашел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"Нашел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
-<<EOF>> {puts("Нашел конец файла");				fprintf(logFile,"Нашел конец файла\n"); return 0;}
-=|([%]=)|("/=")|([/]{2}[=])|([-][=])|([+][=])|([*][=])|([*]{2}[=])			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
+<<EOF>> {puts("Нашел конец файла");				fprintf(logFile,"Нашел конец файла"); return 0;}
+=|([%]=)|([/]{1,2}[=])|([-][=])|([+][=])|([*]{1,2}[=])			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
 True			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 False			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 not			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
@@ -86,7 +87,7 @@ del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое сло
 \( {printf("%s - открывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся круглая скобка\n", yytext);}
 \) {printf("%s - закрывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся круглая скобка\n", yytext);}
 ,			{printf("%s - запятая\n", yytext);	fprintf(logFile,"%s - запятая\n", yytext);}
-{VAR}		{printf("Нашел вызов переменной: %s\n", yytext);	fprintf(logFile,"Нашел вызов переменной: %s\n", yytext);}
+{VAR}		{printf("Нашел идентификатор: %s\n", yytext);	fprintf(logFile,"Нашел идентификатор: %s\n", yytext);}
 {DIGIT}+	{printf("Нашел число: %s\n", yytext);			fprintf(logFile,"Нашел число: %s\n", yytext);}
 {WHITE_SPACE}+	{puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");}
 \n				{puts("Новая строка");					fprintf(logFile,"Новая строка\n"); current_line_indent = 0; BEGIN(INDENT);}
@@ -119,6 +120,7 @@ int main(int argc, char** argv) {
 			yylex();	
 		}while(!feof(yyin));
 		fclose(yyin);
+		fclose(logFile);
 	}
 	_getch();
 	return 0;
