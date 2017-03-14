@@ -48,7 +48,7 @@ WHITE_SPACE[ \t]
 >|<|(<=)|(>=)	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 (==)|(!=)		{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 \'				{ printf("Нашел одинарную кавычку\n");	fprintf(logFile,"Нашел одинарную кавычку\n"); strcpy(bufStr,""); BEGIN(SINGLE_QUOTED_STRING);}
-<SINGLE_QUOTED_STRING>[^\\\n\']+	strcat(bufStr,yytext);
+<SINGLE_QUOTED_STRING>[^\\\n\'"]+	strcat(bufStr,yytext);
 <SINGLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
 <SINGLE_QUOTED_STRING>\"	strcat(bufStr,"\\\"");
 <SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
@@ -77,11 +77,10 @@ break		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое
 if			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
 elif		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
 else		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-"return"		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);
+"return"		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);}
 :	{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);}
 def {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
->|<|<=|>= {printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 \[ {printf("%s - открывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся квадратная скобка\n", yytext);}
 \] {printf("%s - закрывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся квадратная скобка\n", yytext);}
 \( {printf("%s - открывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся круглая скобка\n", yytext);}
