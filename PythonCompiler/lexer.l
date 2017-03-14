@@ -116,7 +116,7 @@ del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое сло
 ,			{printf("%s - запятая\n", yytext);	fprintf(logFile,"%s - запятая\n", yytext);}
 {VAR}		{printf("Нашел идентификатор: %s\n", yytext);	fprintf(logFile,"Нашел идентификатор: %s\n", yytext);}
 {DIGIT}+	{printf("Нашел число: %s\n", yytext);			fprintf(logFile,"Нашел число: %s\n", yytext);}
-{WHITE_SPACE}+	{puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");}
+{WHITE_SPACE}+	{/*puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");*/}
 \n				{puts("Новая строка");					fprintf(logFile,"Новая строка\n"); current_line_indent = 0; BEGIN(INDENT);}
 %%
 int main(int argc, char** argv) {
