@@ -60,30 +60,31 @@ WHITE_SPACE[ \t]
 (==)|(!=)		{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 (\"){3}				{ printf("Нашел многострочный текст через двойную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через двойную кавычку\n"); strcpy(bufStr,""); BEGIN(MULTILINE_DOUBLE_QUOTED_STRING);}
 <MULTILINE_DOUBLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
-<MULTILINE_DOUBLE_QUOTED_STRING>\'	strcat(bufStr,"\'");
+<MULTILINE_DOUBLE_QUOTED_STRING>\'|(\\\')	strcat(bufStr,"\'");
 <MULTILINE_DOUBLE_QUOTED_STRING>\n	strcat(bufStr,"\n");
-<MULTILINE_DOUBLE_QUOTED_STRING>\"	strcat(bufStr,"\\\"");
+<MULTILINE_DOUBLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <MULTILINE_DOUBLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{ printf("Вывел многострочный текст через двойную кавычку: %s\n", bufStr);	fprintf(logFile,"Вывел многострочный текст через двойную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <MULTILINE_DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 (\'){3}				{ printf("Нашел многострочный текст через одинарную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через одинарную кавычку\n"); strcpy(bufStr,""); BEGIN(MULTILINE_SINGLE_QUOTED_STRING);}
 <MULTILINE_SINGLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
-<MULTILINE_SINGLE_QUOTED_STRING>\'	strcat(bufStr,"\'");
+<MULTILINE_SINGLE_QUOTED_STRING>\'|(\\\')	strcat(bufStr,"\'");
 <MULTILINE_SINGLE_QUOTED_STRING>\n	strcat(bufStr,"\n");
-<MULTILINE_SINGLE_QUOTED_STRING>\"	strcat(bufStr,"\\\"");
+<MULTILINE_SINGLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <MULTILINE_SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{ printf("Вывел многострочный текст через одинарную кавычку: %s\n", bufStr);	fprintf(logFile,"Вывел многострочный текст через одинарную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <MULTILINE_SINGLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \'				{ printf("Нашел одинарную кавычку\n");	fprintf(logFile,"Нашел одинарную кавычку\n"); strcpy(bufStr,""); BEGIN(SINGLE_QUOTED_STRING);}
 <SINGLE_QUOTED_STRING>[^\\\n\'"]+	strcat(bufStr,yytext);
 <SINGLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
-<SINGLE_QUOTED_STRING>\"	strcat(bufStr,"\\\"");
+<SINGLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <SINGLE_QUOTED_STRING>\\\'	strcat(bufStr,"\'");
 <SINGLE_QUOTED_STRING>\'	{ printf("Вывел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"Вывел строку в одинарных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <SINGLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \"				{ printf("Нашел кавычку\n");	fprintf(logFile,"Нашел кавычку\n"); strcpy(bufStr,""); BEGIN(DOUBLE_QUOTED_STRING);}
-<DOUBLE_QUOTED_STRING>[^\\\n\"]+	strcat(bufStr,yytext);
+<DOUBLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
+<DOUBLE_QUOTED_STRING>\'|(\\\')	strcat(bufStr,"\'");
 <DOUBLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
 <DOUBLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <DOUBLE_QUOTED_STRING>\\\"	strcat(bufStr,"\"");
