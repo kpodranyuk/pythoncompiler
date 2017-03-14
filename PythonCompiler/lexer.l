@@ -23,7 +23,7 @@ WHITE_SPACE[ \t]
 %{
 	char bufStr [1000] ="";
 %}
-#[^\n]*/\n	{printf("Комментарий\n");	fprintf(logFile,"Комментарий\n");}
+#[^\n]*/\n	{printf("Комментарий\n");	fprintf(logFile,"Комментарий\n"); }
 <INDENT>" "      { current_line_indent++; }
 <INDENT>"\t"     { current_line_indent+=4;}
 <INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
