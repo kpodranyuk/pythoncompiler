@@ -15,6 +15,7 @@ str\"string3''
 g = """ string1
 string2
 str\"string3"""
+del g
 digits = []
 for symbol in s:
     if symbol:
@@ -26,7 +27,8 @@ for symbol in s:
 
 list = [["a", "b"], ["c", "d"]]
 list2 = [["e", "f"], ["g", "h"]]
-print(list + list2)
+print(list[1])
+print(list2[-1])
 
 
 def funcOperation(a, b): #Comment
