@@ -7,7 +7,7 @@ while a != 0:
 else:
     print('Ни одного отрицательного числа не встретилось')
 
-s = 'ab12c59p7dq'
+s = 3*'ab12c59p7dq'
 d = ''' string1
 string2
 str\"string3''
@@ -46,7 +46,8 @@ def funcOperation(a, b): #Comment
     c = a + 4
     c = a - 4
     return c
-
+print ("abc"+"def")
+int('0b10011', 2)
 print(funcOperation(10, 2))
 print('Hello, {}'.format(5))
 print(repr(5))
