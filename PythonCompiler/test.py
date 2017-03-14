@@ -8,6 +8,13 @@ else:
     print('Ни одного отрицательного числа не встретилось')
 
 s = 'ab12c59p7dq'
+d = ''' string1
+string2
+str\"string3''
+'''
+g = """ string1
+string2
+str\"string3"""
 digits = []
 for symbol in s:
     if symbol:
