@@ -1,11 +1,11 @@
 a = int(input())
 while a != 0:
     if a < 0:
-        print('Встретилось отрицательное число', a)
+        print('Number equals 0', a)
         break
     a = int(input())
 else:
-    print('Ни одного отрицательного числа не встретилось')
+    print('Number dont equals 0')
 
 s = 3*'ab12c59p7dq'
 d = ''' string1
