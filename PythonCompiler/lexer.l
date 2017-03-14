@@ -23,19 +23,22 @@ WHITE_SPACE[ \t]
 %{
 	char bufStr [1000] ="";
 %}
-<<EOF>> {puts("Нашел конец файла");				fprintf(logFile,"Нашел конец файла\n"); return 0;}
 #[^\n]*/\n	{printf("Комментарий\n");	fprintf(logFile,"Комментарий\n");}
 <INDENT>" "      { current_line_indent++; }
 <INDENT>"\t"     { current_line_indent+=4;}
 <INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
 <INDENT>.        {
-                   if (current_line_indent > indent_level) {
+                   if (current_line_indent > indent_level) 
+				   {
                        indent_level++;
                        printf("УВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УВЕЛИЧЕНИЕ ОТСТУПА");
-                   } else if (current_line_indent < indent_level) {
+                   }
+				   else if (current_line_indent < indent_level)
+				   {
                        indent_level--;
                        printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА");
-                   } else {
+                   } else
+				   {
                        BEGIN(INITIAL);
                    }
                  }
@@ -59,7 +62,8 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING>\\\"	strcat(bufStr,"\"");
 <DOUBLE_QUOTED_STRING>\"	{ printf("Нашел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"Нашел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
-=|([%]=)|(/=)|([/]{2}=)|([-]=)|([+]=)|([*]=)|([*]{2}=)			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
+<<EOF>> {puts("Нашел конец файла");				fprintf(logFile,"Нашел конец файла\n"); return 0;}
+=|([%]=)|("/=")|([/]{2}[=])|([-][=])|([+][=])|([*][=])|([*]{2}[=])			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
 True			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 False			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
 not			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
