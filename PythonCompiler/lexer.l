@@ -2,6 +2,7 @@
 #include <process.h>
 #include <conio.h>	
 #include <locale.h>
+#define INDNT 4
 FILE* logFile;
 /* globals to track current indentation */
 int current_line_indent = 0;   /* indentation of the current line */
@@ -29,16 +30,25 @@ WHITE_SPACE[ \t]
 <INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
 <INDENT>.        {
 					unput(*yytext);
-                   if (current_line_indent > indent_level) 
+					if (current_line_indent%INDNT!=0) 
+				   {
+                       printf("Îøèáêà: ÍÅÂÅĞÍÎÅ ÊÎËÈ×ÅÑÒÂÎ ÎÒÑÒÓÏÎÂ. Çàâåğøåíèå ğàáîòû.\n");		
+					   fprintf(logFile,"Îøèáêà: ÍÅÂÅĞÍÎÅ ÊÎËÈ×ÅÑÒÂÎ ÎÒÑÒÓÏÎÂ. Çàâåğøåíèå ğàáîòû.\n");
+					   return -1;
+                   }
+                   else if (current_line_indent > indent_level*INDNT) 
 				   {
                        indent_level++;
+					   /*current_line_indent-=INDNT;*/
                        printf("ÓÂÅËÈ×ÅÍÈÅ ÎÒÑÒÓÏÀ\n");		fprintf(logFile,"ÓÂÅËÈ×ÅÍÈÅ ÎÒÑÒÓÏÀ\n");
                    }
-				   else if (current_line_indent < indent_level)
+				   else if (current_line_indent < indent_level*INDNT)
 				   {
                        indent_level--;
+					   /*current_line_indent+=INDNT;*/
                        printf("ÓÌÅÍÜØÅÍÈÅ ÎÒÑÒÓÏÀ\n");		fprintf(logFile,"ÓÌÅÍÜØÅÍÈÅ ÎÒÑÒÓÏÀ\n");
-                   } else
+                   } 
+				   else
 				   {
                        BEGIN(INITIAL);
                    }
