@@ -22,6 +22,8 @@ for symbol in s:
         digits.append(symbol)
     elif not symbol == True or symbol != False:
         digits.remove(symbol)
+	elif 0 <= a <8 or 10 >= a > 12:
+        continue
     else:
         continue
 
