@@ -4,8 +4,7 @@
 extern int yylex();
 extern int yyparse();
 %}
-
-
+%start root
 %%
-
+root: ')'
 %%
