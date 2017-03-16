@@ -9,6 +9,7 @@ FILE* logFile;
 /* globals to track current indentation */
 int current_line_indent = 0;   /* indentation of the current line */
 int indent_level = 0;          /* indentation level passed to the parser */
+extern int root;
 void yyerror(const char* s);
 %}
 %option noyywrap 
@@ -58,7 +59,8 @@ WHITE_SPACE[ \t]
                  }
 [*]{2}			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);} 
 \*|\%|([/]{1,2})	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);} 
-\+|-			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
+\+ {return '+';}
+-			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
 >|<|(<=)|(>=)	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 (==)|(!=)		{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
 (\"){3}				{ /*printf("Нашел многострочный текст через двойную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через двойную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(MULTILINE_DOUBLE_QUOTED_STRING);}
@@ -118,7 +120,7 @@ del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое сло
 \) {printf("%s - закрывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся круглая скобка\n", yytext);}
 ,			{printf("%s - запятая\n", yytext);	fprintf(logFile,"%s - запятая\n", yytext);}
 {VAR}		{printf("Нашел идентификатор: %s\n", yytext);	fprintf(logFile,"Нашел идентификатор: %s\n", yytext);}
-{DIGIT}+	{printf("Нашел число: %s\n", yytext);			fprintf(logFile,"Нашел число: %s\n", yytext);}
+{DIGIT}+	{printf("Нашел число: %s\n", yytext);			fprintf(logFile,"Нашел число: %s\n", yytext); yylval.Int=atoi(yytext); return OPERAND;}
 {WHITE_SPACE}+	{/*puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");*/}
 \n				{puts("Новая строка");					fprintf(logFile,"Новая строка\n"); current_line_indent = 0; BEGIN(INDENT);}
 %%
@@ -147,10 +149,11 @@ int main(int argc, char** argv) {
 		//rewind(yyin);
 		logFile = fopen("log.txt", "wt");
 		do{
-			yylex();	
+			yyparse();//yylex();	
 		}while(!feof(yyin));
 		fclose(yyin);
 		fclose(logFile);
+		printf("result is %d", root);
 	}
 	_getch();
 	return 0;
