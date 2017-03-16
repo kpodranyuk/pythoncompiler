@@ -2,11 +2,14 @@
 #include <process.h>
 #include <conio.h>	
 #include <locale.h>
+#include "parser.tab.h"
 #define INDNT 4
+#pragma warning(disable : 4996)
 FILE* logFile;
 /* globals to track current indentation */
 int current_line_indent = 0;   /* indentation of the current line */
 int indent_level = 0;          /* indentation level passed to the parser */
+void yyerror(const char* s);
 %}
 %option noyywrap 
 %option never-interactive
@@ -151,4 +154,10 @@ int main(int argc, char** argv) {
 	}
 	_getch();
 	return 0;
+}
+
+void yyerror(const char* s) {
+	//printf("Parse error! Message: %s",s);
+	// might as well halt now:
+	//exit(-1);
 }
