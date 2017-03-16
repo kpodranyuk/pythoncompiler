@@ -126,7 +126,7 @@ del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое сло
 %%
 int main(int argc, char** argv) {
 	setlocale(LC_ALL, "RUS");
-	if(argc<2)
+	/*if(argc<2)
 	{
 		printf("Недостаточно параметров для вызова программы");
 		return -1;
@@ -137,12 +137,13 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 	else
-	{
+	{*/
 		// set flex to read from it instead of defaulting to STDIN:
-		yyin = fopen(argv[1], "rt");
+		yyin = fopen("test.py","rt");//(argv[1], "rt");
 		if(yyin==NULL)
 		{
-			printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);
+			//printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);
+			printf("Ошибка! Невозможно открыть файл на чтение!");
 			exit(-1);
 		}
 		// parse through the input until there is no more:
@@ -154,7 +155,7 @@ int main(int argc, char** argv) {
 		fclose(yyin);
 		fclose(logFile);
 		printf("result is %d", root);
-	}
+	/*}*/
 	_getch();
 	return 0;
 }
