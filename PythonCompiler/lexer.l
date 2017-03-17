@@ -45,24 +45,33 @@ WHITE_SPACE[ \t]
                        indent_level++;
 					   /*current_line_indent-=INDNT;*/
                        printf("УВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УВЕЛИЧЕНИЕ ОТСТУПА\n");
+					   return INDENT;
                    }
 				   else if (current_line_indent < indent_level*INDNT)
 				   {
                        indent_level--;
 					   /*current_line_indent+=INDNT;*/
                        printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА\n");
+					   return DEDENT;
                    } 
 				   else
 				   {
                        BEGIN(INITIAL);
                    }
                  }
-[*]{2}			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);} 
-\*|\%|([/]{1,2})	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);} 
-\+ {return '+';}
--			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
->|<|(<=)|(>=)	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
-(==)|(!=)		{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);}
+[*]{2}			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return POW;} 
+\*	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return MUL;} 
+\%	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return MOD;} 
+[/]	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return DIV;} 
+[/]{2}	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return INT;} 
+\+ {printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext); return '+';}
+-			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return '-';}
+\>	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	return '>';}
+\<	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	return '<';}
+\<=	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	return LESS_OR_EQUAL;}
+\>=	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	return GREATER_OR_EQUAL;}
+==		{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	return EQUAL;}
+!=	{printf("Нашел оператор сравнения: %s\n", yytext);	fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	return NOT_EQUAL;}
 (\"){3}				{ /*printf("Нашел многострочный текст через двойную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через двойную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(MULTILINE_DOUBLE_QUOTED_STRING);}
 <MULTILINE_DOUBLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
 <MULTILINE_DOUBLE_QUOTED_STRING>\'|(\\\')	strcat(bufStr,"\'");
@@ -96,30 +105,31 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING>\"	{ printf("Вывел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"Вывел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
 <DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
 <<EOF>> {puts("Нашел конец файла");				fprintf(logFile,"Нашел конец файла"); return 0;}
-=|([%]=)|([/]{1,2}[=])|([-][=])|([+][=])|([*]{1,2}[=])			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
-True			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-False			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-not			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-and			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-or			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-while		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-for			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);}
-in			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);}
-continue	{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-break		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-if			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-elif		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-else		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);} 
-"return"		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);}
-:	{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);}
-def {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);}
-\[ {printf("%s - открывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся квадратная скобка\n", yytext);}
-\] {printf("%s - закрывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся квадратная скобка\n", yytext);}
-\( {printf("%s - открывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся круглая скобка\n", yytext);}
-\) {printf("%s - закрывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся круглая скобка\n", yytext);}
-,			{printf("%s - запятая\n", yytext);	fprintf(logFile,"%s - запятая\n", yytext);}
-{VAR}		{printf("Нашел идентификатор: %s\n", yytext);	fprintf(logFile,"Нашел идентификатор: %s\n", yytext);}
+=	{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);	return '=';}
+([%]=)|([/]{1,2}[=])|([-][=])|([+][=])|([*]{1,2}[=])			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
+True			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return TRUE;}
+False			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return FALSE;}
+not			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return NOT;}
+and			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return AND;}
+or			{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return OR;}
+while		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return WHILE;} 
+for			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return FOR;}
+in			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return IN;}
+continue	{printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return CONTINUE;} 
+break		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return BREAK;} 
+if			{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return IF;} 
+elif		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return ELIF;} 
+else		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return ELSE;} 
+"return"		{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return RETURN;}
+:	{printf("%s - ключевое слово\n", yytext);		fprintf(logFile,"%s - ключевое слово\n", yytext);	return ':';}
+def {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return DEF;}
+del {printf("%s - ключевое слово\n", yytext);	fprintf(logFile,"%s - ключевое слово\n", yytext);	return DEL;}
+\[ {printf("%s - открывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся квадратная скобка\n", yytext);	return '[';}
+\] {printf("%s - закрывающаяся квадратная скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся квадратная скобка\n", yytext);	return ']';}
+\( {printf("%s - открывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - открывающаяся круглая скобка\n", yytext);	return '(';}
+\) {printf("%s - закрывающаяся круглая скобка\n", yytext);	fprintf(logFile,"%s - закрывающаяся круглая скобка\n", yytext);	return ')';}
+,			{printf("%s - запятая\n", yytext);	fprintf(logFile,"%s - запятая\n", yytext);	return ',';}
+{VAR}		{printf("Нашел идентификатор: %s\n", yytext);	fprintf(logFile,"Нашел идентификатор: %s\n", yytext);	yylval.StringVal=(char*)memset(malloc(strlen(yytext)+1),'\0',strlen(yytext)+1);	strcpy(yylval.StringVal, yytext); return OPERAND; }
 {DIGIT}+	{printf("Нашел число: %s\n", yytext);			fprintf(logFile,"Нашел число: %s\n", yytext); yylval.Int=atoi(yytext); return DIGIT;}
 {WHITE_SPACE}+	{/*puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");*/}
 \n				{puts("Новая строка");					fprintf(logFile,"Новая строка\n"); current_line_indent = 0; BEGIN(INDENT);}
@@ -139,7 +149,7 @@ int main(int argc, char** argv) {
 	else
 	{*/
 		// set flex to read from it instead of defaulting to STDIN:
-		yyin = fopen("test.py","rt");//(argv[1], "rt");
+		yyin = fopen("test1.py","rt");//(argv[1], "rt");
 		if(yyin==NULL)
 		{
 			//printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);

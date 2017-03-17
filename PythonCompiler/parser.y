@@ -1,5 +1,6 @@
 %{
 #include <string.h>
+#include <math.h>
 extern int yylex();
 extern int yyparse();
 extern void yyerror(const char* s);
@@ -13,13 +14,14 @@ int root;
 %type <Int> fullroot
 %token INDENT	// Начало блока кода
 %token DEDENT	// Конец блока кода
-%token POW		// Оператор возведения в степень
-%token MUL		// Оператор умножения
-%token DIV		// Оператор деления
-%token MOD		// Оператор остатка от деления
-%token INT		// Оператор целой части от деления (возможна замена одним символом)
+%token '='		// Оператор присвоения
 %left '+'		// Оператор сложения
-%token '-'		// Оператор вычитания
+%left '-'		// Оператор вычитания
+%left POW		// Оператор возведения в степень
+%left MUL		// Оператор умножения
+%left DIV		// Оператор деления
+%left MOD		// Оператор остатка от деления
+%left INT		// Оператор целой части от деления (возможна замена одним символом)
 %token '<'		// Оператор меньше
 %token '>'		// Оператор больше
 %token LESS_OR_EQUAL		// Оператор меньше либо равно
@@ -46,12 +48,17 @@ int root;
 %token ','		// Запятая
 %token '['		// Открывающая квадратная скобка
 %token ']'		// Закрывающая квадратная скобка
-%token '('		// Открывающая круглая скобка
-%token ')'		// Закрывающая круглая скобка
+%nonassoc '('		// Открывающая круглая скобка
+%nonassoc ')'		// Закрывающая круглая скобка
 %token <StringVal>OPERAND	// Операнд
+%token <StringVal>STRING	// Строка
 %left <Int>DIGIT			// Число
 %start fullroot		// Стартовый символ
 %%
-fullroot: DIGIT {$$=$1; root = $$;}
-| fullroot '+' fullroot {$$=$1+$3; root = $$;};
+fullroot: fullroot '+' fullroot {$$=$1+$3; root = $$;}
+| fullroot '-' fullroot {$$=$1-$3; root = $$;}
+| fullroot POW fullroot {$$=(int)pow((double)$1,$3); root = $$;}
+| DIGIT {$$=$1; root = $$;}
+| '(' fullroot ')' {$$=$2;}
+;
 %%
