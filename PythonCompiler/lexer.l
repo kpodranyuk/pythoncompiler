@@ -1,6 +1,5 @@
 %{
-#include <process.h>
-#include <conio.h>	
+#include <conio.h>
 #include <locale.h>
 #include "parser.tab.h"
 #define INDNT 4
@@ -32,11 +31,11 @@ WHITE_SPACE[ \t]
 	{
 		indent_level--;
 	   /*current_line_indent+=INDNT;*/
-	   printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА\n");
+	   printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");
 	   return DEDENT;
 	}
 %}
-#[^\n]*/\n	{printf("Комментарий\n");	fprintf(logFile,"Комментарий\n"); }
+#[^\n]*/\n	{printf("FLEX:\tКомментарий\n");	fprintf(logFile,"FLEX:\tКомментарий\n"); }
 <INDENT>" "      { current_line_indent++; }
 <INDENT>"\t"     { current_line_indent+=4;}
 <INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
@@ -44,15 +43,15 @@ WHITE_SPACE[ \t]
 					unput(*yytext);
 					if (current_line_indent%INDNT!=0) 
 				    {
-                       printf("Ошибка: НЕВЕРНОЕ КОЛИЧЕСТВО ОТСТУПОВ. Завершение работы.\n");		
-					   fprintf(logFile,"Ошибка: НЕВЕРНОЕ КОЛИЧЕСТВО ОТСТУПОВ. Завершение работы.\n");
+                       printf("FLEX:\tОшибка: НЕВЕРНОЕ КОЛИЧЕСТВО ОТСТУПОВ. Завершение работы.\n");		
+					   fprintf(logFile,"FLEX:\tОшибка: НЕВЕРНОЕ КОЛИЧЕСТВО ОТСТУПОВ. Завершение работы.\n");
 					   return -1;
                     }
                     else if (current_line_indent > indent_level*INDNT) 
 				    {
                        indent_level++;
 					   /*current_line_indent-=INDNT;*/
-                       printf("УВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УВЕЛИЧЕНИЕ ОТСТУПА\n");
+                       printf("FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");
 					   return INDENT;
                     }
 				    else if (current_line_indent < indent_level*INDNT)
@@ -60,7 +59,7 @@ WHITE_SPACE[ \t]
                        indent_level--;
 					   dedents_count=(indent_level*INDNT-current_line_indent)/INDNT;
 					   /*current_line_indent+=INDNT;*/
-                       printf("УМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"УМЕНЬШЕНИЕ ОТСТУПА\n");
+                       printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");
 					   return DEDENT;
                     } 
 				    else
@@ -69,13 +68,13 @@ WHITE_SPACE[ \t]
                     }
                  }
 [*]{2}			{
-					printf("%s - операция\n", yytext);		
-					fprintf(logFile,"%s - операция\n", yytext);	
+					printf("FLEX:\t%s - операция\n", yytext);		
+					fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 					return POW;
 				} 
 \*	{
-		printf("%s - операция\n", yytext);		
-		fprintf(logFile,"%s - операция\n", yytext);	
+		printf("FLEX:\t%s - операция\n", yytext);		
+		fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 		return MUL;
 	} 
 \%	{
@@ -84,53 +83,53 @@ WHITE_SPACE[ \t]
 		return MOD;
 	} 
 [/]	{
-		printf("%s - операция\n", yytext);		
-		fprintf(logFile,"%s - операция\n", yytext);	
+		printf("FLEX:\t%s - операция\n", yytext);		
+		fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 		return DIV;
 	} 
 [/]{2}	{
-			printf("%s - операция\n", yytext);		
-			fprintf(logFile,"%s - операция\n", yytext);	
+			printf("FLEX:\t%s - операция\n", yytext);		
+			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 			return INT;
 		} 
 \+ 		{
-			printf("%s - операция\n", yytext);		
-			fprintf(logFile,"%s - операция\n", yytext); 
+			printf("FLEX:\t%s - операция\n", yytext);		
+			fprintf(logFile,"FLEX:\t%s - операция\n", yytext); 
 			return '+';
 		}
 -		{
-			printf("%s - операция\n", yytext);		
-			fprintf(logFile,"%s - операция\n", yytext);	
+			printf("FLEX:\t%s - операция\n", yytext);		
+			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 			return '-';
 		}
 \>	{
-		printf("Нашел оператор сравнения: %s\n", yytext);	
-		fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	
+		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return '>';
 	}
 \<	{
-		printf("Нашел оператор сравнения: %s\n", yytext);	
-		fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	
+		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return '<';
 	}
 \<=	{	
-		printf("Нашел оператор сравнения: %s\n", yytext);	
-		fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	
+		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return LESS_OR_EQUAL;
 	}
 \>=	{
-		printf("Нашел оператор сравнения: %s\n", yytext);	
-		fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	
+		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return GREATER_OR_EQUAL;
 	}
 ==	{
-		printf("Нашел оператор сравнения: %s\n", yytext);	
-		fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	
+		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return EQUAL;
 	}
 !=	{
-		printf("Нашел оператор сравнения: %s\n", yytext);	
-		fprintf(logFile,"Нашел оператор сравнения: %s\n", yytext);	
+		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return NOT_EQUAL;
 	}
 (\"){3}				{ /*printf("Нашел многострочный текст через двойную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через двойную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(MULTILINE_DOUBLE_QUOTED_STRING);}
@@ -139,171 +138,171 @@ WHITE_SPACE[ \t]
 <MULTILINE_DOUBLE_QUOTED_STRING>\n	strcat(bufStr,"\n");
 <MULTILINE_DOUBLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <MULTILINE_DOUBLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
-<MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{ printf("Вывел многострочный текст через двойную кавычку: %s\n", bufStr);	fprintf(logFile,"Вывел многострочный текст через двойную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
-<MULTILINE_DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
+<MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{ printf("FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<MULTILINE_DOUBLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 (\'){3}				{ /*printf("Нашел многострочный текст через одинарную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через одинарную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(MULTILINE_SINGLE_QUOTED_STRING);}
 <MULTILINE_SINGLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
 <MULTILINE_SINGLE_QUOTED_STRING>\'|(\\\')	strcat(bufStr,"\'");
 <MULTILINE_SINGLE_QUOTED_STRING>\n	strcat(bufStr,"\n");
 <MULTILINE_SINGLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <MULTILINE_SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
-<MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{ printf("Вывел многострочный текст через одинарную кавычку: %s\n", bufStr);	fprintf(logFile,"Вывел многострочный текст через одинарную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
-<MULTILINE_SINGLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
+<MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{ printf("FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<MULTILINE_SINGLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \'				{ /*printf("Нашел одинарную кавычку\n");	fprintf(logFile,"Нашел одинарную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(SINGLE_QUOTED_STRING);}
 <SINGLE_QUOTED_STRING>[^\\\n\'"]+	strcat(bufStr,yytext);
 <SINGLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
 <SINGLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <SINGLE_QUOTED_STRING>\\\'	strcat(bufStr,"\'");
-<SINGLE_QUOTED_STRING>\'	{ printf("Вывел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"Вывел строку в одинарных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
-<SINGLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
+<SINGLE_QUOTED_STRING>\'	{ printf("FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<SINGLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \"				{ /*printf("Нашел кавычку\n");	fprintf(logFile,"Нашел кавычку\n"); strcpy(bufStr,"");*/ BEGIN(DOUBLE_QUOTED_STRING);}
 <DOUBLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
 <DOUBLE_QUOTED_STRING>\'|(\\\')	strcat(bufStr,"\'");
 <DOUBLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
 <DOUBLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <DOUBLE_QUOTED_STRING>\\\"	strcat(bufStr,"\"");
-<DOUBLE_QUOTED_STRING>\"	{ printf("Вывел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"Вывел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
-<DOUBLE_QUOTED_STRING><<EOF>>	{printf("Нашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"Нашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
+<DOUBLE_QUOTED_STRING>\"	{ printf("FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<DOUBLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
 <<EOF>> {
-			puts("Нашел конец файла");				
-			fprintf(logFile,"Нашел конец файла"); 
+			puts("FLEX:\tНашел конец файла");				
+			fprintf(logFile,"FLEX:\tНашел конец файла"); 
 			dedents_count=(indent_level*INDNT-current_line_indent)/INDNT; 
 			return 0;
 		}
 =		{
-			printf("%s - операция\n", yytext);		
-			fprintf(logFile,"%s - операция\n", yytext);	
+			printf("FLEX:\t%s - операция\n", yytext);		
+			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 			return '=';
 		}
 ([%]=)|([/]{1,2}[=])|([-][=])|([+][=])|([*]{1,2}[=])			{printf("%s - операция\n", yytext);		fprintf(logFile,"%s - операция\n", yytext);}
 True		{
-				printf("%s - ключевое слово\n", yytext);	
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return TRUE;
 			}
 False		{
-				printf("%s - ключевое слово\n", yytext);	
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				fprintf(logFile,"%FLEX:\ts - ключевое слово\n", yytext);	
 				return FALSE;
 			}
 not			{
-				printf("%s - ключевое слово\n", yytext);	
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return NOT;
 			}
 and			{	
-				printf("%s - ключевое слово\n", yytext);	
-				fprintf(logFile,"%s - ключевое слово\n", yytext);		
+				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);		
 				return AND;
 			}
 or			{
-				printf("%s - ключевое слово\n", yytext);	
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return OR;
 			}
 while		{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return WHILE;
 			} 
 for			{	
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return FOR;
 			}
 in			{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return IN;
 			}
 continue	{
-				printf("%s - ключевое слово\n", yytext);	
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return CONTINUE;
 			} 
 break		{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return BREAK;
 			} 
 if			{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return IF;
 			} 
 elif		{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return ELIF;
 			} 
 else		{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return ELSE;
 			} 
 "return"	{
-				printf("%s - ключевое слово\n", yytext);		
-				fprintf(logFile,"%s - ключевое слово\n", yytext);	
+				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return RETURN;
 			}
 :	{
-		printf("%s - ключевое слово\n", yytext);		
-		fprintf(logFile,"%s - ключевое слово\n", yytext);	
+		printf("FLEX:\t%s - ключевое слово\n", yytext);		
+		fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 		return ':';
 	}
 def	{
-		printf("%s - ключевое слово\n", yytext);	
-		fprintf(logFile,"%s - ключевое слово\n", yytext);	
+		printf("FLEX:\t%s - ключевое слово\n", yytext);	
+		fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 		return DEF;
 	}
 del	{
-		printf("%s - ключевое слово\n", yytext);	
-		fprintf(logFile,"%s - ключевое слово\n", yytext);	
+		printf("FLEX:\t%s - ключевое слово\n", yytext);	
+		fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 		return DEL;
 	}
 \[ 	{
-		printf("%s - открывающаяся квадратная скобка\n", yytext);	
-		fprintf(logFile,"%s - открывающаяся квадратная скобка\n", yytext);	
+		printf("FLEX:\t%s - открывающаяся квадратная скобка\n", yytext);	
+		fprintf(logFile,"FLEX:\t%s - открывающаяся квадратная скобка\n", yytext);	
 		return '[';
 	}
 \] 	{
-		printf("%s - закрывающаяся квадратная скобка\n", yytext);	
-		fprintf(logFile,"%s - закрывающаяся квадратная скобка\n", yytext);	
+		printf("FLEX:\t%s - закрывающаяся квадратная скобка\n", yytext);	
+		fprintf(logFile,"FLEX:\t%s - закрывающаяся квадратная скобка\n", yytext);	
 		return ']';
 	}
 \( 	{
-		printf("%s - открывающаяся круглая скобка\n", yytext);	
-		fprintf(logFile,"%s - открывающаяся круглая скобка\n", yytext);	
+		printf("FLEX:\t%s - открывающаяся круглая скобка\n", yytext);	
+		fprintf(logFile,"FLEX:\t%s - открывающаяся круглая скобка\n", yytext);	
 		return '(';
 	}
 \) 	{
-		printf("%s - закрывающаяся круглая скобка\n", yytext);	
-		fprintf(logFile,"%s - закрывающаяся круглая скобка\n", yytext);	
+		printf("FLEX:\t%s - закрывающаяся круглая скобка\n", yytext);	
+		fprintf(logFile,"FLEX:\t%s - закрывающаяся круглая скобка\n", yytext);	
 		return ')';
 	}
 ,			{
-				printf("%s - запятая\n", yytext);	
-				fprintf(logFile,"%s - запятая\n", yytext);	
+				printf("FLEX:\t%s - запятая\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - запятая\n", yytext);	
 				return ',';
 			}
 {VAR}		{
-				printf("Нашел идентификатор: %s\n", yytext);	
-				fprintf(logFile,"Нашел идентификатор: %s\n", yytext);	
+				printf("FLEX:\tНашел идентификатор: %s\n", yytext);	
+				fprintf(logFile,"FLEX:\tНашел идентификатор: %s\n", yytext);	
 				yylval.StringVal=(char*)memset(malloc(strlen(yytext)+1),'\0',strlen(yytext)+1);	
 				strcpy(yylval.StringVal, yytext); 
 				return OPERAND;
 			}
 {DIGIT}+	{
-				printf("Нашел число: %s\n", yytext);			
-				fprintf(logFile,"Нашел число: %s\n", yytext); 
+				printf("FLEX:\tНашел число: %s\n", yytext);			
+				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
 				yylval.Int=atoi(yytext); 
 				return DIGIT;
 			}
 {WHITE_SPACE}+	{/*puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");*/}
 \n			{
-				puts("Новая строка");					
-				fprintf(logFile,"Новая строка\n"); 
+				puts("FLEX:\tНовая строка");					
+				fprintf(logFile,"FLEX:\tНовая строка\n"); 
 				current_line_indent = 0; 
 				BEGIN(INDENT);
 			}

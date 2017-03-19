@@ -1,9 +1,12 @@
 %{
 #include <string.h>
 #include <math.h>
+#include <process.h>
+#include <stdio.h>	
 extern int yylex();
 extern int yyparse();
 extern void yyerror(const char* s);
+extern FILE* logFile;
 int root;
 %}
 %union
@@ -58,7 +61,7 @@ int root;
 fullroot: fullroot '+' fullroot {$$=$1+$3; root = $$;}
 | fullroot '-' fullroot {$$=$1-$3; root = $$;}
 | fullroot POW fullroot {$$=(int)pow((double)$1,$3); root = $$;}
-| DIGIT {$$=$1; root = $$;}
+| DIGIT {printf("BISON:\tfound DIGIT:\t%d\n",$1); fprintf(logFile,"BISON:\tfound DIGIT:\t%d\n",$1);}//{$$=$1; root = $$;}
 | '(' fullroot ')' {$$=$2;}
 ;
 %%
