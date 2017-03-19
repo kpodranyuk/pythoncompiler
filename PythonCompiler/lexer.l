@@ -337,14 +337,14 @@ int main(int argc, char** argv) {
 		}while(!feof(yyin));
 		fclose(yyin);
 		fclose(logFile);
-		printf("result is %d", root);
+		//printf("result is %d", root);
 	/*}*/
 	_getch();
 	return 0;
 }
 
 void yyerror(const char* s) {
-	//printf("Parse error! Message: %s",s);
+	printf("Parse error! Message: %s",s);
 	// might as well halt now:
 	//exit(-1);
 }

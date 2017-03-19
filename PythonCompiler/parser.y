@@ -58,10 +58,10 @@ int root;
 %left <Int>DIGIT			// Число
 %start fullroot		// Стартовый символ
 %%
-fullroot: fullroot '+' fullroot {$$=$1+$3; root = $$;}
-| fullroot '-' fullroot {$$=$1-$3; root = $$;}
-| fullroot POW fullroot {$$=(int)pow((double)$1,$3); root = $$;}
+fullroot: fullroot '+' fullroot {printf("BISON:\tfound +\n"); fprintf(logFile,"BISON:\tfound +\n");}//{$$=$1+$3; root = $$;}
+| fullroot '-' fullroot {printf("BISON:\tfound -\n"); fprintf(logFile,"BISON:\tfound -\n");}//{$$=$1-$3; root = $$;}
+| fullroot POW fullroot {printf("BISON:\tfound POW\n"); fprintf(logFile,"BISON:\tfound POW\n");}//{$$=(int)pow((double)$1,$3); root = $$;}
 | DIGIT {printf("BISON:\tfound DIGIT:\t%d\n",$1); fprintf(logFile,"BISON:\tfound DIGIT:\t%d\n",$1);}//{$$=$1; root = $$;}
-| '(' fullroot ')' {$$=$2;}
+| '(' fullroot ')' {printf("BISON:\tfound (fullroot)\n"); fprintf(logFile,"BISON:\tfound (fullroot)\n");}//{$$=$2;}
 ;
 %%
