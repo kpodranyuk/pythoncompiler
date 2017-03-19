@@ -52,6 +52,7 @@ WHITE_SPACE[ \t]
                        indent_level++;
 					   /*current_line_indent-=INDNT;*/
                        printf("FLEX:\tсбекхвемхе нрярсою\n");		fprintf(logFile,"FLEX:\tсбекхвемхе нрярсою\n");
+					   BEGIN(INITIAL);
 					   return INDENT;
                     }
 				    else if (current_line_indent < indent_level*INDNT)
@@ -305,6 +306,7 @@ del	{
 				fprintf(logFile,"FLEX:\tмНБЮЪ ЯРПНЙЮ\n"); 
 				current_line_indent = 0; 
 				BEGIN(INDENT);
+				return NEWLINE;
 			}
 %%
 int main(int argc, char** argv) {
