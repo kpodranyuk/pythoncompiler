@@ -51,8 +51,8 @@ WHITE_SPACE[ \t]
 				    {
                        indent_level++;
 					   /*current_line_indent-=INDNT;*/
-                       printf("FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");
 					   BEGIN(INITIAL);
+					   printf("FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");
 					   return INDENT;
                     }
 				    else if (current_line_indent < indent_level*INDNT)
@@ -167,7 +167,7 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
 <<EOF>> {
 			puts("FLEX:\tНашел конец файла");				
-			fprintf(logFile,"FLEX:\tНашел конец файла"); 
+			fprintf(logFile,"FLEX:\tНашел конец файла\n"); 
 			dedents_count=(indent_level*INDNT-current_line_indent)/INDNT; 
 			return 0;
 		}
