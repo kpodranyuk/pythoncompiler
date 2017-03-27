@@ -57,14 +57,14 @@ int root;
 %left <Int>DIGIT			// Число
 %start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFile,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
-<<<<<<< local
+//<<<<<<< local
 fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
-=======
+/*=======
 fullroot: fullroot NEWLINE fullroot{printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
 | if_stmt {printf("BISON:\tfound IF_STMT: INDENT\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT INDENT:\t\n");}//{$$=$1; root = $$;}
 | func_def
 | expr
->>>>>>> other
+>>>>>>> other*/
 ;
 if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
 | IF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
@@ -86,6 +86,7 @@ stmt_list: stmt {printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFile,"BISON:
 
 stmt: expr NEWLINE {printf("BISON:\tfound expr stmt:\t\n"); fprintf(logFile,"BISON:\tfound expr stmt:\t\n");}
 | if_stmt {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFile,"BISON:\tfound if_stmt:\t\n");}
+| func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFile,"BISON:\tfound func_def:\t\n");}
 | for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFile,"BISON:\tfound for_stmt:\t\n");}
 | while_stmt {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFile,"BISON:\tfound while_stmt:\t\n");}
 ;
@@ -111,7 +112,7 @@ expr: expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(
 | '(' expr ')'					{printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFile,"BISON:\tfound expr: BRACKETS\n");}
 | expr '=' expr					{printf("BISON:\tfound expr: =\n"); fprintf(logFile,"BISON:\tfound expr: =\n");}
 | var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFile,"BISON:\tfound expr: var_val\n");}
-| OPERAND					{printf("BISON:\tfound expr: OPERAND\n"); fprintf(logFile,"BISON:\tfound expr: OPERAND\n");}
+| OPERAND					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFile,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | DEL OPERAND				{printf("BISON:\tfound expr: DEL\n"); fprintf(logFile,"BISON:\tfound expr: DEL\n");}
 ;
 param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logFile,"BISON:\tfound param_list: EMPTY\n");}
@@ -120,6 +121,6 @@ param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logF
 param_listE: expr	{printf("BISON:\tfound param_listE: expr\n"); fprintf(logFile,"BISON:\tfound param_listE: expr\n");}
 | param_listE ',' expr	{printf("BISON:\tfound param_listE: ,\n"); fprintf(logFile,"BISON:\tfound param_listE: ,\n");}
 ;
-func_def: DEF OPERAND '(' param_list ')' ':' NEWLINE INDENT fullroot RETURN expr DEDENT	{printf("BISON:\tfound func_def: ,\n"); fprintf(logFile,"BISON:\tfound func_def: ,\n");}
+func_def: DEF OPERAND '(' param_list ')' ':' NEWLINE INDENT stmt_list RETURN expr DEDENT	{printf("BISON:\tfound func_def: ,\n"); fprintf(logFile,"BISON:\tfound func_def: ,\n");}
 ;
 %%
