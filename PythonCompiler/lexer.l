@@ -68,6 +68,7 @@ WHITE_SPACE[ \t]
                        BEGIN(INITIAL);
                     }
                  }
+,	{return ',';}
 [*]{2}			{
 					printf("FLEX:\t%s - операция\n", yytext);		
 					fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
