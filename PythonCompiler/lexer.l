@@ -30,6 +30,8 @@ WHITE_SPACE[ \t]
 	while(dedents_count>0)
 	{
 		dedents_count--;
+		if(indent_level>0)
+		{indent_level--;}
 	   /*current_line_indent+=INDNT;*/
 	   printf("FLEX:\tслемэьемхе нрярсою\n");		fprintf(logFile,"FLEX:\tслемэьемхе нрярсою\n");
 	   return DEDENT;
@@ -59,6 +61,7 @@ WHITE_SPACE[ \t]
 				    {
                        indent_level--;
 					   dedents_count=(indent_level*INDNT-current_line_indent)/INDNT;
+					   BEGIN(INITIAL);
 					   /*current_line_indent+=INDNT;*/
                        printf("FLEX:\tслемэьемхе нрярсою\n");		fprintf(logFile,"FLEX:\tслемэьемхе нрярсою\n");
 					   return DEDENT;
@@ -68,7 +71,6 @@ WHITE_SPACE[ \t]
                        BEGIN(INITIAL);
                     }
                  }
-,	{return ',';}
 [*]{2}			{
 					printf("FLEX:\t%s - НОЕПЮЖХЪ\n", yytext);		
 					fprintf(logFile,"FLEX:\t%s - НОЕПЮЖХЪ\n", yytext);	
