@@ -73,7 +73,9 @@ if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_S
 ;
 
 for_stmt: FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
 | FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
 ;
 
 while_stmt: WHILE expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFile,"BISON:\tfound WHILE_STMT:\t\n");}
