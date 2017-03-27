@@ -76,9 +76,9 @@ stmt_list: stmt {printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFile,"BISON:
 ;
 
 stmt: expr NEWLINE {printf("BISON:\tfound expr stmt:\t\n"); fprintf(logFile,"BISON:\tfound expr stmt:\t\n");}
-| if_stmt NEWLINE {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFile,"BISON:\tfound if_stmt:\t\n");}
-| for_stmt NEWLINE {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFile,"BISON:\tfound for_stmt:\t\n");}
-| while_stmt NEWLINE {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFile,"BISON:\tfound while_stmt:\t\n");}
+| if_stmt {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFile,"BISON:\tfound if_stmt:\t\n");}
+| for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFile,"BISON:\tfound for_stmt:\t\n");}
+| while_stmt {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFile,"BISON:\tfound while_stmt:\t\n");}
 ;
 
 var_val: TRUE	{printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFile,"BISON:\tfound var_val: TRUE\n");}
