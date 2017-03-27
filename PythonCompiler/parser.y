@@ -53,9 +53,7 @@ int root;
 %left <Int>DIGIT			// Число
 %start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFile,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
-fullroot: fullroot NEWLINE fullroot{printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
-| if_stmt {printf("BISON:\tfound IF_STMT: INDENT\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT INDENT:\t\n");}//{$$=$1; root = $$;}
-| expr
+fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
 ;
 if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
 | IF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
