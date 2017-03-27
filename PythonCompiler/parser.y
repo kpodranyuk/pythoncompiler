@@ -19,9 +19,6 @@ int root;
 %nonassoc INDENT DEDENT	// Начало и конец блока кода
 %left NEWLINE		// Перенос строки
 %token ':'		// Двоеточие
-
-
-%token 	// Оператор неравенства
 %token TRUE	FALSE	// Оператор логической истины
 %token WHILE	// Оператор цикла пока
 %token FOR		// Оператор цикла для
