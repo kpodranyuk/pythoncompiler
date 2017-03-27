@@ -16,8 +16,8 @@ int root;
 };
 %type <Int> fullroot
 %type <Int> block
-%nonassoc INDENT DEDENT	// Начало и конец блока кода
-%left NEWLINE		// Перенос строки
+%type <Int> if_stmt
+%nonassoc INDENT DEDENT	NEWLINE// Начало и конец блока кода
 %token ':'		// Двоеточие
 %token TRUE	FALSE	// Оператор логической истины
 %token WHILE	// Оператор цикла пока
@@ -50,11 +50,13 @@ int root;
 %%
 block:	fullroot	{printf("BISON:\tfound fullroot\n"); fprintf(logFile,"BISON:\tfound fullroot\n");}//| fullroot DEDENT {printf("BISON:\tfound fullroot DEDENT\n"); fprintf(logFile,"BISON:\tfound fullroot DEDENT\n");}//{$$=$2;}
 ;
-fullroot: fullroot NEWLINE {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
+fullroot: if_stmt NEWLINE INDENT fullroot DEDENT {printf("BISON:\tfound IF_STMT: INDENT\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT INDENT:\t%d\n");}//{$$=$1; root = $$;}
+| fullroot NEWLINE {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
 | fullroot '+' fullroot {printf("BISON:\tfound +\n"); fprintf(logFile,"BISON:\tfound +\n");}//{$$=$1+$3; root = $$;}
 | fullroot '-' fullroot {printf("BISON:\tfound -\n"); fprintf(logFile,"BISON:\tfound -\n");}//{$$=$1-$3; root = $$;}
 | fullroot POW fullroot {printf("BISON:\tfound POW\n"); fprintf(logFile,"BISON:\tfound POW\n");}//{$$=(int)pow((double)$1,$3); root = $$;}
 | DIGIT {printf("BISON:\tfound DIGIT:\t%d\n",$1); fprintf(logFile,"BISON:\tfound DIGIT:\t%d\n",$1);}//{$$=$1; root = $$;}
 | '(' fullroot ')' {printf("BISON:\tfound (fullroot)\n"); fprintf(logFile,"BISON:\tfound (fullroot)\n");}//{$$=$2;}
+if_stmt: IF fullroot ':' {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t%d\n");}//{$$=$1; root = $$;}
 ;
 %%

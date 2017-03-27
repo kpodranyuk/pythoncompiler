@@ -22,7 +22,7 @@ WHITE_SPACE[ \t]
 %x SINGLE_QUOTED_STRING
 %x MULTILINE_DOUBLE_QUOTED_STRING
 %x MULTILINE_SINGLE_QUOTED_STRING
-%x INDENT
+%x INDENT_
 %%
 %{
 	static int dedents_count=0;
@@ -36,10 +36,10 @@ WHITE_SPACE[ \t]
 	}
 %}
 #[^\n]*/\n	{printf("FLEX:\tКомментарий\n");	fprintf(logFile,"FLEX:\tКомментарий\n"); }
-<INDENT>" "      { current_line_indent++; }
-<INDENT>"\t"     { current_line_indent+=4;}
-<INDENT>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
-<INDENT>.        {
+<INDENT_>" "      { current_line_indent++; }
+<INDENT_>"\t"     { current_line_indent+=4;}
+<INDENT_>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
+<INDENT_>.        {
 					unput(*yytext);
 					if (current_line_indent%INDNT!=0) 
 				    {
@@ -168,7 +168,12 @@ WHITE_SPACE[ \t]
 <<EOF>> {
 			puts("FLEX:\tНашел конец файла");				
 			fprintf(logFile,"FLEX:\tНашел конец файла\n"); 
-			dedents_count=(indent_level*INDNT-current_line_indent)/INDNT; 
+			if(indent_level!=0)
+			{
+				dedents_count=indent_level;//(indent_level*INDNT-current_line_indent)/INDNT; 
+				unput(*yytext);
+				indent_level=0;
+			}
 			return 0;
 		}
 =		{
@@ -200,6 +205,7 @@ and			{
 or			{
 				printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
+			
 				return OR;
 			}
 while		{
@@ -305,7 +311,7 @@ del	{
 				puts("FLEX:\tНовая строка");					
 				fprintf(logFile,"FLEX:\tНовая строка\n"); 
 				current_line_indent = 0; 
-				BEGIN(INDENT);
+				BEGIN(INDENT_);
 				return NEWLINE;
 			}
 %%
