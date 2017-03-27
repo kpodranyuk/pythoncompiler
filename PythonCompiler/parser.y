@@ -18,8 +18,9 @@ int root;
 %type <Int> block
 %nonassoc INDENT	// Начало блока кода
 %nonassoc DEDENT	// Конец блока кода
-%token '='		// Оператор присвоения
 %left NEWLINE		// Перенос строки
+%token ':'		// Двоеточие
+%token '='		// Оператор присвоения
 %left '+'		// Оператор сложения
 %left '-'		// Оператор вычитания
 %left POW		// Оператор возведения в степень
@@ -49,7 +50,6 @@ int root;
 %token RETURN	// Оператор возврата значения
 %token DEF		// Оператор объявления функции
 %token DEL		// Оператор удаления переменной
-%token ':'		// Двоеточие
 %token ','		// Запятая
 %token '['		// Открывающая квадратная скобка
 %token ']'		// Закрывающая квадратная скобка
@@ -58,14 +58,11 @@ int root;
 %token <StringVal>OPERAND	// Операнд
 %token <StringVal>STRING	// Строка
 %left <Int>DIGIT			// Число
-%start block		// Стартовый символ
+%start block		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFile,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
-block:	fullroot	{printf("BISON:\tfound fullroot\n"); fprintf(logFile,"BISON:\tfound fullroot\n");}
-| NEWLINE INDENT fullroot {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFile,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
-| fullroot DEDENT {printf("BISON:\tfound fullroot DEDENT\n"); fprintf(logFile,"BISON:\tfound fullroot DEDENT\n");}//{$$=$2;}
+block:	fullroot	{printf("BISON:\tfound fullroot\n"); fprintf(logFile,"BISON:\tfound fullroot\n");}//| fullroot DEDENT {printf("BISON:\tfound fullroot DEDENT\n"); fprintf(logFile,"BISON:\tfound fullroot DEDENT\n");}//{$$=$2;}
 ;
-fullroot: fullroot NEWLINE fullroot {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}
-| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
+fullroot: fullroot NEWLINE {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
 | fullroot '+' fullroot {printf("BISON:\tfound +\n"); fprintf(logFile,"BISON:\tfound +\n");}//{$$=$1+$3; root = $$;}
 | fullroot '-' fullroot {printf("BISON:\tfound -\n"); fprintf(logFile,"BISON:\tfound -\n");}//{$$=$1-$3; root = $$;}
 | fullroot POW fullroot {printf("BISON:\tfound POW\n"); fprintf(logFile,"BISON:\tfound POW\n");}//{$$=(int)pow((double)$1,$3); root = $$;}
