@@ -5,6 +5,7 @@
 #define INDNT 4
 #pragma warning(disable : 4996)
 FILE* logFile;
+FILE* logFileB;
 /* globals to track current indentation */
 int current_line_indent = 0;   /* indentation of the current line */
 int indent_level = 0;          /* indentation level passed to the parser */
@@ -26,15 +27,41 @@ WHITE_SPACE[ \t]
 %%
 %{
 	static int dedents_count=0;
+	static int eof_count=0;
 	char bufStr [1000] ="";
-	while(dedents_count>0)
+	if(eof_count==1&&dedents_count>0)
 	{
-		dedents_count--;
-		if(indent_level>0)
-		{indent_level--;}
-	   /*current_line_indent+=INDNT;*/
-	   printf("FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");		fprintf(logFile,"FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");
-	   return DEDENT;
+		//return EOF_TOKEN;
+		while(dedents_count>0)
+		{
+			dedents_count--;
+			if(indent_level>0)
+			{indent_level--;}
+		   /*current_line_indent+=INDNT;*/
+		   printf("FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");		fprintf(logFile,"FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");
+		   return DEDENT;
+		}
+		/*puts("FLEX:\t¬ÂÌÛÎ ÍÓÌÂˆ Ù‡ÈÎ‡");
+		fprintf(logFile,"FLEX:\t¬ÂÌÛÎ ÍÓÌÂˆ Ù‡ÈÎ‡\n"); */
+		eof_count=0;
+		//return EOF_TOKEN;
+		yyterminate();
+	}
+	else if (eof_count==0)
+	{
+		while(dedents_count>0)
+		{
+			dedents_count--;
+			if(indent_level>0)
+			{indent_level--;}
+		   /*current_line_indent+=INDNT;*/
+		   printf("FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");		fprintf(logFile,"FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");
+		   return DEDENT;
+		}
+	}
+	else if (eof_count==1&&dedents_count==0)
+	{
+		yyterminate();
 	}
 %}
 #[^\n]*/\n	{printf("FLEX:\t ÓÏÏÂÌÚ‡ËÈ\n");	fprintf(logFile,"FLEX:\t ÓÏÏÂÌÚ‡ËÈ\n"); }
@@ -174,17 +201,17 @@ WHITE_SPACE[ \t]
 			if(indent_level!=0)
 			{
 				dedents_count=indent_level;//(indent_level*INDNT-current_line_indent)/INDNT; 
-				//unput(*yytext);
 				indent_level=0;
-				while(dedents_count>0)
+				/*while(dedents_count>0)
 				{
 					dedents_count--;
 				   /*current_line_indent+=INDNT;*/
-				   printf("FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");		fprintf(logFile,"FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");
+				   /*printf("FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");		fprintf(logFile,"FLEX:\t”Ã≈Õ‹ÿ≈Õ»≈ Œ“—“”œ¿\n");
 				   return DEDENT;
-				}
+				}*/
 			}
-			return 0;
+			eof_count=1;
+			return EOF_TOKEN;
 			
 		}
 =		{
@@ -351,11 +378,13 @@ int main(int argc, char** argv) {
 		// parse through the input until there is no more:
 		//rewind(yyin);
 		logFile = fopen("log.txt", "wt");
+		logFileB = fopen("logB.txt", "wt");
 		do{
 			yyparse();//yylex();	
 		}while(!feof(yyin));
 		fclose(yyin);
 		fclose(logFile);
+		fclose(logFileB);
 		//printf("result is %d", root);
 	/*}*/
 	_getch();
