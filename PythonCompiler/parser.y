@@ -6,7 +6,7 @@
 extern int yylex();
 extern int yyparse();
 extern void yyerror(const char* s);
-extern FILE* logFile;
+extern FILE* logFileB;
 int root;
 %}
 %union
@@ -30,6 +30,7 @@ int root;
 %nonassoc INDENT NEWLINE// Начало и конец блока кода
 %left DEDENT// Начало и конец блока кода
 %token ':'		// Двоеточие
+%token EOF_TOKEN		// Конец файла
 %token TRUE	FALSE	// Оператор логической истины
 %token WHILE	// Оператор цикла пока
 %token FOR		// Оператор цикла для
@@ -57,81 +58,84 @@ int root;
 %token <StringVal>OPERAND	// Операнд
 %left <StringVal>STRING	// Строка
 %left <Int>DIGIT			// Число
-%start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFile,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
+%start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFileB,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
 //<<<<<<< local
-fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
+fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+;
 /*=======
-fullroot: fullroot NEWLINE fullroot{printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFile,"BISON:\tconcatenated NEWLINE\n");}
-| if_stmt {printf("BISON:\tfound IF_STMT: INDENT\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT INDENT:\t\n");}//{$$=$1; root = $$;}
+fullroot: fullroot NEWLINE fullroot{printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+| if_stmt {printf("BISON:\tfound IF_STMT: INDENT\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT INDENT:\t\n");}//{$$=$1; root = $$;}
 | func_def
 | expr
 >>>>>>> other*/
 ;
-if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
-| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
-| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
+if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
 ;
 
-for_stmt: FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
+for_stmt: FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
 ;
 
-while_stmt: WHILE expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFile,"BISON:\tfound WHILE_STMT:\t\n");}
-|  WHILE expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFile,"BISON:\tfound WHILE_STMT:\t\n");}
+while_stmt: WHILE expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound WHILE_STMT:\t\n");}
+|  WHILE expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound WHILE_STMT:\t\n");}
 ;
 
-stmt_list: stmt{printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFile,"BISON:\tfound stmt_list:\t\n");}
-| stmt_list stmt {printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFile,"BISON:\tfound stmt_list:\t\n");}
+stmt_list: stmt_list line_sep {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+| stmt{printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
+| stmt_list stmt {printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
 ;
 
-stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFile,"BISON:\tfound expr stmt:\t\n");}
-| RETURN expr line_sep{printf("BISON:\tfound stmt return:\t\n"); fprintf(logFile,"BISON:\tfound stmt return:\t\n");}
-| if_stmt {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFile,"BISON:\tfound if_stmt:\t\n");}
-| func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFile,"BISON:\tfound func_def:\t\n");}
-| for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFile,"BISON:\tfound for_stmt:\t\n");}
-| while_stmt {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFile,"BISON:\tfound while_stmt:\t\n");}
+stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr stmt:\t\n");}
+| RETURN expr line_sep{printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt return:\t\n");}
+| if_stmt {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
+| func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
+| for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
+| while_stmt {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
 
-var_val: TRUE	{printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFile,"BISON:\tfound var_val: TRUE\n");}
-| FALSE		{printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFile,"BISON:\tfound var_val: FALSE\n");}
-| STRING	{printf("BISON:\tfound var_val: STRING\n"); fprintf(logFile,"BISON:\tfound var_val: STRING\n");}
-| DIGIT		{printf("BISON:\tfound var_val: DIGIT\n"); fprintf(logFile,"BISON:\tfound var_val: DIGIT\n");}
+var_val: TRUE	{printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
+| FALSE		{printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
+| STRING	{printf("BISON:\tfound var_val: STRING\n"); fprintf(logFileB,"BISON:\tfound var_val: STRING\n");}
+| DIGIT		{printf("BISON:\tfound var_val: DIGIT\n"); fprintf(logFileB,"BISON:\tfound var_val: DIGIT\n");}
 ;
-expr: expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(logFile,"BISON:\tfound expr: NOT_EQUAL\n");}
-| expr EQUAL expr				{printf("BISON:\tfound expr: EQUAL\n"); fprintf(logFile,"BISON:\tfound expr: EQUAL\n");}
-| expr '>' expr					{printf("BISON:\tfound expr: >\n"); fprintf(logFile,"BISON:\tfound expr: >\n");}
-| expr GREATER_OR_EQUAL expr	{printf("BISON:\tfound expr: GREATER_OR_EQUAL\n"); fprintf(logFile,"BISON:\tfound expr: GREATER_OR_EQUAL\n");}
-| expr '<' expr					{printf("BISON:\tfound expr: <\n"); fprintf(logFile,"BISON:\tfound expr: <\n");}
-| expr LESS_OR_EQUAL expr		{printf("BISON:\tfound expr: LESS_OR_EQUAL\n"); fprintf(logFile,"BISON:\tfound expr: LESS_OR_EQUAL\n");}
-| expr '-' expr					{printf("BISON:\tfound expr: -\n"); fprintf(logFile,"BISON:\tfound expr: -\n");}
-| expr '+' expr					{printf("BISON:\tfound expr: +\n"); fprintf(logFile,"BISON:\tfound expr: +\n");}
-| expr INT expr					{printf("BISON:\tfound expr: INT\n"); fprintf(logFile,"BISON:\tfound expr: INT\n");}
-| expr MOD expr					{printf("BISON:\tfound expr: MOD\n"); fprintf(logFile,"BISON:\tfound expr: MOD\n");}
-| expr DIV expr					{printf("BISON:\tfound expr: DIV\n"); fprintf(logFile,"BISON:\tfound expr: DIV\n");}
-| expr MUL expr					{printf("BISON:\tfound expr: MUL\n"); fprintf(logFile,"BISON:\tfound expr: MUL\n");}
-| expr POW expr					{printf("BISON:\tfound expr: POW\n"); fprintf(logFile,"BISON:\tfound expr: POW\n");}
-| '(' expr ')'					{printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFile,"BISON:\tfound expr: BRACKETS\n");}
-| expr '=' expr					{printf("BISON:\tfound expr: =\n"); fprintf(logFile,"BISON:\tfound expr: =\n");}
-| var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFile,"BISON:\tfound expr: var_val\n");}
-| OPERAND					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFile,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
-| func_call {printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFile,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
-| DEL OPERAND				{printf("BISON:\tfound expr: DEL\n"); fprintf(logFile,"BISON:\tfound expr: DEL\n");}
+expr: expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: NOT_EQUAL\n");}
+| expr EQUAL expr				{printf("BISON:\tfound expr: EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: EQUAL\n");}
+| expr '>' expr					{printf("BISON:\tfound expr: >\n"); fprintf(logFileB,"BISON:\tfound expr: >\n");}
+| expr GREATER_OR_EQUAL expr	{printf("BISON:\tfound expr: GREATER_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: GREATER_OR_EQUAL\n");}
+| expr '<' expr					{printf("BISON:\tfound expr: <\n"); fprintf(logFileB,"BISON:\tfound expr: <\n");}
+| expr LESS_OR_EQUAL expr		{printf("BISON:\tfound expr: LESS_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: LESS_OR_EQUAL\n");}
+| expr '-' expr					{printf("BISON:\tfound expr: -\n"); fprintf(logFileB,"BISON:\tfound expr: -\n");}
+| expr '+' expr					{printf("BISON:\tfound expr: +\n"); fprintf(logFileB,"BISON:\tfound expr: +\n");}
+| expr INT expr					{printf("BISON:\tfound expr: INT\n"); fprintf(logFileB,"BISON:\tfound expr: INT\n");}
+| expr MOD expr					{printf("BISON:\tfound expr: MOD\n"); fprintf(logFileB,"BISON:\tfound expr: MOD\n");}
+| expr DIV expr					{printf("BISON:\tfound expr: DIV\n"); fprintf(logFileB,"BISON:\tfound expr: DIV\n");}
+| expr MUL expr					{printf("BISON:\tfound expr: MUL\n"); fprintf(logFileB,"BISON:\tfound expr: MUL\n");}
+| expr POW expr					{printf("BISON:\tfound expr: POW\n"); fprintf(logFileB,"BISON:\tfound expr: POW\n");}
+| '(' expr ')'					{printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFileB,"BISON:\tfound expr: BRACKETS\n");}
+| expr '=' expr					{printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
+| var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
+| OPERAND 					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
+| func_call {printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
+| DEL OPERAND				{printf("BISON:\tfound expr: DEL\n"); fprintf(logFileB,"BISON:\tfound expr: DEL\n");}
 ;
-param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logFile,"BISON:\tfound param_list: EMPTY\n");}
-| param_listE	{printf("BISON:\tfound param_list: param_listE\n"); fprintf(logFile,"BISON:\tfound param_list: param_listE\n");}
+param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logFileB,"BISON:\tfound param_list: EMPTY\n");}
+| param_listE	{printf("BISON:\tfound param_list: param_listE\n"); fprintf(logFileB,"BISON:\tfound param_list: param_listE\n");}
 ;
-param_listE: expr	{printf("BISON:\tfound param_listE: expr\n"); fprintf(logFile,"BISON:\tfound param_listE: expr\n");}
-| param_listE ',' expr	{printf("BISON:\tfound param_listE: ,\n"); fprintf(logFile,"BISON:\tfound param_listE: ,\n");}
+param_listE: expr	{printf("BISON:\tfound param_listE: expr\n"); fprintf(logFileB,"BISON:\tfound param_listE: expr\n");}
+| param_listE ',' expr	{printf("BISON:\tfound param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound param_listE: ,\n");}
 ;
-func_def: DEF OPERAND '(' param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{printf("BISON:\tfound func_def: ,\n"); fprintf(logFile,"BISON:\tfound func_def: ,\n");}
+func_def: DEF OPERAND '(' param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{printf("BISON:\tfound func_def: ,\n"); fprintf(logFileB,"BISON:\tfound func_def: ,\n");}
 ;
-func_call: OPERAND '(' param_list ')' {printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFile,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
+func_call: OPERAND '(' param_list ')' {printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
 ;
-line_sep: /*empty*/ {printf("BISON:\tfound line_sep\n"); fprintf(logFile,"BISON:\tfound line_sep\n");}
-| NEWLINE	{printf("BISON:\tfound line_sep\n"); fprintf(logFile,"BISON:\tfound line_sep\n");}
+line_sep:NEWLINE	{printf("BISON:\tfound line_sep\n"); fprintf(logFileB,"BISON:\tfound line_sep\n");}
+| EOF_TOKEN	{printf("BISON:\tfound line_sep\n"); fprintf(logFileB,"BISON:\tfound line_sep\n");}
+// NEWLINE EOF_TOKEN	%prec POW{printf("BISON:\tfound line_sep\n"); fprintf(logFileB,"BISON:\tfound line_sep\n");}
 ;
 %%
