@@ -67,9 +67,9 @@ fullroot: fullroot NEWLINE fullroot{printf("BISON:\tconcatenated 2 strings\n"); 
 >>>>>>> other*/
 ;
 if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
 | ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
-| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
+| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT NEWLINE ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFile,"BISON:\tfound IF_STMT:\t\n");}
 ;
 
 for_stmt: FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFile,"BISON:\tfound FOR_STMT:\t\n");}
