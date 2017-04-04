@@ -44,8 +44,6 @@ int root;
 %token DEL		// Оператор удаления переменной
 %token ','		// Запятая
 %token '.'		// Точка
-%token '['		// Открывающая квадратная скобка
-%token ']'		// Закрывающая квадратная скобка
 %token AND OR NOT								// Оператор и или не
 %token IN 										// Оператор in
 %right '='										// Оператор присвоения
@@ -54,6 +52,8 @@ int root;
 %left '+'	'-'									// Оператор сложения и вычитания
 %left MUL DIV MOD INT							// Оператор умножения, деления, остатка от деления, целой части от деления (возможна замена одним символом)
 %left POW										// Оператор возведения в степень
+%nonassoc '['		// Открывающая квадратная скобка
+%nonassoc ']'		// Закрывающая квадратная скобка
 %nonassoc '('		// Открывающая круглая скобка
 %nonassoc ')'		// Закрывающая круглая скобка
 %token <StringVal>OPERAND	// Операнд
@@ -120,6 +120,9 @@ expr: expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(
 | expr POW expr					{printf("BISON:\tfound expr: POW\n"); fprintf(logFileB,"BISON:\tfound expr: POW\n");}
 | '(' expr ')'					{printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFileB,"BISON:\tfound expr: BRACKETS\n");}
 | expr '=' expr					{printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
+| expr '[' expr ']'				{printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}
+| '[' param_list ']'			{printf("BISON:\tfound expr: initialize\n"); fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
+| OPERAND '.' OPERAND '(' var_val ')'  {printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
 | var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
 | OPERAND 					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
