@@ -331,6 +331,11 @@ del	{
 				fprintf(logFile,"FLEX:\t%s - запятая\n", yytext);	
 				return ',';
 			}
+\. 			{
+				printf("FLEX:\t%s - точка\n", yytext);	
+				fprintf(logFile,"FLEX:\t%s - точка\n", yytext);	
+				return '.';
+			}
 {VAR}		{
 				printf("FLEX:\tНашел идентификатор: %s\n", yytext);	
 				fprintf(logFile,"FLEX:\tНашел идентификатор: %s\n", yytext);	
