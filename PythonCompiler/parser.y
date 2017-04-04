@@ -44,9 +44,9 @@ int root;
 %token DEL		// Оператор удаления переменной
 %token ','		// Запятая
 %token '.'		// Точка
-%token AND OR NOT								// Оператор и или не
 %token IN 										// Оператор in
 %right '='										// Оператор присвоения
+%left AND OR NOT								// Оператор и или не
 %left EQUAL NOT_EQUAL							// Оператор равенства и неравенства
 %left LESS_OR_EQUAL '<' GREATER_OR_EQUAL '>'	// Оператор меньше либо равно, больше либо равно, меньше, больше
 %left '+'	'-'									// Оператор сложения и вычитания
@@ -105,7 +105,10 @@ var_val: TRUE	{printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:
 | STRING	{printf("BISON:\tfound var_val: STRING\n"); fprintf(logFileB,"BISON:\tfound var_val: STRING\n");}
 | DIGIT		{printf("BISON:\tfound var_val: DIGIT\n"); fprintf(logFileB,"BISON:\tfound var_val: DIGIT\n");}
 ;
-expr: expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: NOT_EQUAL\n");}
+expr: expr OR expr				{printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
+| expr AND expr					{printf("BISON:\tfound expr: AND\n"); fprintf(logFileB,"BISON:\tfound expr: AND\n");}
+| NOT expr						{printf("BISON:\tfound expr: NOT\n"); fprintf(logFileB,"BISON:\tfound expr: NOT\n");}
+| expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: NOT_EQUAL\n");}
 | expr EQUAL expr				{printf("BISON:\tfound expr: EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: EQUAL\n");}
 | expr '>' expr					{printf("BISON:\tfound expr: >\n"); fprintf(logFileB,"BISON:\tfound expr: >\n");}
 | expr GREATER_OR_EQUAL expr	{printf("BISON:\tfound expr: GREATER_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: GREATER_OR_EQUAL\n");}
