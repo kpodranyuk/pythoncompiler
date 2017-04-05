@@ -169,7 +169,7 @@ WHITE_SPACE[ \t]
 <MULTILINE_DOUBLE_QUOTED_STRING>\n	strcat(bufStr,"\n");
 <MULTILINE_DOUBLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <MULTILINE_DOUBLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
-<MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{ printf("FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{ printf("FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 <MULTILINE_DOUBLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 (\'){3}				{ /*printf("Нашел многострочный текст через одинарную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через одинарную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(MULTILINE_SINGLE_QUOTED_STRING);}
 <MULTILINE_SINGLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
@@ -177,7 +177,7 @@ WHITE_SPACE[ \t]
 <MULTILINE_SINGLE_QUOTED_STRING>\n	strcat(bufStr,"\n");
 <MULTILINE_SINGLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <MULTILINE_SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
-<MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{ printf("FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{ printf("FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 <MULTILINE_SINGLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \'				{ /*printf("Нашел одинарную кавычку\n");	fprintf(logFile,"Нашел одинарную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(SINGLE_QUOTED_STRING);}
 <SINGLE_QUOTED_STRING>[^\\\n\'"]+	strcat(bufStr,yytext);
@@ -185,7 +185,7 @@ WHITE_SPACE[ \t]
 <SINGLE_QUOTED_STRING>\"|(\\\")	strcat(bufStr,"\"");
 <SINGLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <SINGLE_QUOTED_STRING>\\\'	strcat(bufStr,"\'");
-<SINGLE_QUOTED_STRING>\'	{ printf("FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<SINGLE_QUOTED_STRING>\'	{ printf("FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 <SINGLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 \"				{ /*printf("Нашел кавычку\n");	fprintf(logFile,"Нашел кавычку\n"); strcpy(bufStr,"");*/ BEGIN(DOUBLE_QUOTED_STRING);}
 <DOUBLE_QUOTED_STRING>[^\\\n\"']+	strcat(bufStr,yytext);
@@ -193,7 +193,7 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING>\\n	strcat(bufStr,"\n");
 <DOUBLE_QUOTED_STRING>\\\\	strcat(bufStr,"\\");
 <DOUBLE_QUOTED_STRING>\\\"	strcat(bufStr,"\"");
-<DOUBLE_QUOTED_STRING>\"	{ printf("FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr); strcpy(bufStr,""); BEGIN(INITIAL);}
+<DOUBLE_QUOTED_STRING>\"	{ printf("FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 <DOUBLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую двойную кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую двойную кавычку. Конец парсинга.\n"); return -1;}
 <<EOF>> {
 			puts("FLEX:\tНашел конец файла");				

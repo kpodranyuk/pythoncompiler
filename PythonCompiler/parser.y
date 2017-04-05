@@ -107,7 +107,7 @@ stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"B
 
 var_val: TRUE	{printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
 | FALSE		{printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
-| STRING	{printf("BISON:\tfound var_val: STRING\n"); fprintf(logFileB,"BISON:\tfound var_val: STRING\n");}
+| STRING	{printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
 | DIGIT		{printf("BISON:\tfound var_val: DIGIT\n"); fprintf(logFileB,"BISON:\tfound var_val: DIGIT\n");}
 ;
 expr: expr OR expr				{printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
