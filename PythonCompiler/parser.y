@@ -17,9 +17,10 @@ int root;
 
 	struct StmtListInfo * stmtlist;
 	struct StmtInfo * stmtinfo;
+	struct IfStmtInfo * ifstmt;
 };
-%type <Int> fullroot
-%type <Int> if_stmt
+%type <stmtlist> fullroot
+%type <ifstmt> if_stmt
 %type <Int> elif_stmt
 %type <Int> for_stmt
 %type <Int> while_stmt
@@ -100,7 +101,7 @@ stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"B
 | BREAK line_sep {printf("BISON:\tfound stmt break:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
 | RETURN expr line_sep {printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
 | DEL OPERAND line_sep {printf("BISON:\tfound expr: DEL_stmt\n"); fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
-| if_stmt {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
+| if_stmt {$$ = createIfStatement(__IF, $1); printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
 | func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
 | for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
 | while_stmt {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
