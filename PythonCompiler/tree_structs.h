@@ -18,8 +18,11 @@ enum ExprType
 	_POW,
 	_ASSIGN,
 	// обращение по индексу массива
+	_ARRID,
 	// инициализаци€ массива
+	__ARRINIT,
 	// действи€ над массивом
+	__ARRACT,
 	_VARVAL,	
 	_OPERAND,
 	_FUNCCALL
@@ -88,6 +91,8 @@ struct StmtInfo
 	struct ForStmtInfo * forstmt;
 	// ”казатель на цикл while
 	struct WhileStmtInfo * whilestmt;
+	// ”казатель на объ€вление функции
+	struct FuncDefStmtInfo * funcdefstmt;
 	// ”казатель на следующий стейтмент
 	struct StmtInfo * next;
 };
@@ -99,4 +104,32 @@ struct StmtListInfo
 {
 	struct StmtInfo * first;
 	struct StmtInfo * last;
+};
+
+/*
+* ’ранит в себе информацию об узле развилки
+*/
+struct IfStmtInfo
+{
+	// ”казатель на условное выражение
+	struct ExprInfo * expr;
+	// ”казатель на тело развилки
+	struct StmtListInfo * stmtlist;
+	// ”казатель на стейтмент elif
+	struct ElifStmtInfo * elifstmt;
+	// ”казатель на тело else
+	struct StmtListInfo * elsestmtlist;
+};
+
+/*
+* ’ранит в себе информацию об узле elif
+*/
+struct ElifStmtInfo
+{
+	// ”словное выражение
+	struct ExprInfo * expr;
+	// “ело развилки
+	struct StmtListInfo * stmtlist;
+	// ”казатель на следующий elif
+	struct ElifStmtInfo * next;
 };
