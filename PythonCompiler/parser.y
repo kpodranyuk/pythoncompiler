@@ -18,11 +18,12 @@ int root;
 	struct StmtListInfo * stmtlist;
 	struct StmtInfo * stmtinfo;
 	struct IfStmtInfo * ifstmt;
+	struct ForStmtInfo * forstmt;
 };
 %type <stmtlist> fullroot
 %type <ifstmt> if_stmt
 %type <Int> elif_stmt
-%type <Int> for_stmt
+%type <forstmt> for_stmt
 %type <Int> while_stmt
 %type <Int> var_val
 %type <stmtinfo> stmt
@@ -103,7 +104,7 @@ stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"B
 | DEL OPERAND line_sep {printf("BISON:\tfound expr: DEL_stmt\n"); fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
 | if_stmt {$$ = createFromIfStatement(__IF, $1); printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
 | func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
-| for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
+| for_stmt {$$ = createFromForStatement(__FOR, $1) ;printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
 | while_stmt {printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
 

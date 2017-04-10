@@ -45,3 +45,17 @@ struct StmtInfo * createFromIfStatement(enum StmtType type, struct IfStmtInfo * 
 	stmt->next=NULL;
 	return stmt;
 }
+
+/* Создание стейтмента для цикла for
+* \param[in] type тип стейтмента
+* \param[in] forstmt указатель на for стейтмент
+* \return указатель на стейтмент
+*/
+struct StmtInfo * createFromForStatement(enum StmtType type, struct ForStmtInfo * forstmt)
+{
+	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+	stmt->type=type;
+	stmt->forstmt=forstmt;
+	stmt->next=NULL;
+	return stmt;
+}
