@@ -22,7 +22,7 @@ int root;
 };
 %type <stmtlist> fullroot
 %type <ifstmt> if_stmt
-%type <Int> elif_stmt
+%type <Int> elif_list
 %type <forstmt> for_stmt
 %type <Int> while_stmt
 %type <Int> var_val
@@ -76,12 +76,12 @@ fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFile
 
 if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
 | IF expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_stmt {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_stmt ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_list {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_list ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
 ;
 
-elif_stmt: ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
-| elif_stmt ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
+elif_list: ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
+| elif_list ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
 ;
 
 for_stmt: FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}

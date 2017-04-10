@@ -115,8 +115,8 @@ struct IfStmtInfo
 	struct ExprInfo * expr;
 	// Указатель на тело развилки
 	struct StmtListInfo * stmtlist;
-	// Указатель на стейтмент elif
-	struct ElifStmtInfo * elifstmt;
+	// Указатель на лист elif
+	struct ElifListInfo * eliflist;
 	// Указатель на тело else
 	struct StmtListInfo * elsestmtlist;
 };
@@ -124,14 +124,14 @@ struct IfStmtInfo
 /*
 * Хранит в себе информацию об узле типа elif
 */
-struct ElifStmtInfo
+struct ElifListInfo
 {
 	// Условное выражение
 	struct ExprInfo * expr;
 	// Тело развилки
 	struct StmtListInfo * stmtlist;
 	// Указатель на следующий elif
-	struct ElifStmtInfo * next;
+	struct ElifListInfo * next;
 };
 
 /*
