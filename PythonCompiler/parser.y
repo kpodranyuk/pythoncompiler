@@ -29,6 +29,8 @@ int root;
 %type <Int> func_def
 %type <Int> func_call
 %type <Int> line_sep
+%type <Int> def_param_list
+%type <Int> def_param_listE
 %nonassoc INDENT NEWLINE// Начало и конец блока кода
 %left DEDENT// Начало и конец блока кода
 %token ':'		// Двоеточие
@@ -137,7 +139,15 @@ param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logF
 param_listE: expr	{printf("BISON:\tfound param_listE: expr\n"); fprintf(logFileB,"BISON:\tfound param_listE: expr\n");}
 | param_listE ',' expr	{printf("BISON:\tfound param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound param_listE: ,\n");}
 ;
-func_def: DEF OPERAND '(' param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{printf("BISON:\tfound func_def: ,\n"); fprintf(logFileB,"BISON:\tfound func_def: ,\n");}
+
+def_param_list:	/*empty*/	{printf("BISON:\tfound def_param_list: EMPTY\n"); fprintf(logFileB,"BISON:\tfound def_param_list: EMPTY\n");}
+| def_param_listE	{printf("BISON:\tfound def_param_list: def_param_listE\n"); fprintf(logFileB,"BISON:\tfound def_param_list: def_param_listE\n");}
+;
+def_param_listE: OPERAND	{printf("BISON:\tfound def_param_listE: OPERAND\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
+| def_param_listE ',' OPERAND	{printf("BISON:\tfound def_param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: ,\n");}
+;
+
+func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{printf("BISON:\tfound func_def: %s\n",$2); fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
 ;
 func_call: OPERAND '(' param_list ')' {printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
 ;
