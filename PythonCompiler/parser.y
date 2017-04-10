@@ -15,21 +15,23 @@ int root;
 	int Int;
 	char* StringVal;
 
+	struct ExprInfo * exprinfo;
 	struct StmtListInfo * stmtlist;
 	struct StmtInfo * stmtinfo;
 	struct IfStmtInfo * ifstmt;
 	struct ForStmtInfo * forstmt;
 	struct WhileStmtInfo * whilestmt;
+	struct ElifListInfo * eliflist;
 };
 %type <stmtlist> fullroot
 %type <ifstmt> if_stmt
-%type <Int> elif_list
+%type <eliflist> elif_list
 %type <forstmt> for_stmt
 %type <whilestmt> while_stmt
 %type <Int> var_val
 %type <stmtinfo> stmt
 %type <stmtlist> stmt_list
-%type <Int> expr
+%type <exprinfo> expr
 %type <Int> param_list
 %type <Int> param_listE
 %type <Int> func_def
@@ -75,14 +77,14 @@ int root;
 fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
 ;
 
-if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {$$ = createIfStatement($2,$6,NULL,NULL);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {$$ = createIfStatement($2,$6,NULL,$12);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_list {$$ = createIfStatement($2,$6,$8,NULL);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
-| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_list ELSE ':' NEWLINE INDENT stmt_list DEDENT {$$ = createIfStatement($2,$6,$8,$13);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createIfStatement($2,$6,NULL,NULL);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {$$=createIfStatement($2,$6,NULL,$12);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_list {$$=createIfStatement($2,$6,$8,NULL);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
+| IF expr ':' NEWLINE INDENT stmt_list DEDENT elif_list ELSE ':' NEWLINE INDENT stmt_list DEDENT {$$=createIfStatement($2,$6,$8,$13);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
 ;
 
-elif_list: ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
-| elif_list ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
+elif_list: ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createElifList($2,$6,NULL);  printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
+| elif_list ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createElifList($3,$7,$1);  printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
 ;
 
 for_stmt: FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}

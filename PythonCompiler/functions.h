@@ -102,3 +102,27 @@ struct IfStmtInfo * createIfStatement(struct ExprInfo * expr, struct StmtListInf
 	ifstmt->elsestmtlist=elsestmtlist;
 	return ifstmt;
 }
+
+/* Создание elif листа
+* \param[in] expr условное выражение
+* \param[in] stmtlist тело
+* \param[in] eliflist указатель на список elif-ов
+* \return указатель на список
+*/
+struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct ElifListInfo * eliflist)
+{
+	struct ElifListInfo * elif = (struct ElifListInfo *)malloc(sizeof(struct ElifListInfo));
+	elif->expr=expr;
+	elif->stmtlist=stmtlist;
+	elif->next=NULL;
+
+	if(eliflist==NULL)
+	{
+		return elif;
+	}
+	else 
+	{
+		eliflist->next=elif;
+		return eliflist;
+	}
+}
