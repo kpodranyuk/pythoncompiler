@@ -97,6 +97,7 @@ stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"B
 | CONTINUE line_sep {printf("BISON:\tfound stmt continue:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
 | BREAK line_sep {printf("BISON:\tfound stmt break:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
 | RETURN expr line_sep {printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
+| DEL OPERAND line_sep {printf("BISON:\tfound expr: DEL_stmt\n"); fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
 | if_stmt {printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
 | func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
 | for_stmt {printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
@@ -132,7 +133,6 @@ expr: expr OR expr				{printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BIS
 | var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
 | OPERAND 					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
-| DEL OPERAND				{printf("BISON:\tfound expr: DEL\n"); fprintf(logFileB,"BISON:\tfound expr: DEL\n");}
 ;
 param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logFileB,"BISON:\tfound param_list: EMPTY\n");}
 | param_listE	{printf("BISON:\tfound param_list: param_listE\n"); fprintf(logFileB,"BISON:\tfound param_list: param_listE\n");}
