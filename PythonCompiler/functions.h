@@ -59,3 +59,17 @@ struct StmtInfo * createFromForStatement(enum StmtType type, struct ForStmtInfo 
 	stmt->next=NULL;
 	return stmt;
 }
+
+/* Создание стейтмента для цикла while
+* \param[in] type тип стейтмента
+* \param[in] whilestmt указатель на while стейтмент
+* \return указатель на стейтмент
+*/
+struct StmtInfo * createFromWhileStatement(enum StmtType type, struct WhileStmtInfo * whilestmt)
+{
+	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+	stmt->type=type;
+	stmt->whilestmt=whilestmt;
+	stmt->next=NULL;
+	return stmt;
+}
