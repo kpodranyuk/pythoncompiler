@@ -14,6 +14,9 @@ int root;
 {
 	int Int;
 	char* StringVal;
+
+	struct StmtListInfo * stmtlist;
+	struct StmtInfo * stmtinfo;
 };
 %type <Int> fullroot
 %type <Int> if_stmt
@@ -21,8 +24,8 @@ int root;
 %type <Int> for_stmt
 %type <Int> while_stmt
 %type <Int> var_val
-%type <Int> stmt
-%type <Int> stmt_list
+%type <stmtinfo> stmt
+%type <stmtlist> stmt_list
 %type <Int> expr
 %type <Int> param_list
 %type <Int> param_listE
@@ -31,6 +34,7 @@ int root;
 %type <Int> line_sep
 %type <Int> def_param_list
 %type <Int> def_param_listE
+
 %nonassoc INDENT NEWLINE// Начало и конец блока кода
 %left DEDENT// Начало и конец блока кода
 %token ':'		// Двоеточие
@@ -86,9 +90,9 @@ while_stmt: WHILE expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfoun
 |  WHILE expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound WHILE_STMT:\t\n");}
 ;
 
-stmt_list: stmt_list line_sep {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
-| stmt{printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
-| stmt_list stmt {printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
+stmt_list: stmt_list line_sep {$$ = createStatementList(NULL, $1); printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+| stmt {$$ = createStatementList($1, NULL); printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
+| stmt_list stmt {$$ = createStatementList($2, $1); printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
 ;
 
 stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
