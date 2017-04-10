@@ -17,6 +17,7 @@ int root;
 %type <Int> fullroot
 %type <Int> if_stmt
 %type <Int> else_stmt
+%type <Int> else_stmtE
 %type <Int> for_stmt
 %type <Int> while_stmt
 %type <Int> var_val
@@ -76,8 +77,11 @@ if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT else_stmt {printf("BISON:\t
 ;
 
 else_stmt: /*empty*/	{printf("BISON:\tfound EMPTY_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound EMPTY_STMT:\t\n");}
-| ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELSE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELSE_STMT:\t\n");}
-| ELIF expr ':' NEWLINE INDENT stmt_list DEDENT else_stmt {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
+| else_stmtE {printf("BISON:\tfound ELSE_STMT_E:\t\n"); fprintf(logFileB,"BISON:\tfound ELSE_STMT_E:\t\n");}
+;
+
+else_stmtE: else_stmt ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELSE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELSE_STMT:\t\n");}
+| else_stmt ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
 ;
 
 for_stmt: FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
