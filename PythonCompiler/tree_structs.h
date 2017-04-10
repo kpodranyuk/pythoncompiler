@@ -56,3 +56,47 @@ struct ExprListInfo
 	struct ExprInfo * first;
 	struct ExprInfo * last;
 };
+
+/*
+* “ип стейтмента
+*/
+enum StmtType
+{
+	__EXPR,
+	__IF,
+	__FOR,
+	__WHILE,
+	__FUNC_DEF,
+	__RETURN,
+	__BREAK,
+	__CONTINUE,
+	__DEL
+};
+
+/*
+* ’ранит в себе информацию об узле стейтмента
+*/
+struct StmtInfo
+{
+	// “ип стейтмента
+	enum StmtType type;
+	// ”казатель на выражение
+	struct ExprInfo * expr;
+	// ”казатель на развилку
+	struct IfStmtInfo * ifstmt;
+	// ”казатель на цикл for
+	struct ForStmtInfo * forstmt;
+	// ”казатель на цикл while
+	struct WhileStmtInfo * whilestmt;
+	// ”казатель на следующий стейтмент
+	struct StmtInfo * next;
+};
+
+/*
+* ’ранит в себе информацию на начало и конец стейтмент листа
+*/
+struct StmtListInfo
+{
+	struct StmtInfo * first;
+	struct StmtInfo * last;
+};
