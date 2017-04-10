@@ -74,11 +74,11 @@ struct StmtInfo * createFromWhileStatement(enum StmtType type, struct WhileStmtI
 	return stmt;
 }
 
-/* Создание стейтмента для continue, break, del, return
+/* Создание стейтмента для continue, break
 * \param[in] type тип стейтмента
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromSingleStatement(enum StmtType type)
+struct StmtInfo * createFromContinueBreakStatement(enum StmtType type)
 {
 	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
 	stmt->type=type;
