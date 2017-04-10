@@ -1,5 +1,5 @@
 %{
-#include "tree_structs.h"
+#include "functions.h"
 #include <string.h>
 #include <math.h>
 #include <process.h>

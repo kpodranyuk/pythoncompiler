@@ -71,6 +71,7 @@
     <Bison Include="parser.y" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="functions.h" />
     <ClInclude Include="parser.tab.h" />
     <ClInclude Include="tree_structs.h" />
   </ItemGroup>
