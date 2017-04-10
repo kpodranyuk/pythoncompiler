@@ -32,12 +32,12 @@ struct StmtListInfo * createStatementList(struct StmtInfo * stmt, struct StmtLis
 	return stmtlist;
 }
 
-/* Создание стейтмент листа
+/* Создание стейтмента для развилки
 * \param[in] type тип стейтмента
 * \param[in] ifstmt указатель на if стейтмент
 * \return указатель на стейтмент
 */
-struct StmtInfo * createIfStatement(enum StmtType type, struct IfStmtInfo * ifstmt)
+struct StmtInfo * createFromIfStatement(enum StmtType type, struct IfStmtInfo * ifstmt)
 {
 	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
 	stmt->type=type;
