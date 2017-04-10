@@ -44,7 +44,7 @@ int root;
 %token DEF		// Оператор объявления функции
 %token DEL		// Оператор удаления переменной
 %token ','		// Запятая
-%token '.'		// Точка
+%nonassoc '.'		// Точка
 %token IN 										// Оператор in
 %right '='										// Оператор присвоения
 %left AND OR NOT								// Оператор и или не
@@ -128,7 +128,7 @@ expr: expr OR expr				{printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BIS
 | expr '=' expr					{printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
 | expr '[' expr ']'				{printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}
 | '[' param_list ']'			{printf("BISON:\tfound expr: initialize\n"); fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
-| OPERAND '.' OPERAND '(' var_val ')'  {printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
+| expr '.' OPERAND '(' expr ')'  {printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
 | var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
 | OPERAND 					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
