@@ -85,3 +85,20 @@ struct StmtInfo * createFromContinueBreakStatement(enum StmtType type)
 	stmt->next=NULL;
 	return stmt;
 }
+
+/* Создание if стейтмента
+* \param[in] expr условное выражение
+* \param[in] stmtlist тело
+* \param[in] eliflist список elif
+* \param[in] elsestmtlist тело блока else
+* \return указатель на if стейтмент
+*/
+struct IfStmtInfo * createIfStatement(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct ElifListInfo * eliflist, struct StmtListInfo * elsestmtlist)
+{
+	struct IfStmtInfo * ifstmt = (struct IfStmtInfo *)malloc(sizeof(struct IfStmtInfo));
+	ifstmt->expr=expr;
+	ifstmt->stmtlist=stmtlist;
+	ifstmt->eliflist=eliflist;
+	ifstmt->elsestmtlist=elsestmtlist;
+	return ifstmt;
+}
