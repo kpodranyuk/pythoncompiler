@@ -347,7 +347,7 @@ del	{
 				printf("FLEX:\tНашел число: %s\n", yytext);			
 				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
 				yylval.Int=atoi(yytext); 
-				return DIGIT;
+				return NUMBER;
 			}
 {WHITE_SPACE}+	{/*puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");*/}
 \n			{
