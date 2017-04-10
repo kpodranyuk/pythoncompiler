@@ -80,10 +80,8 @@ else_stmt: /*empty*/	{printf("BISON:\tfound EMPTY_STMT:\t\n"); fprintf(logFileB,
 | ELIF expr ':' NEWLINE INDENT stmt_list DEDENT else_stmt {printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
 ;
 
-for_stmt: FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN OPERAND ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN STRING ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+for_stmt: FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
 ;
 
 while_stmt: WHILE expr ':' NEWLINE INDENT stmt_list DEDENT {printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound WHILE_STMT:\t\n");}
