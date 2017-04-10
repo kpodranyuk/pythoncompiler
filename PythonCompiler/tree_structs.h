@@ -77,7 +77,7 @@ enum StmtType
 };
 
 /*
-* Хранит в себе информацию об узле стейтмента
+* Хранит в себе информацию об узле типа стейтмента
 */
 struct StmtInfo
 {
@@ -107,7 +107,7 @@ struct StmtListInfo
 };
 
 /*
-* Хранит в себе информацию об узле развилки
+* Хранит в себе информацию об узле типа развилки
 */
 struct IfStmtInfo
 {
@@ -122,7 +122,7 @@ struct IfStmtInfo
 };
 
 /*
-* Хранит в себе информацию об узле elif
+* Хранит в себе информацию об узле типа elif
 */
 struct ElifStmtInfo
 {
@@ -132,4 +132,32 @@ struct ElifStmtInfo
 	struct StmtListInfo * stmtlist;
 	// Указатель на следующий elif
 	struct ElifStmtInfo * next;
+};
+
+/*
+* Хранит в себе информацию об узле типа while
+*/
+struct WhileStmtInfo
+{
+	// Условное выражение выполнения цикла
+	struct ExprInfo * expr;
+	// Тело цикла
+	struct StmtListInfo * stmtlist;
+	// Указатель на тело блока else после цикла
+	struct StmtListInfo * elsestmt;
+};
+
+/*
+* Хранит в себе информацию об узле типа for
+*/
+struct ForStmtInfo
+{
+	// Счетчик цикла(переменная)
+	char* counter;
+	// Указатель на выражение, по чем проходит цикл
+	struct ExprInfo * expr;
+	// Тело цикла
+	struct StmtListInfo * stmtlist;
+	// Указатель на тело блока else после цикла
+	struct StmtListInfo * elsestmt;
 };
