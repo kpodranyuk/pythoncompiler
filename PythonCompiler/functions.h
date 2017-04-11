@@ -121,7 +121,7 @@ struct StmtInfo * createFromContinueBreakStatement(enum StmtType type)
 	return stmt;
 }
 
-/* Создание if стейтмента
+/* Создание if
 * \param[in] expr условное выражение
 * \param[in] stmtlist тело
 * \param[in] eliflist список elif
@@ -160,4 +160,37 @@ struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo
 		eliflist->next=elif;
 		return eliflist;
 	}
+}
+
+
+/* Создание for
+* \param[in] counter счетчик цикла
+* \param[in] expr выражение по чем проходит цикл
+* \param[in] stmtlist тело цикла
+* \param[in] elsestmt тело else после цикла
+* \return указатель for
+*/
+struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
+{
+	struct ForStmtInfo * forstmt = (struct ForStmtInfo *)malloc(sizeof(struct ForStmtInfo));
+	forstmt->counter=counter;
+	forstmt->expr=expr;
+	forstmt->stmtlist=stmtlist;
+	forstmt->elsestmt=elsestmt;
+	return forstmt; 
+}
+
+/* Создание while
+* \param[in] expr условие выполнения
+* \param[in] stmtlist тело цикла
+* \param[in] elsestmt тело else после цикла
+* \return указатель while
+*/
+struct WhileStmtInfo * createWhileStatement(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
+{
+	struct WhileStmtInfo * whilestmt = (struct WhileStmtInfo *)malloc(sizeof(struct WhileStmtInfo));
+	whilestmt->expr=expr;
+	whilestmt->stmtlist=stmtlist;
+	whilestmt->elsestmt=elsestmt;
+	return whilestmt; 
 }
