@@ -251,10 +251,48 @@ void printContinueBreakStmt(int* nodeCount, std::vector<std::string>& dotTree)
 
 void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла
+	char* curNode;
+	std::string nodeDec;
+	
+	// Запомнить номер текущего "родительского" узла
+	node1=*nodeCount;
+	curNode = new char [30];
+	sprintf(curNode,"%d [label=\"RETURN\" shape=box];",node1);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
+	// Запомнить номер текущего дочернего узла
+	node2=*nodeCount+1; 
+	printExpr(expr,nodeCount,dotTree);
+	// Добавить в список связь между дочерним и родительским узлами
+	curNode[0] = '\0';
+	sprintf(curNode,"%d -- %d;",node1,node2);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
 }
 
 void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла
+	char* curNode;
+	std::string nodeDec;
+	
+	// Запомнить номер текущего "родительского" узла
+	node1=*nodeCount;
+	curNode = new char [30];
+	sprintf(curNode,"%d [label=\"DEL\" shape=box];",node1);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
+	// Запомнить номер текущего дочернего узла
+	node2=*nodeCount+1; 
+	printExpr(expr,nodeCount,dotTree);
+	// Добавить в список связь между дочерним и родительским узлами
+	curNode[0] = '\0';
+	sprintf(curNode,"%d -- %d;",node1,node2);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
 }
 
 char* makeExprNodename(enum ExprType type, int node)
