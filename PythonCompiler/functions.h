@@ -126,3 +126,21 @@ struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo
 		return eliflist;
 	}
 }
+
+
+/* Создание for стейтмента
+* \param[in] counter счетчик цикла
+* \param[in] expr выражение по чем проходит цикл
+* \param[in] stmtlist тело цикла
+* \param[in] elsestmt тело else после цикла
+* \return указатель for
+*/
+struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
+{
+	struct ForStmtInfo * forstmt = (struct ForStmtInfo *)malloc(sizeof(struct ForStmtInfo));
+	forstmt->counter=counter;
+	forstmt->expr=expr;
+	forstmt->stmtlist=stmtlist;
+	forstmt->elsestmt=elsestmt;
+	return forstmt; 
+}
