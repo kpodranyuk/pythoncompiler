@@ -72,6 +72,105 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 
 void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла
+	/*
+	_OR,
+	_AND,
+	_NOT,
+	_NOT_EQUAL,
+	_EQUAL,
+	_GREATER,
+	_GREATER_OR_EQUAL,
+	_LESS,
+	_LESS_OR_EQUAL,
+	_SUB,
+	_ADD,
+	_INT,
+	_MOD,
+	_DIV,
+	_MUL,
+	_POW,
+	_ASSIGN,
+	// обращение по индексу массива
+	_ARRID,
+	// инициализация массива
+	_ARRINIT,
+	// действия над массивом
+	_ARRACT,
+	_VARVAL,	
+	_OPERAND,
+	_FUNCCALL
+	*/
+
+	char* curNode;
+	std::string nodeDec;
+	// В зависимости от типа узла/элемента вызываем соответствующую функцию
+		if(expr->type==_OR)
+		{
+			// Запомнить номер текущего "родительского" узла
+			node1=*nodeCount;
+			curNode = new char [30];
+			//printExpr(begining->expr,nodeCount,dotTree);
+			sprintf(curNode,"%d [label=\"OR\" shape=box];",node1);
+			nodeDec = std::string(curNode);
+			dotTree.push_back(nodeDec);
+			// Запомнить номер текущего дочернего узла
+			node2=*nodeCount+1; 
+			printExpr(expr->left,nodeCount,dotTree);
+			// Добавить в список связь между дочерним и родительским узлами
+			curNode[0] = '\0';
+			sprintf(curNode,"%d -- %d;",node1,node2);
+			nodeDec = std::string(curNode);
+			dotTree.push_back(nodeDec);
+			// Запомнить номер текущего дочернего узла
+			node2=*nodeCount+1; 
+			printExpr(expr->right,nodeCount,dotTree);
+			// Добавить в список связь между дочерним и родительским узлами
+			curNode[0] = '\0';
+			sprintf(curNode,"%d -- %d;",node1,node2);
+			nodeDec = std::string(curNode);
+			dotTree.push_back(nodeDec);
+			//std::string nodeDec = [label=\"OR\" shape=box];";
+		}
+		else if(expr->type==_OPERAND)
+		{
+			// Запомнить номер текущего "родительского" узла
+			node1=*nodeCount;
+			curNode = new char [30];
+			//printExpr(begining->expr,nodeCount,dotTree);
+			sprintf(curNode,"%d [label=\"Type = OPERAND\n%s\"];",node1,expr->idName);
+			nodeDec = std::string(curNode);
+			dotTree.push_back(nodeDec);
+		}
+		/*else if(expr->type==_FOR)
+		{
+			printForStmt(begining->forstmt,nodeCount,dotTree);
+		}
+		else if(expr->type==_WHILE)
+		{
+			printWhileStmt(begining->whilestmt,nodeCount,dotTree);
+		}
+		else if(expr->type==_FUNC_DEF)
+		{
+			printFuncDefStmt(begining->funcdefstmt,nodeCount,dotTree);
+		}
+		else if(expr->type==_RETURN)
+		{
+			printReturnStmt(begining->expr,nodeCount,dotTree);
+		}
+		else if(expr->type==_BREAK)
+		{
+			printContinueBreakStmt(nodeCount,dotTree);
+		}
+		else if(expr->type==_CONTINUE)
+		{
+			printContinueBreakStmt(nodeCount,dotTree);
+		}
+		else if(expr->type==_DEL)
+		{
+			printDelStmt(begining->expr,nodeCount,dotTree);
+		}*/
 }
 
 void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree)
