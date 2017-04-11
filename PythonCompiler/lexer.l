@@ -4,13 +4,14 @@
 #include "parser.tab.h"
 #define INDNT 4
 #pragma warning(disable : 4996)
-FILE* logFile;
-FILE* logFileB;
+extern FILE* logFile;
+extern FILE* logFileB;
 /* globals to track current indentation */
 int current_line_indent = 0;   /* indentation of the current line */
 int indent_level = 0;          /* indentation level passed to the parser */
 extern int root;
 void yyerror(const char* s);
+extern int yylex();
 %}
 %option noyywrap 
 %option never-interactive
@@ -358,43 +359,6 @@ del	{
 				return NEWLINE;
 			}
 %%
-int main(int argc, char** argv) {
-	setlocale(LC_ALL, "RUS");
-	/*if(argc<2)
-	{
-		printf("Недостаточно параметров для вызова программы");
-		return -1;
-	}
-	else if(argc>3)
-	{
-		printf("Слишком много параметров для вызова программы");
-		return -1;
-	}
-	else
-	{*/
-		// set flex to read from it instead of defaulting to STDIN:
-		yyin = fopen("test1.py","rt");//(argv[1], "rt");
-		if(yyin==NULL)
-		{
-			//printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);
-			printf("Ошибка! Невозможно открыть файл на чтение!");
-			exit(-1);
-		}
-		// parse through the input until there is no more:
-		//rewind(yyin);
-		logFile = fopen("log.txt", "wt");
-		logFileB = fopen("logB.txt", "wt");
-		do{
-			yyparse();//yylex();	
-		}while(!feof(yyin));
-		fclose(yyin);
-		fclose(logFile);
-		fclose(logFileB);
-		//printf("result is %d", root);
-	/*}*/
-	_getch();
-	return 0;
-}
 
 void yyerror(const char* s) {
 	printf("Parse error! Message: %s",s);

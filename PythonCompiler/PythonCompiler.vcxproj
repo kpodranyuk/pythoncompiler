@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="lexer.flex.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
   </ItemGroup>
   <ItemGroup>

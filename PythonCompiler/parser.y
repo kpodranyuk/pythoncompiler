@@ -5,10 +5,9 @@
 #include <process.h>
 #include <stdio.h>	
 extern int yylex();
-extern int yyparse();
 extern void yyerror(const char* s);
 extern FILE* logFileB;
-int root;
+struct StmtListInfo* root;
 %}
 %union
 {
