@@ -74,7 +74,7 @@ struct StmtListInfo* root;
 %left <Int>NUMBER			// Число
 %start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFileB,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
-fullroot: stmt_list {printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+fullroot: stmt_list {root=$1;	printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
 ;
 
 if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createIfStatement($2,$6,NULL,NULL);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
@@ -100,7 +100,7 @@ stmt_list: stmt_list line_sep {$$ = createStatementList(NULL, $1); printf("BISON
 | stmt_list stmt {$$ = createStatementList($2, $1); printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
 ;
 
-stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
+stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
 | CONTINUE line_sep {$$ = createFromContinueBreakStatement(_CONTINUE); printf("BISON:\tfound stmt continue:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
 | BREAK line_sep {$$ = createFromContinueBreakStatement(_BREAK); printf("BISON:\tfound stmt break:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
 | RETURN expr line_sep {$$=createFromReturnStatement(_RETURN, $2); printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
