@@ -74,6 +74,7 @@
   <ItemGroup>
     <ClInclude Include="functions.h" />
     <ClInclude Include="parser.tab.h" />
+    <ClInclude Include="tree_print.h" />
     <ClInclude Include="tree_structs.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
