@@ -9,8 +9,18 @@
 
 struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val)
 {
+	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
+	expr->type=type;
+	if(opName!=NULL)
+	{
+		expr->idName = (char*)malloc(sizeof(strlen(opName)+1));
+		strcpy(expr->idName, opName);
+	}
+	else
+		expr->idName=NULL;
+	expr->exprVal=val;
 	// Заглушка
-	return NULL;
+	return expr;
 }
 
 /* Создание узла из типа выражения
