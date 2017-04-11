@@ -34,13 +34,30 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 	struct StmtInfo* begining;
 	// Считаем первый элемент списка начальным
 	begining = root->first;
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла
+	char* curNode;
+	std::string nodeDec;
+	// Запомнить номер текущего "родительского" узла
+	node1=*nodeCount;
+	curNode = new char [50];
+	sprintf(curNode,"%d [label=\"MAINBLOCK\" shape=invtriangle];",node1);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
 	// Пока текущий элемент списка не последний..
 	while(begining!=NULL)
 	{
 		// В зависимости от типа узла/элемента вызываем соответствующую функцию
 		if(begining->type==_EXPR)
 		{
+			// Запомнить номер текущего дочернего узла
+			node2=*nodeCount+1; 
 			printExpr(begining->expr,nodeCount,dotTree);
+			// Добавить в список связь между дочерним и родительским узлами
+			curNode[0] = '\0';
+			sprintf(curNode,"%d -- %d;",node1,node2);
+			nodeDec = std::string(curNode);
+			dotTree.push_back(nodeDec);
 		}
 		else if(begining->type==_IF)
 		{
