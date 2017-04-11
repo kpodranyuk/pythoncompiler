@@ -117,29 +117,29 @@ var_val: TRUE	{$$=createValNode(_TRUE,true,NULL,NULL);				printf("BISON:\tfound 
 | STRING	{$$=createValNode(_STRING,false,$1,NULL);					printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
 | NUMBER		{$$=createValNode(_NUMBER,false,NULL,$1);			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
 ;
-expr: expr OR expr				{printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
-| expr AND expr					{printf("BISON:\tfound expr: AND\n"); fprintf(logFileB,"BISON:\tfound expr: AND\n");}
-| NOT expr						{printf("BISON:\tfound expr: NOT\n"); fprintf(logFileB,"BISON:\tfound expr: NOT\n");}
-| expr NOT_EQUAL expr			{printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: NOT_EQUAL\n");}
-| expr EQUAL expr				{printf("BISON:\tfound expr: EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: EQUAL\n");}
-| expr '>' expr					{printf("BISON:\tfound expr: >\n"); fprintf(logFileB,"BISON:\tfound expr: >\n");}
-| expr GREATER_OR_EQUAL expr	{printf("BISON:\tfound expr: GREATER_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: GREATER_OR_EQUAL\n");}
-| expr '<' expr					{printf("BISON:\tfound expr: <\n"); fprintf(logFileB,"BISON:\tfound expr: <\n");}
-| expr LESS_OR_EQUAL expr		{printf("BISON:\tfound expr: LESS_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: LESS_OR_EQUAL\n");}
-| expr '-' expr					{printf("BISON:\tfound expr: -\n"); fprintf(logFileB,"BISON:\tfound expr: -\n");}
-| expr '+' expr					{printf("BISON:\tfound expr: +\n"); fprintf(logFileB,"BISON:\tfound expr: +\n");}
-| expr INT expr					{printf("BISON:\tfound expr: INT\n"); fprintf(logFileB,"BISON:\tfound expr: INT\n");}
-| expr MOD expr					{printf("BISON:\tfound expr: MOD\n"); fprintf(logFileB,"BISON:\tfound expr: MOD\n");}
-| expr DIV expr					{printf("BISON:\tfound expr: DIV\n"); fprintf(logFileB,"BISON:\tfound expr: DIV\n");}
-| expr MUL expr					{printf("BISON:\tfound expr: MUL\n"); fprintf(logFileB,"BISON:\tfound expr: MUL\n");}
-| expr POW expr					{printf("BISON:\tfound expr: POW\n"); fprintf(logFileB,"BISON:\tfound expr: POW\n");}
-| '(' expr ')'					{printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFileB,"BISON:\tfound expr: BRACKETS\n");}
-| expr '=' expr					{printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
-| expr '[' expr ']'				{printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}
+expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3); printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
+| expr AND expr					{$$=createExprInfo(_AND,$1,$3); printf("BISON:\tfound expr: AND\n"); fprintf(logFileB,"BISON:\tfound expr: AND\n");}
+| NOT expr						{$$=createExprInfo(_NOT,$2,NULL); printf("BISON:\tfound expr: NOT\n"); fprintf(logFileB,"BISON:\tfound expr: NOT\n");}
+| expr NOT_EQUAL expr			{$$=createExprInfo(_NOT_EQUAL,$1,$3); printf("BISON:\tfound expr: NOT_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: NOT_EQUAL\n");}
+| expr EQUAL expr				{$$=createExprInfo(_EQUAL,$1,$3); printf("BISON:\tfound expr: EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: EQUAL\n");}
+| expr '>' expr					{$$=createExprInfo(_GREATER,$1,$3); printf("BISON:\tfound expr: >\n"); fprintf(logFileB,"BISON:\tfound expr: >\n");}
+| expr GREATER_OR_EQUAL expr	{$$=createExprInfo(_GREATER_OR_EQUAL,$1,$3); printf("BISON:\tfound expr: GREATER_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: GREATER_OR_EQUAL\n");}
+| expr '<' expr					{$$=createExprInfo(_LESS,$1,$3); printf("BISON:\tfound expr: <\n"); fprintf(logFileB,"BISON:\tfound expr: <\n");}
+| expr LESS_OR_EQUAL expr		{$$=createExprInfo(_LESS_OR_EQUAL,$1,$3); printf("BISON:\tfound expr: LESS_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: LESS_OR_EQUAL\n");}
+| expr '-' expr					{$$=createExprInfo(_SUB,$1,$3); printf("BISON:\tfound expr: -\n"); fprintf(logFileB,"BISON:\tfound expr: -\n");}
+| expr '+' expr					{$$=createExprInfo(_ADD,$1,$3); printf("BISON:\tfound expr: +\n"); fprintf(logFileB,"BISON:\tfound expr: +\n");}
+| expr INT expr					{$$=createExprInfo(_INT,$1,$3); printf("BISON:\tfound expr: INT\n"); fprintf(logFileB,"BISON:\tfound expr: INT\n");}
+| expr MOD expr					{$$=createExprInfo(_MOD,$1,$3); printf("BISON:\tfound expr: MOD\n"); fprintf(logFileB,"BISON:\tfound expr: MOD\n");}
+| expr DIV expr					{$$=createExprInfo(_DIV,$1,$3); printf("BISON:\tfound expr: DIV\n"); fprintf(logFileB,"BISON:\tfound expr: DIV\n");}
+| expr MUL expr					{$$=createExprInfo(_MUL,$1,$3); printf("BISON:\tfound expr: MUL\n"); fprintf(logFileB,"BISON:\tfound expr: MUL\n");}
+| expr POW expr					{$$=createExprInfo(_POW,$1,$3); printf("BISON:\tfound expr: POW\n"); fprintf(logFileB,"BISON:\tfound expr: POW\n");}
+| '(' expr ')'					{$$=$2; printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFileB,"BISON:\tfound expr: BRACKETS\n");}
+| expr '=' expr					{$$=createExprInfo(_ASSIGN,$1,$3); printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
+| expr '[' expr ']'				{$$=createExprInfo(_ARRID,$1,$3); printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}
 | '[' param_list ']'			{printf("BISON:\tfound expr: initialize\n"); fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
 | expr '.' OPERAND '(' expr ')'  {printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
-| var_val					{printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
-| OPERAND 					{printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
+| var_val					{$$=createSimpleExpr(_VARVAL,NULL,$1); printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
+| OPERAND 					{$$=createSimpleExpr(_OPERAND,$1,NULL); printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
 ;
 param_list:	/*empty*/	{printf("BISON:\tfound param_list: EMPTY\n"); fprintf(logFileB,"BISON:\tfound param_list: EMPTY\n");}

@@ -3,7 +3,7 @@
 #include <string.h>
 #include "tree_structs.h"
 
-/* Создание узла из выражения
+/* Создание узла из выражения (операнда или значения)
 *
 */
 
@@ -20,6 +20,24 @@ struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValIn
 		expr->idName=NULL;
 	expr->exprVal=val;
 	// Заглушка
+	return expr;
+}
+
+/* Создание узла выражения из выражений
+*
+*/
+
+struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right)
+{
+	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
+
+	expr->type=type;
+	expr->arglist=NULL;
+	expr->exprVal=NULL;
+	expr->idName=NULL;
+	expr->left=left;
+	expr->right=right;
+	
 	return expr;
 }
 
