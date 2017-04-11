@@ -125,7 +125,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		// «апомнить номер текущего "родительского" узла
 		node1=*nodeCount;
 		curNode = new char [30];
-		sprintf(curNode,"%d [label=\"NOT\"];",node1);
+		sprintf(curNode,"%d [label=\"NOT\" shape=box];",node1);
 		nodeDec = std::string(curNode);
 		dotTree.push_back(nodeDec);
 		// «апомнить номер текущего дочернего узла
