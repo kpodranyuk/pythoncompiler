@@ -7,7 +7,7 @@
 *
 */
 
-struct ExprListInfo* createExprList()
+struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val)
 {
 	// Заглушка
 	return NULL;

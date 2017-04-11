@@ -63,28 +63,26 @@ struct ExprInfo
 	// Правый операнд выражения
 	struct ExprInfo * right;
 	// Указатель на следующий элемент (выражение)
-	struct ExprInfo * next;
+	//struct ExprInfo * next;
 	// Указатель на список аргументов выражения
 	struct ExprListInfo * arglist;
 	// Тип выражения
 	enum ExprType type;
 
-	// Значение выражения-строки
-	char * opVal;
-	// Значение выражения-целого числа
-	int intVal;
-	// Значение выражения-логической переменной
-	bool logVal;
+	// Имя переменной
+	char* idName;
+	// Значение выражения-переменной
+	struct ValInfo* exprVal;
 };
 /*
 * Хранит в себе указатель на начало и конец списка выражений
 * (возможно следует изменить тип - хранить начало и следующий)
 */
-struct ExprListInfo
+/*struct ExprListInfo
 {
 	struct ExprInfo * first;
 	struct ExprInfo * last;
-};
+};*/
 
 /*
 * Тип стейтмента
