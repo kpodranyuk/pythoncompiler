@@ -27,6 +27,32 @@ enum ExprType
 	_OPERAND,
 	_FUNCCALL
 };
+
+enum ValType
+{
+	_TRUE,
+	_FALSE,
+	_STRING,
+	_NUMBER
+};
+
+/*
+* Хранит в себе информацию об узле типа выражения
+*/
+struct ValInfo
+{
+	// Тип выражения
+	enum ValType type;
+
+	// Значение выражения-строки
+	char* stringVal;
+	// Значение выражения-целого числа
+	int intVal;
+	// Значение выражения-логической переменной
+	bool logVal;
+};
+
+
 /*
 * Хранит в себе информацию об узле типа выражения
 */

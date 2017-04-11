@@ -3,6 +3,41 @@
 #include <string.h>
 #include "tree_structs.h"
 
+/* Создание узла из выражения
+*
+*/
+
+struct ExprListInfo* createExprList()
+{
+	// Заглушка
+	return NULL;
+}
+
+/* Создание узла из типа выражения
+* \param[in] type тип значения 
+* \param[in] logVal логическое значение 
+* \param[in] stringVal строковое значение 
+* \param[in] numVal целочисленное значение 
+*/
+
+struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal)
+{
+	struct ValInfo* val = (struct ValInfo*)malloc(sizeof(struct ValInfo));
+	val->type = type;
+	val->logVal = logVal;
+	if(stringVal!=NULL)
+	{
+		val->stringVal = (char*)malloc(sizeof(strlen(stringVal)+1));
+		strcpy(val->stringVal, stringVal);
+	}
+	else
+	{
+		val->stringVal = stringVal;
+	}
+	val->intVal = numVal;
+	return val;
+}
+
 /* Создание стейтмент листа
 * \param[in] stmt указатель на добавляемый стейтмент
 * \param[in] stmtlist указатель на стейтмент лист

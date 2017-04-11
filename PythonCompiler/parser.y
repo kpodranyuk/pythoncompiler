@@ -14,6 +14,7 @@ int root;
 {
 	int Int;
 	char* StringVal;
+	struct ValInfo* var_valinfo;
 
 	struct ExprInfo * exprinfo;
 	struct StmtListInfo * stmtlist;
@@ -28,7 +29,7 @@ int root;
 %type <eliflist> elif_list
 %type <forstmt> for_stmt
 %type <whilestmt> while_stmt
-%type <Int> var_val
+%type <var_valinfo> var_val
 %type <stmtinfo> stmt
 %type <stmtlist> stmt_list
 %type <exprinfo> expr
@@ -111,10 +112,10 @@ stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"B
 | while_stmt {$$ = createFromWhileStatement(__WHILE, $1) ; printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
 
-var_val: TRUE	{printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
-| FALSE		{printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
-| STRING	{printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
-| NUMBER		{printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
+var_val: TRUE	{$$=createValNode(_TRUE,true,NULL,NULL);				printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
+| FALSE		{$$=createValNode(_FALSE,false,NULL,NULL);					printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
+| STRING	{$$=createValNode(_STRING,false,$1,NULL);					printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
+| NUMBER		{$$=createValNode(_NUMBER,false,NULL,$1);			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
 ;
 expr: expr OR expr				{printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
 | expr AND expr					{printf("BISON:\tfound expr: AND\n"); fprintf(logFileB,"BISON:\tfound expr: AND\n");}
