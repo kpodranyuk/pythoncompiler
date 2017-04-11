@@ -121,6 +121,20 @@ struct StmtInfo * createFromContinueBreakStatement(enum StmtType type)
 	return stmt;
 }
 
+/* Создание стейтмента для return
+* \param[in] type тип стейтмента
+* \param[in] expr возвращаемое выражение
+* \return указатель на стейтмент
+*/
+struct StmtInfo * createFromReturnStatement(enum StmtType type, struct ExprInfo * expr)
+{
+	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+	stmt->type=type;
+	stmt->expr=expr;
+	stmt->next=NULL;
+	return stmt;
+}
+
 /* Создание if
 * \param[in] expr условное выражение
 * \param[in] stmtlist тело
