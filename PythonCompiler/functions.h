@@ -90,8 +90,8 @@ struct StmtListInfo * createStatementList(struct StmtInfo * stmt, struct StmtLis
 		return newStmtList;
 	}
 
+	stmtlist->last->next=stmt;
 	stmtlist->last=stmt;
-	stmtlist->last->next=stmtlist->last;
 	return stmtlist;
 }
 
