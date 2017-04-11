@@ -95,6 +95,20 @@ struct StmtListInfo * createStatementList(struct StmtInfo * stmt, struct StmtLis
 	return stmtlist;
 }
 
+/* Создание стейтмента для выражения
+* \param[in] type тип стейтмента
+* \param[in] ifstmt указатель на if стейтмент
+* \return указатель на стейтмент
+*/
+struct StmtInfo * createFromExprStatement(enum StmtType type, struct ExprInfo * exprstmt)
+{
+	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+	stmt->type=type;
+	stmt->expr=exprstmt;
+	stmt->next=NULL;
+	return stmt;
+}
+
 /* Создание стейтмента для развилки
 * \param[in] type тип стейтмента
 * \param[in] ifstmt указатель на if стейтмент
