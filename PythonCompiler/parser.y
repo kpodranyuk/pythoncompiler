@@ -102,14 +102,14 @@ stmt_list: stmt_list line_sep {$$ = createStatementList(NULL, $1); printf("BISON
 ;
 
 stmt: expr line_sep {printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
-| CONTINUE line_sep {$$ = createFromContinueBreakStatement(__CONTINUE); printf("BISON:\tfound stmt continue:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
-| BREAK line_sep {$$ = createFromContinueBreakStatement(__BREAK); printf("BISON:\tfound stmt break:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
+| CONTINUE line_sep {$$ = createFromContinueBreakStatement(_CONTINUE); printf("BISON:\tfound stmt continue:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
+| BREAK line_sep {$$ = createFromContinueBreakStatement(_BREAK); printf("BISON:\tfound stmt break:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
 | RETURN expr line_sep {printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
 | DEL OPERAND line_sep {printf("BISON:\tfound expr: DEL_stmt\n"); fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
-| if_stmt {$$ = createFromIfStatement(__IF, $1); printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
+| if_stmt {$$ = createFromIfStatement(_IF, $1); printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
 | func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
-| for_stmt {$$ = createFromForStatement(__FOR, $1) ;printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
-| while_stmt {$$ = createFromWhileStatement(__WHILE, $1) ; printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
+| for_stmt {$$ = createFromForStatement(_FOR, $1) ;printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
+| while_stmt {$$ = createFromWhileStatement(_WHILE, $1) ; printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
 
 var_val: TRUE	{$$=createValNode(_TRUE,true,NULL,NULL);				printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}

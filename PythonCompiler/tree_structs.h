@@ -20,9 +20,9 @@ enum ExprType
 	// обращение по индексу массива
 	_ARRID,
 	// инициализация массива
-	__ARRINIT,
+	_ARRINIT,
 	// действия над массивом
-	__ARRACT,
+	_ARRACT,
 	_VARVAL,	
 	_OPERAND,
 	_FUNCCALL
@@ -91,15 +91,15 @@ struct ExprListInfo
 */
 enum StmtType
 {
-	__EXPR,
-	__IF,
-	__FOR,
-	__WHILE,
-	__FUNC_DEF,
-	__RETURN,
-	__BREAK,
-	__CONTINUE,
-	__DEL
+	_EXPR,
+	_IF,
+	_FOR,
+	_WHILE,
+	_FUNC_DEF,
+	_RETURN,
+	_BREAK,
+	_CONTINUE,
+	_DEL
 };
 
 /*
