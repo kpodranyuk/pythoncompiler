@@ -11,6 +11,7 @@ extern "C" int yylex();
 
 FILE* logFile;
 FILE* logFileB;
+extern StmtListInfo* root;
 
 int main(int argc, char** argv) {
 	setlocale(LC_ALL, "RUS");
@@ -44,6 +45,7 @@ int main(int argc, char** argv) {
 		fclose(yyin);
 		fclose(logFile);
 		fclose(logFileB);
+		std::vector<std::string> dotTree;
 		//printf("result is %d", root);
 	/*}*/
 	_getch();

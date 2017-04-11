@@ -9,7 +9,6 @@ extern FILE* logFileB;
 /* globals to track current indentation */
 int current_line_indent = 0;   /* indentation of the current line */
 int indent_level = 0;          /* indentation level passed to the parser */
-extern int root;
 void yyerror(const char* s);
 extern int yylex();
 %}
