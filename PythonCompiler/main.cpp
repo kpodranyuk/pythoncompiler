@@ -2,7 +2,8 @@
 #include <conio.h>
 #include <locale.h>
 #include <iostream>
-#include "tree_structs.h"
+#include <process.h>
+#include "tree_print.h"
 #include "parser.tab.h"
 
 extern FILE* yyin;
@@ -45,8 +46,19 @@ int main(int argc, char** argv) {
 		fclose(yyin);
 		fclose(logFile);
 		fclose(logFileB);
+		int nodeCount=0;
 		std::vector<std::string> dotTree;
-		//printf("result is %d", root);
+		dotTree.push_back("graph tree{");
+		printStatementList(root,&nodeCount,dotTree);
+		dotTree.push_back("}");
+		FILE* dotFile = fopen("dotTree.txt","wt");
+		for each (std::string curStr in dotTree)
+		{
+			fprintf(dotFile,"%s\n",curStr.c_str());
+		}
+		fclose(dotFile);
+		printf("tree was created\n");
+		spawnl(_P_NOWAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTree.txt",NULL);
 	/*}*/
 	_getch();
 	return 0;
