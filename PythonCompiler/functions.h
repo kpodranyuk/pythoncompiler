@@ -145,6 +145,20 @@ struct StmtInfo * createFromReturnStatement(enum StmtType type, struct ExprInfo 
 	return stmt;
 }
 
+/* Создание стейтмента для del
+* \param[in] type тип стейтмента
+* \param[in] operand очищаемый операнд
+* \return указатель на стейтмент
+*/
+struct StmtInfo * createFromDelStatement(enum StmtType type, char * operand)
+{
+	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+	stmt->type=type;
+	stmt->expr=createSimpleExpr(_OPERAND, operand, NULL);
+	stmt->next=NULL;
+	return stmt;
+}
+
 /* Создание if
 * \param[in] expr условное выражение
 * \param[in] stmtlist тело
