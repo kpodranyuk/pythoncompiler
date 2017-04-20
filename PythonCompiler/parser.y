@@ -65,6 +65,7 @@ struct StmtListInfo* root;
 %left '+'	'-'									// Оператор сложения и вычитания
 %left MUL DIV MOD INT							// Оператор умножения, деления, остатка от деления, целой части от деления (возможна замена одним символом)
 %left POW										// Оператор возведения в степень
+%left UMINUS									// Унарный минус
 %nonassoc '['		// Открывающая квадратная скобка
 %nonassoc ']'		// Закрывающая квадратная скобка
 %nonassoc '('		// Открывающая круглая скобка
@@ -132,6 +133,7 @@ expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3); printf("BISON:\tfound expr:
 | expr DIV expr					{$$=createExprInfo(_DIV,$1,$3); printf("BISON:\tfound expr: DIV\n"); fprintf(logFileB,"BISON:\tfound expr: DIV\n");}
 | expr MUL expr					{$$=createExprInfo(_MUL,$1,$3); printf("BISON:\tfound expr: MUL\n"); fprintf(logFileB,"BISON:\tfound expr: MUL\n");}
 | expr POW expr					{$$=createExprInfo(_POW,$1,$3); printf("BISON:\tfound expr: POW\n"); fprintf(logFileB,"BISON:\tfound expr: POW\n");}
+| '-' expr %prec UMINUS			{$$=createExprInfo(_UMINUS,$2,NULL); printf("BISON:\tfound expr: UMINUS\n"); fprintf(logFileB,"BISON:\tfound expr: UMINUS\n");}
 | '(' expr ')'					{$$=$2; printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFileB,"BISON:\tfound expr: BRACKETS\n");}
 | expr '=' expr					{$$=createExprInfo(_ASSIGN,$1,$3); printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
 | expr '[' expr ']'				{$$=createExprInfo(_ARRID,$1,$3); printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}

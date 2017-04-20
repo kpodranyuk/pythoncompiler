@@ -25,7 +25,8 @@ enum ExprType
 	_ARRACT,
 	_VARVAL,	
 	_OPERAND,
-	_FUNCCALL
+	_FUNCCALL,
+	_UMINUS
 };
 
 enum ValType

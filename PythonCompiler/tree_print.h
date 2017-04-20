@@ -146,6 +146,23 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		nodeDec = std::string(curNode);
 		dotTree.push_back(nodeDec);
 	}
+	else if(expr->type==_UMINUS)
+	{
+		// «апомнить номер текущего "родительского" узла
+		node1=*nodeCount;
+		curNode = new char [30];
+		sprintf(curNode,"%d [label=\"UMINUS\" shape=box];",node1);
+		nodeDec = std::string(curNode);
+		dotTree.push_back(nodeDec);
+		// «апомнить номер текущего дочернего узла
+		node2=*nodeCount+1; 
+		printExpr(expr->left,nodeCount,dotTree);
+		// ƒобавить в список св€зь между дочерним и родительским узлами
+		curNode[0] = '\0';
+		sprintf(curNode,"%d -- %d;",node1,node2);
+		nodeDec = std::string(curNode);
+		dotTree.push_back(nodeDec);
+	}
 	else if(expr->type==_VARVAL)
 	{
 		// «апомнить номер текущего "родительского" узла
