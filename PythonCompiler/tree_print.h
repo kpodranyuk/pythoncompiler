@@ -24,6 +24,8 @@ void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::strin
 
 char* makeExprNodename(enum ExprType type, int node);
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree);
+void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
+void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 
 /* Обойти дерево и "перевести" для печати на язык dot
 * \param[in] root список корней дерева
@@ -117,7 +119,6 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	_ARRINIT,
 	// действия над массивом
 	_ARRACT,
-	_FUNCCALL
 	*/
 	char* curNode;
 	std::string nodeDec;
@@ -182,6 +183,19 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		nodeDec = std::string(curNode);
 		dotTree.push_back(nodeDec);			
 	}
+	else if(expr->type==_FUNCCALL)
+	{
+		// Запомнить номер текущего "родительского" узла
+		node1=*nodeCount;
+		curNode = new char [30];
+		sprintf(curNode,"%d [label=\"Type = FUNC_CALL\"];",node1);
+		nodeDec = std::string(curNode);
+		dotTree.push_back(nodeDec);
+		// Запомнить номер текущего дочернего узла
+		node2=*nodeCount+1; 
+		// ВЫЗОВ
+		printFuncCall(expr,nodeCount,dotTree);
+	}
 	else
 	{
 		// Запомнить номер текущего "родительского" узла
@@ -211,7 +225,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree)
 {
-	int node1, node2; // Номер главного узла и номер дочернего узла
+	int node1; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
 	char* curNode;
 	std::string nodeDec;
@@ -248,6 +262,35 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	dotTree.push_back(nodeDec);
 }
 
+void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree)
+{
+	// Создаем ExprInfo указатель на элемент входного дерева
+	struct ExprInfo* begining;
+	// Считаем первый элемент списка начальным
+	begining = exprlist->first;
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	//*nodeCount+=1; // Получить номер узла
+	char* curNode;
+	curNode = new char [30];
+	std::string nodeDec;
+	// Запомнить номер текущего "родительского" узла
+	node1=*nodeCount;
+	// Пока текущий элемент списка не последний..
+	while(begining!=NULL)
+	{
+		// Запомнить номер текущего дочернего узла
+		node2=*nodeCount+1; 
+		printExpr(begining,nodeCount,dotTree);
+		// Добавить в список связь между дочерним и родительским узлами
+		curNode[0] = '\0';
+		sprintf(curNode,"%d -- %d;",node1,node2);
+		nodeDec = std::string(curNode);
+		dotTree.push_back(nodeDec);
+		// Считаем следующий элемент списка новым текущим
+		begining = begining->next;
+	}
+}
+
 void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree)
 {
 }
@@ -258,6 +301,38 @@ void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vecto
 
 void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree)
 {
+}
+
+void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
+{
+	char* curNode;
+	std::string nodeDec;
+	int parent = (*nodeCount)++;
+	int name = (*nodeCount)++;
+	int args, node2;
+	curNode = new char[30+strlen(expr->idName)];
+	sprintf(curNode,"%d [label=\"FUNC:\t%s\"];",name,expr->idName);	
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
+	// Добавить в список связь между дочерним и родительским узлами
+	curNode[0] = '\0';
+	sprintf(curNode,"%d -- %d;",parent,name);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
+	// Запомнить номер текущего дочернего узла
+	args = (*nodeCount);
+	curNode[0] = '\0';
+	sprintf(curNode,"%d [label=\"ARGS\"];",args);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
+	// Запомнить номер текущего дочернего узла
+	node2=(*nodeCount)+1; 
+	curNode = new char[30+strlen(expr->idName)];
+	printExprList(expr->arglist,nodeCount,dotTree);
+	curNode[0] = '\0';
+	sprintf(curNode,"%d -- %d;",parent,args);
+	nodeDec = std::string(curNode);
+	dotTree.push_back(nodeDec);
 }
 
 void printFuncDefStmt(struct FuncDefStmtInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree)

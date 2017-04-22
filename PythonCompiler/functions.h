@@ -5,6 +5,45 @@
 
 #pragma warning(disable : 4996)
 
+/* Создание листа выражений
+* \param[in] expr указатель на добавляемое выражение
+* \param[in] exprlist указатель на лист
+* \return указатель на лист
+*/
+struct ExprListInfo * createExprList(struct ExprInfo * expr, struct ExprListInfo * exprlist)
+{
+	//если новый узел
+	if(exprlist==NULL&&expr==NULL)
+	{
+		//создаем новый узел
+		struct ExprListInfo * newExprList=(struct ExprListInfo*)malloc(sizeof(struct ExprListInfo));
+		newExprList->first=NULL;
+		newExprList->last=NULL;
+		return newExprList;
+	}
+
+	//если ничего нового в узел не добавляется(stmt_list и после него идет line_sep, то возвращаем тот же  stmtlist)
+	if(expr==NULL)
+	{
+		return exprlist;
+	}
+
+	expr->next=NULL;
+	//если новый узел
+	if(exprlist==NULL)
+	{
+		//создаем новый узел
+		struct ExprListInfo * newExprList=(struct ExprListInfo*)malloc(sizeof(struct ExprListInfo));
+		newExprList->first=expr;
+		newExprList->last=expr;
+		return newExprList;
+	}
+
+	exprlist->last->next=expr;
+	exprlist->last=expr;
+	return exprlist;
+}
+
 /* Создание узла из выражения (операнда или значения)
 *
 */
@@ -39,6 +78,25 @@ struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struc
 	expr->idName=NULL;
 	expr->left=left;
 	expr->right=right;
+	
+	return expr;
+}
+
+/* Создание узла выражения из выражений
+*
+*/
+
+struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, struct ExprListInfo* args)
+{
+	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
+
+	expr->type=type;
+	expr->arglist=args;
+	expr->exprVal=NULL;
+	expr->idName=(char*)malloc(sizeof(strlen(funcName)+1));
+	strcpy(expr->idName,funcName);
+	expr->left=NULL;
+	expr->right=NULL;
 	
 	return expr;
 }
