@@ -3,6 +3,8 @@
 #include <string.h>
 #include "tree_structs.h"
 
+#pragma warning(disable : 4996)
+
 /* —оздание узла из выражени€ (операнда или значени€)
 *
 */
