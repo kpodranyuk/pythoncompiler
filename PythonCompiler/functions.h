@@ -154,6 +154,86 @@ struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, i
 	return val;
 }
 
+
+/* Создание списка параметров функции
+* @author Kate
+* \param[in] newParamName новый параметр функции
+* \param[in] params список параметров
+* \return указатель на новый список
+*/
+struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct DefFuncParamListInfo* params)
+{
+	// Если список из пустых аргументов 
+	if(newParamName==NULL&&params==NULL)
+	{
+		// Создаем пустой список и возвращаем его
+		struct DefFuncParamListInfo * newParamList=(struct DefFuncParamListInfo*)malloc(sizeof(struct DefFuncParamListInfo));
+		newParamList->first=NULL;
+		newParamList->last=NULL;
+		return newParamList;
+	}
+	// Если ничего нового в узел не добавляется
+	if(newParamName==NULL)
+	{
+		return params;
+	}
+	// Создаем новый узел-элемент
+	struct DefFuncParamInfo* newParam = (struct DefFuncParamInfo*)malloc(sizeof(struct DefFuncParamInfo));
+	newParam->paramName = (char*)malloc(strlen(newParamName)+1);
+	strcpy(newParam->paramName,newParamName);
+	// Считаем, что следующего элемента у выражения нет
+	newParam->next=NULL;
+	// Если входного списка нет
+	if(params==NULL)
+	{
+		// Создаем новый список, единственным элементом считаем входной
+		struct DefFuncParamListInfo * newParamList=(struct DefFuncParamListInfo*)malloc(sizeof(struct DefFuncParamListInfo));
+		newParamList->first=newParam;
+		newParamList->last=newParam;
+		// Возвращаем его
+		return newParamList;
+	}
+	// Иначе связываем входной список со входным элементом
+	params->last->next=newParam;
+	params->last=newParam;
+	// Возвращаем обновленный входной список
+	return params;
+}
+
+/* Создание узла объявления функции
+* @author Kate
+* \param[in] funcName имя функции
+* \param[in] params параметры функции
+* \param[in] funcBody тело функции
+* \return указатель на узел объявления функции
+*/
+struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* params, struct StmtListInfo* funcBody)
+{
+	if(funcName==NULL||funcBody==NULL) 
+		return NULL;
+	struct FuncDefInfo* func = (struct FuncDefInfo*)malloc(sizeof(struct FuncDefInfo));
+	func->functionName = (char*)malloc(strlen(funcName)+1);
+	strcpy(func->functionName,funcName);
+	func->params=params;
+	func->body=funcBody;
+	return func;
+}
+
+/* Создание стейтмента для определения функции
+* @author Kate
+* \param[in] type тип стейтмента
+* \param[in] funcDef указатель на объявление функции
+* \return указатель на стейтмент
+*/
+struct StmtInfo* createFromFuncDefStatement(enum StmtType type, struct FuncDefInfo* funcDef)
+{
+	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+	stmt->type=type;
+	stmt->funcdefstmt=funcDef;
+	stmt->next=NULL;
+	return stmt;
+}
+
 /* Создание стейтмент листа
 * \param[in] stmt указатель на добавляемый стейтмент
 * \param[in] stmtlist указатель на стейтмент лист

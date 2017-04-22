@@ -86,6 +86,42 @@ struct ExprListInfo
 };
 
 /*
+* ’ранит в себе информацию о входных параметрах функции при ее объ€влении
+*/
+struct DefFuncParamInfo
+{
+	// ”казатель на следующий элемент (выражение)
+	struct DefFuncParamInfo * next;
+
+	// »м€ параметра
+	char* paramName;
+};
+/*
+* ’ранит в себе указатель на начало и конец списка параметров функции
+* (возможно следует изменить тип - хранить начало и следующий)
+*/
+struct DefFuncParamListInfo
+{
+	struct DefFuncParamInfo * first;
+	struct DefFuncParamInfo * last;
+};
+
+
+/*
+* ’ранит в себе информацию о функции при ее объ€влении
+*/
+struct FuncDefInfo
+{
+	// »м€ функции
+	char* functionName;
+	// ѕараметры функции
+	struct DefFuncParamListInfo* params;
+	// “ело функции
+	struct StmtListInfo* body;
+};
+
+
+/*
 * “ип стейтмента
 */
 enum StmtType
@@ -117,7 +153,7 @@ struct StmtInfo
 	// ”казатель на цикл while
 	struct WhileStmtInfo * whilestmt;
 	// ”казатель на объ€вление функции
-	struct FuncDefStmtInfo * funcdefstmt;
+	struct FuncDefInfo* funcdefstmt;
 	// ”казатель на следующий стейтмент
 	struct StmtInfo * next;
 };

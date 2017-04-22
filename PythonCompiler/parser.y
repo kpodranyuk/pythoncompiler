@@ -15,6 +15,8 @@ struct StmtListInfo* root;
 	char* StringVal;
 	struct ValInfo* var_valinfo;
 
+	struct FuncDefInfo* funcdef;
+	struct DefFuncParamListInfo* defparamslist;
 	struct ExprInfo * exprinfo;
 	struct ExprListInfo * exprlist;
 	struct StmtListInfo * stmtlist;
@@ -35,11 +37,11 @@ struct StmtListInfo* root;
 %type <exprinfo> expr
 %type <exprlist> param_list
 %type <exprlist> param_listE
-%type <Int> func_def
+%type <funcdef> func_def
 %type <exprinfo> func_call
 %type <Int> line_sep
-%type <Int> def_param_list
-%type <Int> def_param_listE
+%type <defparamslist> def_param_list
+%type <defparamslist> def_param_listE
 
 %nonassoc INDENT NEWLINE// Начало и конец блока кода
 %left DEDENT// Начало и конец блока кода
@@ -108,7 +110,7 @@ stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); printf("BISON:\tfou
 | RETURN expr line_sep {$$=createFromReturnStatement(_RETURN, $2); printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
 | DEL OPERAND line_sep {$$=createFromDelStatement(_DEL, $2);  printf("BISON:\tfound expr: DEL_stmt\n"); fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
 | if_stmt {$$ = createFromIfStatement(_IF, $1); printf("BISON:\tfound if_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
-| func_def {printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
+| func_def {$$ = createFromFuncDefStatement(_FUNC_DEF,$1); printf("BISON:\tfound func_def:\t\n"); fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
 | for_stmt {$$ = createFromForStatement(_FOR, $1) ;printf("BISON:\tfound for_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
 | while_stmt {$$ = createFromWhileStatement(_WHILE, $1) ; printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
@@ -151,14 +153,14 @@ param_listE: expr	{$$ = createExprList($1,NULL); printf("BISON:\tfound param_lis
 | param_listE ',' expr	{$$ = createExprList($3,$1); printf("BISON:\tfound param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound param_listE: ,\n");}
 ;
 
-def_param_list:	/*empty*/	{printf("BISON:\tfound def_param_list: EMPTY\n"); fprintf(logFileB,"BISON:\tfound def_param_list: EMPTY\n");}
-| def_param_listE	{printf("BISON:\tfound def_param_list: def_param_listE\n"); fprintf(logFileB,"BISON:\tfound def_param_list: def_param_listE\n");}
+def_param_list:	/*empty*/	{$$ = createDefFuncParamListInfo(NULL,NULL); printf("BISON:\tfound def_param_list: EMPTY\n"); fprintf(logFileB,"BISON:\tfound def_param_list: EMPTY\n");}
+| def_param_listE	{$$ = createDefFuncParamListInfo(NULL,$1);  printf("BISON:\tfound def_param_list: def_param_listE\n"); fprintf(logFileB,"BISON:\tfound def_param_list: def_param_listE\n");}
 ;
-def_param_listE: OPERAND	{printf("BISON:\tfound def_param_listE: OPERAND\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
-| def_param_listE ',' OPERAND	{printf("BISON:\tfound def_param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: ,\n");}
+def_param_listE: OPERAND	{$$ = createDefFuncParamListInfo($1,NULL); printf("BISON:\tfound def_param_listE: OPERAND\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
+| def_param_listE ',' OPERAND	{$$ = createDefFuncParamListInfo($3,$1); printf("BISON:\tfound def_param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: ,\n");}
 ;
 
-func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{printf("BISON:\tfound func_def: %s\n",$2); fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
+func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{$$=createFuncDef($2,$4,$9); printf("BISON:\tfound func_def: %s\n",$2); fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
 ;
 func_call: OPERAND '(' param_list ')' {$$=createExprInfoFromFuncCall(_FUNCCALL,$1,$3); printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
 ;
