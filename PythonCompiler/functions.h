@@ -6,123 +6,151 @@
 #pragma warning(disable : 4996)
 
 /* Создание листа выражений
+* @author Kate
 * \param[in] expr указатель на добавляемое выражение
 * \param[in] exprlist указатель на лист
 * \return указатель на лист
 */
 struct ExprListInfo * createExprList(struct ExprInfo * expr, struct ExprListInfo * exprlist)
 {
-	//если новый узел
+	// Если список из пустых аргументов 
 	if(exprlist==NULL&&expr==NULL)
 	{
-		//создаем новый узел
+		// Создаем пустой список и возвращаем его
 		struct ExprListInfo * newExprList=(struct ExprListInfo*)malloc(sizeof(struct ExprListInfo));
 		newExprList->first=NULL;
 		newExprList->last=NULL;
 		return newExprList;
 	}
-
-	//если ничего нового в узел не добавляется(stmt_list и после него идет line_sep, то возвращаем тот же  stmtlist)
+	// Если ничего нового в узел не добавляется
 	if(expr==NULL)
 	{
 		return exprlist;
 	}
-
+	// Считаем, что следующего элемента у выражения нет
 	expr->next=NULL;
-	//если новый узел
+	// Если входного списка нет
 	if(exprlist==NULL)
 	{
-		//создаем новый узел
+		// Создаем новый список, единственным элементом считаем входной
 		struct ExprListInfo * newExprList=(struct ExprListInfo*)malloc(sizeof(struct ExprListInfo));
 		newExprList->first=expr;
 		newExprList->last=expr;
+		// Возвращаем его
 		return newExprList;
 	}
-
+	// Иначе связываем входной список со входным элементом
 	exprlist->last->next=expr;
 	exprlist->last=expr;
+	// Возвращаем обновленный входной список
 	return exprlist;
 }
 
-/* Создание узла из выражения (операнда или значения)
-*
+/* Создание простого узла из выражения (операнда или значения)
+* @author Kate
+* \param[in] type тип выражения
+* \param[in] opName имя операнда
+* \param[in] val значение операнда
+* \return указатель на узел
 */
-
 struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val)
 {
+	// Выделяем память под узел
 	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
+	// Присваиваем тип
 	expr->type=type;
+	// Если передано имя операнда..
 	if(opName!=NULL)
 	{
+		// Выделяем память в поле под имя операнда и перекопируем
 		expr->idName = (char*)malloc(sizeof(strlen(opName)+1));
 		strcpy(expr->idName, opName);
 	}
+	// Иначе присваиваем NULL
 	else
 		expr->idName=NULL;
+	// Присваиваем переданное значение операнда
 	expr->exprVal=val;
-	// Заглушка
+	// Возвращаем созданный узел
 	return expr;
 }
 
 /* Создание узла выражения из выражений
-*
+* @author Kate
+* \param[in] type тип выражения
+* \param[in] left левое выражение
+* \param[in] right правое выражение
+* \return указатель на новый узел
 */
-
 struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right)
 {
+	// Выделяем память под новый узел-выражение
 	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-
+	// Присваиваем тип
 	expr->type=type;
+	// Считаем, что у узла есть только левый и правый дочерний узлы
 	expr->arglist=NULL;
 	expr->exprVal=NULL;
 	expr->idName=NULL;
 	expr->left=left;
 	expr->right=right;
-	
+	// Возвращаем новый созданный узел
 	return expr;
 }
 
-/* Создание узла выражения из выражений
-*
+/* Создание узла выражения из вызова функции
+* @author Kate
+* \param[in] type тип выражения
+* \param[in] funcName имя функции
+* \param[in] args список аргументов
+* \return указатель на новый узел
 */
-
 struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, struct ExprListInfo* args)
 {
+	// Выделяем память под узел
 	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-
+	// Переприсваиваем тип и аргументы
 	expr->type=type;
 	expr->arglist=args;
-	expr->exprVal=NULL;
+	// Выделяем память под имя функции
 	expr->idName=(char*)malloc(sizeof(strlen(funcName)+1));
 	strcpy(expr->idName,funcName);
+	// Считаем остальное отсутствующим
+	expr->exprVal=NULL;
 	expr->left=NULL;
 	expr->right=NULL;
-	
+	expr->next=NULL;
+	// Возвращаем узел
 	return expr;
 }
 
 /* Создание узла из типа выражения
+* @author Kate
 * \param[in] type тип значения 
 * \param[in] logVal логическое значение 
 * \param[in] stringVal строковое значение 
 * \param[in] numVal целочисленное значение 
 */
-
 struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal)
 {
+	// Выделяем память под узел
 	struct ValInfo* val = (struct ValInfo*)malloc(sizeof(struct ValInfo));
+	// Переприсваиваем тип и логическое значение
 	val->type = type;
 	val->logVal = logVal;
+	// Если задано строковое значение
 	if(stringVal!=NULL)
 	{
+		// Выделяем память и перекопируем значение
 		val->stringVal = (char*)malloc(sizeof(strlen(stringVal)+1));
 		strcpy(val->stringVal, stringVal);
 	}
+	// Иначе переприсваиваем
 	else
-	{
 		val->stringVal = stringVal;
-	}
+	// Переприсваиваем целочисленное значение
 	val->intVal = numVal;
+	// Возвращаем созданный узел
 	return val;
 }
 
