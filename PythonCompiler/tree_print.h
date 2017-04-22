@@ -134,7 +134,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
 		curNode = new char [50+strlen(expr->idName)+1];
-		sprintf(curNode,"[label=\"Type = OPERAND\n%s\"];",expr->idName);
+		sprintf(curNode,"[label=\"<ID>\n%s\"];",expr->idName);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(expr->type==_UMINUS)
@@ -152,7 +152,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		addDeclStringToStringList("[label=\"Type = VARVAL\"];",node1,dotTree);
+		addDeclStringToStringList("[label=\"VARVAL\"];",node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printVarVal(expr->exprVal,nodeCount,dotTree);
@@ -163,7 +163,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		addDeclStringToStringList("[label=\"Type = FUNC_CALL\"];",node1,dotTree);
+		addDeclStringToStringList("[label=\"FUNC_CALL\"];",node1,dotTree);
 		// ВЫЗОВ
 		printFuncCall(expr,nodeCount,dotTree);
 	}
@@ -256,23 +256,19 @@ void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std:
 void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
 {
 	char* curNode;
-	std::string nodeDec;
 	int parent = (*nodeCount)++;
 	int name = (*nodeCount)++;
 	int args, node2;
 	curNode = new char[30+strlen(expr->idName)];
-	sprintf(curNode,"%d [label=\"FUNC:\t%s\"];",name,expr->idName);	
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	sprintf(curNode,"[label=\"FUNC\n%s\"];",expr->idName);	
+	addDeclStringToStringList(curNode,name,dotTree);
 	// Добавить в список связь между дочерним и родительским узлами
 	addLinkToStringList(parent,name,dotTree);
 	// Запомнить номер текущего дочернего узла
 	args = (*nodeCount);
-	curNode[0] = '\0';
 	addDeclStringToStringList("[label=\"ARGS\"];",args,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=(*nodeCount)+1; 
-	curNode = new char[30+strlen(expr->idName)];
 	printExprList(expr->arglist,nodeCount,dotTree);
 	addLinkToStringList(parent,args,dotTree);
 }
