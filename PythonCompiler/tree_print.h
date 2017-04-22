@@ -27,6 +27,7 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 void addDeclStringToStringList(char* string, int declNumber, std::vector<std::string>& dotTree);
+void addLinkToStringList(int firstNode, int secondNode, std::vector<std::string>& dotTree);
 /* Обойти дерево и "перевести" для печати на язык dot
 * @author Kate
 * \param[in] root список корней дерева
@@ -44,11 +45,9 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 	begining = root->first;
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
-	char* curNode;
 	std::string nodeDec;
 	// Запомнить номер текущего "родительского" узла
 	node1=*nodeCount;
-	curNode = new char [50];
 	addDeclStringToStringList("[label=\"MAINBLOCK\" shape=invtriangle];",node1,dotTree);
 	// Пока текущий элемент списка не последний..
 	while(begining!=NULL)
@@ -97,10 +96,7 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 			return;
 		}
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addLinkToStringList(node1,node2,dotTree);
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
 	}
@@ -127,21 +123,17 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
 		addDeclStringToStringList("[label=\"NOT\" shape=box];",node1,dotTree);
-		curNode = new char [30];
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addLinkToStringList(node1,node2,dotTree);
 	}
 	else if(expr->type==_OPERAND)
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		curNode = new char [30];
+		curNode = new char [50+strlen(expr->idName)+1];
 		sprintf(curNode,"%d [label=\"Type = OPERAND\n%s\"];",node1,expr->idName);
 		nodeDec = std::string(curNode);
 		dotTree.push_back(nodeDec);
@@ -151,30 +143,22 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
 		addDeclStringToStringList("[label=\"UMINUS\" shape=box];",node1,dotTree);
-		curNode = new char [30];
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addLinkToStringList(node1,node2,dotTree);
 	}
 	else if(expr->type==_VARVAL)
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
 		addDeclStringToStringList("[label=\"Type = VARVAL\"];",node1,dotTree);
-		curNode = new char [30];
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printVarVal(expr->exprVal,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);			
+		addLinkToStringList(node1,node2,dotTree);
 	}
 	else if(expr->type==_FUNCCALL)
 	{
@@ -196,18 +180,12 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addLinkToStringList(node1,node2,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->right,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addLinkToStringList(node1,node2,dotTree);
 	}
 }
 
@@ -258,8 +236,6 @@ void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<s
 	begining = exprlist->first;
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	//*nodeCount+=1; // Получить номер узла
-	char* curNode;
-	curNode = new char [30];
 	std::string nodeDec;
 	// Запомнить номер текущего "родительского" узла
 	node1=*nodeCount;
@@ -270,10 +246,7 @@ void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<s
 		node2=*nodeCount+1; 
 		printExpr(begining,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		curNode[0] = '\0';
-		sprintf(curNode,"%d -- %d;",node1,node2);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addLinkToStringList(node1,node2,dotTree);
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
 	}
@@ -303,10 +276,7 @@ void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::stri
 	nodeDec = std::string(curNode);
 	dotTree.push_back(nodeDec);
 	// Добавить в список связь между дочерним и родительским узлами
-	curNode[0] = '\0';
-	sprintf(curNode,"%d -- %d;",parent,name);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addLinkToStringList(parent,name,dotTree);
 	// Запомнить номер текущего дочернего узла
 	args = (*nodeCount);
 	curNode[0] = '\0';
@@ -315,10 +285,7 @@ void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::stri
 	node2=(*nodeCount)+1; 
 	curNode = new char[30+strlen(expr->idName)];
 	printExprList(expr->arglist,nodeCount,dotTree);
-	curNode[0] = '\0';
-	sprintf(curNode,"%d -- %d;",parent,args);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addLinkToStringList(parent,args,dotTree);
 }
 
 void printFuncDefStmt(struct FuncDefStmtInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree)
@@ -333,42 +300,32 @@ void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::st
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
-	char* curNode;
 	std::string nodeDec;
 	
 	// Запомнить номер текущего "родительского" узла
 	node1=*nodeCount;
 	addDeclStringToStringList("[label=\"RETURN\" shape=box];",node1,dotTree);
-	curNode = new char [30];
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
 	printExpr(expr,nodeCount,dotTree);
 	// Добавить в список связь между дочерним и родительским узлами
-	curNode[0] = '\0';
-	sprintf(curNode,"%d -- %d;",node1,node2);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addLinkToStringList(node1,node2,dotTree);
 }
 
 void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
-	char* curNode;
 	std::string nodeDec;
 	
 	// Запомнить номер текущего "родительского" узла
 	node1=*nodeCount;
-	curNode = new char [30];
 	addDeclStringToStringList("[label=\"DEL\" shape=box];",node1,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
 	printExpr(expr,nodeCount,dotTree);
 	// Добавить в список связь между дочерним и родительским узлами
-	curNode[0] = '\0';
-	sprintf(curNode,"%d -- %d;",node1,node2);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addLinkToStringList(node1,node2,dotTree);
 }
 /* Добавить в список строк объявление узла на языке dot
 * @author Kate
@@ -386,6 +343,32 @@ void addDeclStringToStringList(char* string, int declNumber, std::vector<std::st
 	strcpy(finalString,intString);
 	strcat(finalString," ");
 	strcat(finalString,string);
+	stringToTree = std::string(finalString);
+	dotTree.push_back(stringToTree);
+	delete intString;
+	delete finalString;
+}
+/* Добавить в список строк связь узлов на языке dot
+* @author Kate
+* \param[in] firstNode номер первого узла
+* \param[in] secondNode номер второго узла
+* \param[in|out] dotTree список строк для хранения кода на dot
+*/
+void addLinkToStringList(int firstNode, int secondNode, std::vector<std::string>& dotTree)
+{
+	if(firstNode==NULL||secondNode==NULL) return ;
+	std::string stringToTree;
+	char* intString = new char [20];
+	char* finalString = new char[50];
+	itoa(firstNode,intString,10);
+	strcpy(finalString,intString);
+	strcat(finalString," -- ");
+
+	itoa(secondNode,intString,10);
+
+	strcat(finalString,intString);
+	strcat(finalString,";");
+
 	stringToTree = std::string(finalString);
 	dotTree.push_back(stringToTree);
 	delete intString;
