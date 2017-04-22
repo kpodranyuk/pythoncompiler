@@ -22,7 +22,7 @@ void printContinueBreakStmt(int* nodeCount, std::vector<std::string>& dotTree);
 void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 
-char* makeExprNodename(enum ExprType type, int node);
+char* makeExprNodename(enum ExprType type);
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree);
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
@@ -134,9 +134,8 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
 		curNode = new char [50+strlen(expr->idName)+1];
-		sprintf(curNode,"%d [label=\"Type = OPERAND\n%s\"];",node1,expr->idName);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		sprintf(curNode,"[label=\"Type = OPERAND\n%s\"];",expr->idName);
+		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(expr->type==_UMINUS)
 	{
@@ -172,10 +171,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		curNode = new char [30];
-		strcpy(curNode,makeExprNodename(expr->type,node1));
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
+		addDeclStringToStringList(makeExprNodename(expr->type),node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
@@ -194,38 +190,31 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	int node1; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
 	char* curNode;
-	std::string nodeDec;
 	// Запомнить номер текущего "родительского" узла
 	node1=*nodeCount;
 	// В зависимости от типа узла/элемента вызываем соответствующую функцию
 	if(val->type==_TRUE)
 	{
-		curNode = new char [30];
-		//printExpr(begining->expr,nodeCount,dotTree);
-		sprintf(curNode,"%d [label=\"true\"];",node1);
+		addDeclStringToStringList("[label=\"true\"];",node1,dotTree);
 	}
 	else if(val->type==_FALSE)
 	{
-		curNode = new char [30];
-		//printExpr(begining->expr,nodeCount,dotTree);
-		sprintf(curNode,"%d [label=\"false\"];",node1);
+		addDeclStringToStringList("[label=\"false\"];",node1,dotTree);
 	}
 	else if(val->type==_STRING)
 	{
 		curNode = new char [30+strlen(val->stringVal)+1];
-		//printExpr(begining->expr,nodeCount,dotTree);
-		sprintf(curNode,"%d [label=\"%s\"];",node1,val->stringVal);
+		sprintf(curNode,"[label=\"%s\"];",val->stringVal);
+		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_NUMBER)
 	{
 		curNode = new char [30];
-		//printExpr(begining->expr,nodeCount,dotTree);
-		sprintf(curNode,"%d [label=\"%d\"];",node1,val->intVal);
+		sprintf(curNode,"[label=\"%d\"];",val->intVal);
+		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else
 		return ;
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
 }
 
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree)
@@ -375,73 +364,73 @@ void addLinkToStringList(int firstNode, int secondNode, std::vector<std::string>
 	delete finalString;
 }
 
-char* makeExprNodename(enum ExprType type, int node)
+char* makeExprNodename(enum ExprType type)
 {
 	char* decl = new char [100];
 	decl[0]='\0';
 	if(type==_OR)
 	{
-		sprintf(decl,"%d [label=\"OR\" shape=box];",node);
+		sprintf(decl,"[label=\"OR\" shape=box];");
 	}
 	else if(type==_AND)
 	{
-		sprintf(decl,"%d [label=\"AND\" shape=box];",node);
+		sprintf(decl,"[label=\"AND\" shape=box];");
 	}
 	else if(type==_NOT_EQUAL)
 	{
-		sprintf(decl,"%d [label=\"!=\" shape=box];",node);
+		sprintf(decl,"[label=\"!=\" shape=box];");
 	}
 	else if(type==_EQUAL)
 	{
-		sprintf(decl,"%d [label=\"EQUAL\" shape=box];",node);
+		sprintf(decl,"[label=\"EQUAL\" shape=box];");
 	}
 	else if(type==_GREATER)
 	{
-		sprintf(decl,"%d [label=\">\" shape=box];",node);
+		sprintf(decl,"[label=\">\" shape=box];");
 	}
 	else if(type==_GREATER_OR_EQUAL)
 	{
-		sprintf(decl,"%d [label=\">=\" shape=box];",node);
+		sprintf(decl,"%d [label=\">=\" shape=box];");
 	}
 	else if(type==_LESS)
 	{
-		sprintf(decl,"%d [label=\"<\" shape=box];",node);
+		sprintf(decl,"[label=\"<\" shape=box];");
 	}
 	else if(type==_LESS_OR_EQUAL)
 	{
-		sprintf(decl,"%d [label=\"<=\" shape=box];",node);
+		sprintf(decl,"[label=\"<=\" shape=box];");
 	}
 	else if(type==_SUB)
 	{
-		sprintf(decl,"%d [label=\"-\" shape=box];",node);
+		sprintf(decl,"[label=\"-\" shape=box];");
 	}
 	else if(type==_ADD)
 	{
-		sprintf(decl,"%d [label=\"+\" shape=box];",node);
+		sprintf(decl,"%d [label=\"+\" shape=box];");
 	}
 	else if(type==_INT)
 	{
-		sprintf(decl,"%d [label=\"//\" shape=box];",node);
+		sprintf(decl,"[label=\"//\" shape=box];");
 	}
 	else if(type==_MOD)
 	{
-		sprintf(decl,"%d [label=\"%\" shape=box];",node);
+		sprintf(decl,"[label=\"%\" shape=box];");
 	}
 	else if(type==_DIV)
 	{
-		sprintf(decl,"%d [label=\"/\" shape=box];",node);
+		sprintf(decl,"%d [label=\"/\" shape=box];");
 	}
 	else if(type==_MUL)
 	{
-		sprintf(decl,"%d [label=\"*\" shape=box];",node);
+		sprintf(decl,"[label=\"*\" shape=box];");
 	}
 	else if(type==_POW)
 	{
-		sprintf(decl,"%d [label=\"**\" shape=box];",node);
+		sprintf(decl,"[label=\"**\" shape=box];");
 	}
 	else if(type==_ASSIGN)
 	{
-		sprintf(decl,"%d [label=\"=\" shape=box];",node);
+		sprintf(decl,"[label=\"=\" shape=box];");
 	}
 	return decl;
 }
