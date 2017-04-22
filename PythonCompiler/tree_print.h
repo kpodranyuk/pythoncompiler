@@ -26,8 +26,9 @@ char* makeExprNodename(enum ExprType type, int node);
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree);
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
-
+void addDeclStringToStringList(char* string, int declNumber, std::vector<std::string>& dotTree);
 /* ќбойти дерево и "перевести" дл€ печати на €зык dot
+* @author Kate
 * \param[in] root список корней дерева
 * \param[in|out] nodeCount текущий индекс узла
 * \param[in|out] dotTree список строк дл€ хранени€ кода на dot
@@ -48,9 +49,7 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 	// «апомнить номер текущего "родительского" узла
 	node1=*nodeCount;
 	curNode = new char [50];
-	sprintf(curNode,"%d [label=\"MAINBLOCK\" shape=invtriangle];",node1);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addDeclStringToStringList("[label=\"MAINBLOCK\" shape=invtriangle];",node1,dotTree);
 	// ѕока текущий элемент списка не последний..
 	while(begining!=NULL)
 	{
@@ -127,10 +126,8 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// «апомнить номер текущего "родительского" узла
 		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"NOT\" shape=box];",node1,dotTree);
 		curNode = new char [30];
-		sprintf(curNode,"%d [label=\"NOT\" shape=box];",node1);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
 		// «апомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
@@ -153,10 +150,8 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// «апомнить номер текущего "родительского" узла
 		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"UMINUS\" shape=box];",node1,dotTree);
 		curNode = new char [30];
-		sprintf(curNode,"%d [label=\"UMINUS\" shape=box];",node1);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
 		// «апомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
@@ -170,10 +165,8 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// «апомнить номер текущего "родительского" узла
 		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"Type = VARVAL\"];",node1,dotTree);
 		curNode = new char [30];
-		sprintf(curNode,"%d [label=\"Type = VARVAL\"];",node1);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
 		// «апомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printVarVal(expr->exprVal,nodeCount,dotTree);
@@ -187,12 +180,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// «апомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		curNode = new char [30];
-		sprintf(curNode,"%d [label=\"Type = FUNC_CALL\"];",node1);
-		nodeDec = std::string(curNode);
-		dotTree.push_back(nodeDec);
-		// «апомнить номер текущего дочернего узла
-		node2=*nodeCount+1; 
+		addDeclStringToStringList("[label=\"Type = FUNC_CALL\"];",node1,dotTree);
 		// ¬џ«ќ¬
 		printFuncCall(expr,nodeCount,dotTree);
 	}
@@ -322,9 +310,7 @@ void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::stri
 	// «апомнить номер текущего дочернего узла
 	args = (*nodeCount);
 	curNode[0] = '\0';
-	sprintf(curNode,"%d [label=\"ARGS\"];",args);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addDeclStringToStringList("[label=\"ARGS\"];",args,dotTree);
 	// «апомнить номер текущего дочернего узла
 	node2=(*nodeCount)+1; 
 	curNode = new char[30+strlen(expr->idName)];
@@ -352,10 +338,8 @@ void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::st
 	
 	// «апомнить номер текущего "родительского" узла
 	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"RETURN\" shape=box];",node1,dotTree);
 	curNode = new char [30];
-	sprintf(curNode,"%d [label=\"RETURN\" shape=box];",node1);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
 	// «апомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
 	printExpr(expr,nodeCount,dotTree);
@@ -376,9 +360,7 @@ void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::strin
 	// «апомнить номер текущего "родительского" узла
 	node1=*nodeCount;
 	curNode = new char [30];
-	sprintf(curNode,"%d [label=\"DEL\" shape=box];",node1);
-	nodeDec = std::string(curNode);
-	dotTree.push_back(nodeDec);
+	addDeclStringToStringList("[label=\"DEL\" shape=box];",node1,dotTree);
 	// «апомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
 	printExpr(expr,nodeCount,dotTree);
@@ -387,6 +369,27 @@ void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::strin
 	sprintf(curNode,"%d -- %d;",node1,node2);
 	nodeDec = std::string(curNode);
 	dotTree.push_back(nodeDec);
+}
+/* ƒобавить в список строк объ€вление узла на €зыке dot
+* @author Kate
+* \param[in] string строка с названием узла и его параметрами
+* \param[in] declNumber номер узла
+* \param[in|out] dotTree список строк дл€ хранени€ кода на dot
+*/
+void addDeclStringToStringList(char* string, int declNumber, std::vector<std::string>& dotTree)
+{
+	if(declNumber==NULL||string==NULL) return ;
+	std::string stringToTree;
+	char* intString = new char [20];
+	itoa(declNumber,intString,10);
+	char* finalString = new char[strlen(intString)+strlen(string)+1+1];
+	strcpy(finalString,intString);
+	strcat(finalString," ");
+	strcat(finalString,string);
+	stringToTree = std::string(finalString);
+	dotTree.push_back(stringToTree);
+	delete intString;
+	delete finalString;
 }
 
 char* makeExprNodename(enum ExprType type, int node)
