@@ -251,6 +251,33 @@ void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::st
 
 void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла while_stmt
+	int while_stmt=*nodeCount;
+	
+	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"WHILE_STMT\"];",while_stmt,dotTree);
+
+	// Вывод условия продолжения цикла
+	node2=*nodeCount+1;
+	printExpr(whilestmt->expr,nodeCount,dotTree);
+	addLinkToStringList(node1,node2,dotTree);
+
+	// Вывод тела цикла
+	node1=while_stmt;
+	node2=*nodeCount+1;
+	printStatementList(whilestmt->stmtlist, nodeCount, dotTree);
+	addLinkToStringList(node1,node2,dotTree);
+
+	// Вывод блока else
+	if(whilestmt->elsestmt!=NULL)
+	{
+		node1=while_stmt;
+		node2=*nodeCount+1;
+		printStatementList(whilestmt->elsestmt, nodeCount, dotTree);
+		addLinkToStringList(node1,node2,dotTree);
+	}
+
 }
 
 void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree)
