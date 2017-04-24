@@ -18,7 +18,7 @@ void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::st
 void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree);
 void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree);
-void printContinueBreakStmt(int* nodeCount, std::vector<std::string>& dotTree);
+void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree);
 void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree);
@@ -85,11 +85,11 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 		}
 		else if(begining->type==_BREAK)
 		{
-			printContinueBreakStmt(nodeCount,dotTree);
+			printContinueBreakStmt(_BREAK,nodeCount,dotTree);
 		}
 		else if(begining->type==_CONTINUE)
 		{
-			printContinueBreakStmt(nodeCount,dotTree);
+			printContinueBreakStmt(_CONTINUE,nodeCount,dotTree);
 		}
 		else if(begining->type==_DEL)
 		{
@@ -473,8 +473,20 @@ void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vec
 	}
 }
 
-void printContinueBreakStmt(int* nodeCount, std::vector<std::string>& dotTree)
+void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Ќомер главного узла и номер дочернего узла
+	*nodeCount+=1;
+	node1=*nodeCount;
+
+	if(type==_BREAK)
+	{
+		addDeclStringToStringList("[label=\"BREAK\" shape=box];",node1,dotTree);
+	}
+	else if(type==_CONTINUE)
+	{
+		addDeclStringToStringList("[label=\"CONTINUE\" shape=box];",node1,dotTree);
+	}
 }
 
 void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
