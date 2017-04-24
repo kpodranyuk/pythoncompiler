@@ -68,7 +68,8 @@ WHITE_SPACE[ \t]
 <INDENT_>" "      { current_line_indent++; }
 <INDENT_>"\t"     { current_line_indent+=4;}
 <INDENT_>"\n"     { current_line_indent = 0; /*ignoring blank line */ }
-<INDENT_>.        {
+<INDENT_>#[^\n]*/\n { current_line_indent = 0; /*ignoring blank line */ }
+<INDENT_>[^#]        {
 					unput(*yytext);
 					if (current_line_indent%INDNT!=0) 
 				    {

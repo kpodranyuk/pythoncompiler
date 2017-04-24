@@ -78,7 +78,8 @@ struct StmtListInfo* root;
 %left <Int>NUMBER			// Число
 %start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFileB,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
-fullroot: stmt_list {root=$1;	printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+fullroot:line_sep stmt_list {root=$2;	printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
+| stmt_list {root=$1;	printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
 ;
 
 if_stmt: IF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createIfStatement($2,$6,NULL,NULL);  printf("BISON:\tfound IF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound IF_STMT:\t\n");}
