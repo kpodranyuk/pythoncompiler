@@ -636,5 +636,9 @@ char* makeExprNodename(enum ExprType type)
 	{
 		sprintf(decl,"[label=\"=\" shape=box];");
 	}
+	else if(type==_ARRID)
+	{
+		sprintf(decl,"[label=\"[]\" shape=box];");
+	}
 	return decl;
 }
