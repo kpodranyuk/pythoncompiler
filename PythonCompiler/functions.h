@@ -183,14 +183,14 @@ struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, i
 	val->type = type;
 	val->logVal = logVal;
 	// Если задано строковое значение
-	if(stringVal!=NULL)
+	/*if(stringVal!=NULL)
 	{
 		// Выделяем память и перекопируем значение
 		val->stringVal = (char*)malloc(sizeof(strlen(stringVal)+1));
 		strcpy(val->stringVal, stringVal);
 	}
 	// Иначе переприсваиваем
-	else
+	else*/
 		val->stringVal = stringVal;
 	// Переприсваиваем целочисленное значение
 	val->intVal = numVal;

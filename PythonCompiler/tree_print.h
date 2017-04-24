@@ -23,6 +23,7 @@ void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::st
 void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree);
 
+char* makeStringForDot(char* string);
 char* makeExprNodename(enum ExprType type, char * idName);
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree);
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
@@ -205,8 +206,9 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	}
 	else if(val->type==_STRING)
 	{
-		curNode = new char [30+strlen(val->stringVal)+1];
-		sprintf(curNode,"[label=\"%s\"];",val->stringVal);
+		char* buf = makeStringForDot(val->stringVal);
+		curNode = new char [30+strlen(buf)+1];
+		sprintf(curNode,"[label=\"%s\"];",buf);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_NUMBER)
@@ -217,6 +219,34 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	}
 	else
 		return ;
+}
+
+char* makeStringForDot(char* string)
+{
+	char* finalString = new char [strlen(string)*2+1];
+	finalString[0]='\0';
+	int index = 0;
+	int finalLength = 0;
+	while(index<strlen(string))
+	{
+		if(string[index]=='\"')
+		{
+			if(strlen(finalString)==0)
+				strcpy(finalString,"\\\"");
+			else
+				strcat(finalString,"\\\"");
+			
+		}
+		else
+		{
+			
+			finalString[finalLength]=string[index];
+			finalString[finalLength+1]='\0';
+		}
+		finalLength = strlen(finalString);
+		index++;
+	}
+	return finalString;
 }
 
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree)
