@@ -247,7 +247,69 @@ void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<s
 
 void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла if_stmt
+	int if_stmt=*nodeCount;
+
+	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"IF_STMT\"];",if_stmt,dotTree);
+
+	// Вывод условного выражения
+	*nodeCount+=1;
+	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
+	addLinkToStringList(if_stmt,node1,dotTree);
+	node2=*nodeCount+1;
+	printExpr(ifstmt->expr,nodeCount,dotTree);
+	addLinkToStringList(node1,node2,dotTree);
+
+	// Вывод тела условия
+	node1=if_stmt;
+	node2=*nodeCount+1;
+	printStatementList(ifstmt->stmtlist, nodeCount, dotTree);
+	addLinkToStringList(node1,node2,dotTree);
+
+	// Вывод elif-ов
+	struct ElifListInfo* begin=ifstmt->eliflist;
+	while(begin!=NULL)
+	{
+		*nodeCount+=1;
+		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"ELIF\"];",node1,dotTree);
+		addLinkToStringList(if_stmt,node1,dotTree);
+		int elif_stmt=node1;
+
+		// Вывод условного выражения
+		*nodeCount+=1;
+		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
+		addLinkToStringList(elif_stmt,node1,dotTree);
+		node2=*nodeCount+1;
+		printExpr(ifstmt->expr,nodeCount,dotTree);
+		addLinkToStringList(node1,node2,dotTree);
+
+		// Вывод тела
+		node1=elif_stmt;
+		node2=*nodeCount+1;
+		printStatementList(begin->stmtlist, nodeCount, dotTree);
+		addLinkToStringList(node1,node2,dotTree);
+
+		begin=begin->next;
+	}
+
+	// Вывод блока else
+	if(ifstmt->elsestmtlist!=NULL)
+	{
+		*nodeCount+=1;
+		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"ELSE BLOCK\"];",node1,dotTree);
+		addLinkToStringList(if_stmt,node1,dotTree);
+		node2=*nodeCount+1;
+		printStatementList(ifstmt->elsestmtlist, nodeCount, dotTree);
+		addLinkToStringList(node1,node2,dotTree);
+	}
 }
+
 
 void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree)
 {
