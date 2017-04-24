@@ -1,40 +1,43 @@
+/*
+* Хранит в себе типы выражения
+*/
 enum ExprType
 {
-	_OR,
-	_AND,
-	_NOT,
-	_NOT_EQUAL,
-	_EQUAL,
-	_GREATER,
-	_GREATER_OR_EQUAL,
-	_LESS,
-	_LESS_OR_EQUAL,
-	_SUB,
-	_ADD,
-	_INT,
-	_MOD,
-	_DIV,
-	_MUL,
-	_POW,
-	_ASSIGN,
-	// обращение по индексу массива
-	_ARRID,
-	// инициализация массива
-	_ARRINIT,
-	// действия над массивом
-	_ARRACT,
-	_VARVAL,	
-	_OPERAND,
-	_FUNCCALL,
-	_UMINUS
+	_OR,					// Или
+	_AND,					// И
+	_NOT,					// Не
+	_NOT_EQUAL,				// Не равно
+	_EQUAL,					// Равно
+	_GREATER,				// Больше
+	_GREATER_OR_EQUAL,		// Больше либо равно
+	_LESS,					// Меньше
+	_LESS_OR_EQUAL,			// Меньше либо равно
+	_SUB,					// Разность
+	_ADD,					// Сумма
+	_INT,					// Целая часть от деления
+	_MOD,					// Остаток от деления
+	_DIV,					// Деление
+	_MUL,					// Умножение
+	_POW,					// Возведение в степень
+	_ASSIGN,				// Присовение
+	_ARRID,					// Обращение по индексу массива
+	_ARRINIT,				// Инициализация массива
+	_ARRACT,				// Действия над массивом
+	_VARVAL,				// Значение операнда
+	_OPERAND,				// Операнд (идентификатор)
+	_FUNCCALL,				// Вызов функции
+	_UMINUS					// Унарный минус
 };
 
+/*
+* Хранит в себе значения операнда
+*/
 enum ValType
 {
-	_TRUE,
-	_FALSE,
-	_STRING,
-	_NUMBER
+	_TRUE,		// Истина
+	_FALSE,		// Ложь
+	_STRING,	// Строка
+	_NUMBER		// Целое число
 };
 
 /*
@@ -77,12 +80,11 @@ struct ExprInfo
 };
 /*
 * Хранит в себе указатель на начало и конец списка выражений
-* (возможно следует изменить тип - хранить начало и следующий)
 */
 struct ExprListInfo
 {
-	struct ExprInfo * first;
-	struct ExprInfo * last;
+	struct ExprInfo * first;	// Начало списка
+	struct ExprInfo * last;		// Конец списка
 };
 
 /*
@@ -98,15 +100,12 @@ struct DefFuncParamInfo
 };
 /*
 * Хранит в себе указатель на начало и конец списка параметров функции
-* (возможно следует изменить тип - хранить начало и следующий)
 */
 struct DefFuncParamListInfo
 {
-	struct DefFuncParamInfo * first;
-	struct DefFuncParamInfo * last;
+	struct DefFuncParamInfo * first;	// Начало списка
+	struct DefFuncParamInfo * last;		// Конец списка
 };
-
-
 /*
 * Хранит в себе информацию о функции при ее объявлении
 */
