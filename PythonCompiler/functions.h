@@ -109,12 +109,35 @@ struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * ex
 	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
 	// ѕрисваиваем тип
 	expr->type=type;
-	// —читаем, что у узла есть только левый и правый дочерний узлы
+	// —читаем, что у узла есть только список экспрешенов
 	expr->arglist=exprlist;
 	expr->exprVal=NULL;
 	expr->idName=NULL;
 	expr->left=NULL;
 	expr->right=NULL;
+	// ¬озвращаем новый созданный узел
+	return expr;
+}
+
+/* —оздание узла выражени€ действи€ над массивом
+* \param[in] type тип выражени€
+* \param[in] left левое выражение(к чему примен€ем)
+* \param[in] right правое выражение
+* \param[in] actName им€ примен€емой операции к массиву
+* \return указатель на новый узел
+*/
+struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right, char * actName)
+{
+	// ¬ыдел€ем пам€ть под новый узел-выражение
+	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
+	// ѕрисваиваем тип
+	expr->type=type;
+	expr->idName = (char*)malloc(sizeof(strlen(actName)+1));
+	strcpy(expr->idName, actName);
+	expr->left=left;
+	expr->right=right;
+	expr->arglist=NULL;
+	expr->exprVal=NULL;
 	// ¬озвращаем новый созданный узел
 	return expr;
 }

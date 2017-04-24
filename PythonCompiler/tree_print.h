@@ -23,7 +23,7 @@ void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::st
 void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree);
 
-char* makeExprNodename(enum ExprType type);
+char* makeExprNodename(enum ExprType type, char * idName);
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree);
 void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
 void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
@@ -111,12 +111,6 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
-	/*
-	// инициализация массива
-	_ARRINIT,
-	// действия над массивом
-	_ARRACT,
-	*/
 	char* curNode;
 	std::string nodeDec;
 	// В зависимости от типа узла/элемента вызываем соответствующую функцию
@@ -179,7 +173,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		addDeclStringToStringList(makeExprNodename(expr->type),node1,dotTree);
+		addDeclStringToStringList(makeExprNodename(expr->type, expr->idName),node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->left,nodeCount,dotTree);
@@ -572,7 +566,7 @@ void addLinkToStringList(int firstNode, int secondNode, std::vector<std::string>
 	delete finalString;
 }
 
-char* makeExprNodename(enum ExprType type)
+char* makeExprNodename(enum ExprType type, char * idName)
 {
 	char* decl = new char [100];
 	decl[0]='\0';
@@ -643,6 +637,10 @@ char* makeExprNodename(enum ExprType type)
 	else if(type==_ARRID)
 	{
 		sprintf(decl,"[label=\"[]\" shape=box];");
+	}
+	else if(type==_ARRACT)
+	{
+		sprintf(decl,"[label=\"%s\" shape=box];", idName);
 	}
 	return decl;
 }

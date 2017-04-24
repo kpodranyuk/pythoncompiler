@@ -142,7 +142,7 @@ expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3); printf("BISON:\tfound expr:
 | expr '=' expr					{$$=createExprInfo(_ASSIGN,$1,$3); printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
 | expr '[' expr ']'				{$$=createExprInfo(_ARRID,$1,$3); printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}
 | '[' param_list ']'			{$$=createInitListInfo(_ARRINIT,$2); printf("BISON:\tfound expr: initialize\n"); fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
-| expr '.' OPERAND '(' expr ')'  {printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
+| expr '.' OPERAND '(' expr ')'  {$$=createActListInfo(_ARRACT,$1,$5,$3); printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
 | var_val					{$$=createSimpleExpr(_VARVAL,NULL,$1); printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
 | OPERAND 					{$$=createSimpleExpr(_OPERAND,$1,NULL); printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {$$=$1; printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
