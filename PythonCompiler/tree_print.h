@@ -284,11 +284,51 @@ void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vecto
 		printStatementList(whilestmt->elsestmt, nodeCount, dotTree);
 		addLinkToStringList(node1,node2,dotTree);
 	}
-
 }
 
 void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree)
 {
+	int node1, node2; // Номер главного узла и номер дочернего узла
+	*nodeCount+=1; // Получить номер узла for_stmt
+	int for_stmt=*nodeCount;
+
+	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"FOR_STMT\"];",for_stmt,dotTree);
+
+	// Вывод счетчика цикла
+	*nodeCount+=1;
+	node1=*nodeCount;
+	char* curNode = new char [50+strlen(forstmt->counter)+1];
+	sprintf(curNode,"[label=\"<COUNTER>\n%s\"];",forstmt->counter);
+	addDeclStringToStringList(curNode,node1,dotTree);
+	addLinkToStringList(for_stmt, node1, dotTree);
+
+	// Вывод выражения, по чем проходит цикл
+	*nodeCount+=1;
+	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"BYPASS_EXPR\"];",node1,dotTree);
+	addLinkToStringList(for_stmt,node1,dotTree);
+	node2=*nodeCount+1;
+	printExpr(forstmt->expr,nodeCount,dotTree);
+	addLinkToStringList(node1,node2,dotTree);
+
+	// Вывод тела цикла
+	node1=for_stmt;
+	node2=*nodeCount+1;
+	printStatementList(forstmt->stmtlist, nodeCount, dotTree);
+	addLinkToStringList(node1,node2,dotTree);
+
+	// Вывод блока else
+	if(forstmt->elsestmt!=NULL)
+	{
+		*nodeCount+=1;
+		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"ELSE BLOCK\"];",node1,dotTree);
+		addLinkToStringList(for_stmt,node1,dotTree);
+		node2=*nodeCount+1;
+		printStatementList(forstmt->elsestmt, nodeCount, dotTree);
+		addLinkToStringList(node1,node2,dotTree);
+	}
 }
 
 void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
