@@ -259,6 +259,10 @@ void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vecto
 	addDeclStringToStringList("[label=\"WHILE_STMT\"];",while_stmt,dotTree);
 
 	// Вывод условия продолжения цикла
+	*nodeCount+=1;
+	node1=*nodeCount;
+	addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
+	addLinkToStringList(while_stmt,node1,dotTree);
 	node2=*nodeCount+1;
 	printExpr(whilestmt->expr,nodeCount,dotTree);
 	addLinkToStringList(node1,node2,dotTree);
@@ -272,7 +276,10 @@ void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vecto
 	// Вывод блока else
 	if(whilestmt->elsestmt!=NULL)
 	{
-		node1=while_stmt;
+		*nodeCount+=1;
+		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"ELSE BLOCK\"];",node1,dotTree);
+		addLinkToStringList(while_stmt,node1,dotTree);
 		node2=*nodeCount+1;
 		printStatementList(whilestmt->elsestmt, nodeCount, dotTree);
 		addLinkToStringList(node1,node2,dotTree);
