@@ -104,8 +104,7 @@ stmt_list: stmt_list line_sep {$$ = createStatementList(NULL, $1); printf("BISON
 | stmt_list stmt {$$ = createStatementList($2, $1); printf("BISON:\tfound stmt_list:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
 ;
 
-stmt: line_sep 
-| expr line_sep {$$ = createFromExprStatement(_EXPR,$1); printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
+stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); printf("BISON:\tfound stmt stmt:\t\n"); fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
 | CONTINUE line_sep {$$ = createFromContinueBreakStatement(_CONTINUE); printf("BISON:\tfound stmt continue:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
 | BREAK line_sep {$$ = createFromContinueBreakStatement(_BREAK); printf("BISON:\tfound stmt break:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
 | RETURN expr line_sep {$$=createFromReturnStatement(_RETURN, $2); printf("BISON:\tfound stmt return:\t\n"); fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
