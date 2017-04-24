@@ -112,8 +112,6 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
 	/*
-	// обращение по индексу массива
-	_ARRID,
 	// инициализация массива
 	_ARRINIT,
 	// действия над массивом
@@ -170,6 +168,12 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		addDeclStringToStringList("[label=\"FUNC_CALL\"];",node1,dotTree);
 		// ВЫЗОВ
 		printFuncCall(expr,nodeCount,dotTree);
+	}
+	else if(expr->type==_ARRINIT)
+	{
+		node1=*nodeCount;
+		addDeclStringToStringList("[label=\"INITIALIZATION_LIST\"];",node1,dotTree);
+		printExprList(expr->arglist,nodeCount,dotTree);
 	}
 	else
 	{

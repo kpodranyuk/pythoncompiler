@@ -98,6 +98,27 @@ struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struc
 	return expr;
 }
 
+/* Создание узла выражения инициализации массива
+* \param[in] type тип выражения
+* \param[in] exprlist лист выражений
+* \return указатель на новый узел
+*/
+struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * exprlist)
+{
+	// Выделяем память под новый узел-выражение
+	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
+	// Присваиваем тип
+	expr->type=type;
+	// Считаем, что у узла есть только левый и правый дочерний узлы
+	expr->arglist=exprlist;
+	expr->exprVal=NULL;
+	expr->idName=NULL;
+	expr->left=NULL;
+	expr->right=NULL;
+	// Возвращаем новый созданный узел
+	return expr;
+}
+
 /* Создание узла выражения из вызова функции
 * @author Kate
 * \param[in] type тип выражения
