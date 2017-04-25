@@ -20,9 +20,9 @@ digits = []
 for symbol in s:
     if symbol:
         digits.append(symbol)
-    elif not symbol == True or symbol != False:
+    elif not symbol == True or symbol != False and True:
         digits.remove(symbol)
-	elif 0 <= a <8 or 10 >= a > 12:
+	elif a<8 or 10>=a:
         continue
     else:
         continue
@@ -35,16 +35,8 @@ print(list2[-1])
 
 def funcOperation(a, b): #Comment
     a = b
-    a %= 1
-    a //= 1
-    a /= 5
-    a -=0
-    a += 10
-    a *= 2
-    a **= 1
     a * b
     a ** b
-    b % 2
     c = a / 10
     c = a // 5
     c = a + 4

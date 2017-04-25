@@ -313,7 +313,7 @@ void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::st
 		addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
 		addLinkToStringList(elif_stmt,node1,dotTree);
 		node2=*nodeCount+1;
-		printExpr(ifstmt->expr,nodeCount,dotTree);
+		printExpr(begin->expr,nodeCount,dotTree);
 		addLinkToStringList(node1,node2,dotTree);
 
 		// Вывод тела
