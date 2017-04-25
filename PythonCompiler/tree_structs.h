@@ -127,15 +127,15 @@ struct FuncDefInfo
 */
 enum StmtType
 {
-	_EXPR,
-	_IF,
-	_FOR,
-	_WHILE,
-	_FUNC_DEF,
-	_RETURN,
-	_BREAK,
-	_CONTINUE,
-	_DEL
+	_EXPR, // Выражение
+	_IF, // Развилки
+	_FOR, // Цикл для
+	_WHILE, // Цикл пока
+	_FUNC_DEF, // Объявление функции
+	_RETURN, // Возвращение значение
+	_BREAK, // Прерывани
+	_CONTINUE, // Продолжение
+	_DEL // Удаление значения переменной из памяти
 };
 
 /*
