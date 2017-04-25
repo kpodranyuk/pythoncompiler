@@ -20,9 +20,9 @@ digits = []
 for symbol in s:
     if symbol:
         digits.append(symbol)
-    elif not symbol == True or symbol != False:
+    elif not symbol == True or symbol != False and True:
         digits.remove(symbol)
-	elif 0 <= a <8 or 10 >= a > 12:
+	elif a<8 or 10>=a:
         continue
     else:
         continue
