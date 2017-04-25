@@ -97,6 +97,8 @@ struct DefFuncParamInfo
 
 	// Имя параметра
 	char* paramName;
+	// Значение параметра
+	struct ValInfo* paramVal;
 };
 /*
 * Хранит в себе указатель на начало и конец списка параметров функции

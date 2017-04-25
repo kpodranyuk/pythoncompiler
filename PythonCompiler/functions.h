@@ -205,10 +205,10 @@ struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, i
 * \param[in] params список параметров
 * \return указатель на новый список
 */
-struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct DefFuncParamListInfo* params)
+struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct ValInfo* newParamVal, struct DefFuncParamListInfo* params)
 {
 	// Если список из пустых аргументов 
-	if(newParamName==NULL&&params==NULL)
+	if(newParamName==NULL&&params==NULL&&newParamVal==NULL)
 	{
 		// Создаем пустой список и возвращаем его
 		struct DefFuncParamListInfo * newParamList=(struct DefFuncParamListInfo*)malloc(sizeof(struct DefFuncParamListInfo));
@@ -227,6 +227,7 @@ struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, stru
 	strcpy(newParam->paramName,newParamName);
 	// Считаем, что следующего элемента у выражения нет
 	newParam->next=NULL;
+	newParam->paramVal=newParamVal;
 	// Если входного списка нет
 	if(params==NULL)
 	{

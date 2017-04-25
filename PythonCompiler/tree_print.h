@@ -482,7 +482,7 @@ void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vec
 	struct DefFuncParamInfo* begining;
 	// Считаем первый элемент списка начальным
 	begining = params->first;
-	int node1, node2; // Номер главного узла и номер дочернего узла
+	int node1, node2, node3; // Номер главного узла и номер дочернего узла
 	// Запомнить номер текущего "родительского" узла
 	node1=++(*nodeCount);
 	addDeclStringToStringList("[label=\"PARAMS\"];",node1,dotTree);
@@ -496,6 +496,16 @@ void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vec
 		addDeclStringToStringList(curNode,node2,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
+		
+		if(begining->paramVal!=NULL)
+		{
+			node3=node2;
+			node2=*nodeCount+1; 
+			printVarVal(begining->paramVal,nodeCount,dotTree);
+			// Добавить в список связь между дочерним и родительским узлами
+			addLinkToStringList(node3,node2,dotTree);
+		}
+
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
 	}
