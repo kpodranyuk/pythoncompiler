@@ -42,6 +42,13 @@ def funcOperation(a, b): #Comment
     c = a + 4
     c = a - 4
     return c
+def baseFunc(a=0,c=False,d="fjghdf",e='fgdjfkj"jkghdf',f='''fgdfjk 
+fdhjsdfgdjhf''',g="""jksfhgfjkdh"""): 
+	def func(): 
+		return 0 
+	a=-9 
+	return func 
+baseFunc()
 print ("abc"+"def")
 int('0b10011', 2)
 print(funcOperation(10, 2))
