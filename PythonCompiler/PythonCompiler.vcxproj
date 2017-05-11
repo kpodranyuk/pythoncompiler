@@ -64,6 +64,7 @@
     <Flex Include="lexer.l" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="bypass_semant_tree.cpp" />
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
@@ -72,6 +73,7 @@
     <Bison Include="parser.y" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="bypass_semant_tree.h" />
     <ClInclude Include="functions.h" />
     <ClInclude Include="parser.tab.h" />
     <ClInclude Include="semant_state.h" />
