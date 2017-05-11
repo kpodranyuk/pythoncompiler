@@ -1,13 +1,11 @@
 #include "bypass_semant_tree.h"
 #include <vector>
 
-/* Обойти дерево и "перевести" для печати на язык dot
-* @author Kate
-* \param[in] root список корней дерева
-* \param[in|out] nodeCount текущий индекс узла
-* \param[in|out] dotTree список строк для хранения кода на dot
-*/
-void printStatementList(struct StmtListInfo* root)
+enum GlobalState gl_state;
+
+enum LocalState lc_state;
+
+void checkStatementList(struct StmtListInfo* root)
 {
 	// Если список корней дерева null - выходим из функции
 	if(root==NULL) return ;
@@ -72,14 +70,23 @@ void checkIfStmt(struct IfStmtInfo * ifstmt)
 
 void checkWhileStmt(struct WhileStmtInfo * whilestmt)
 {
+	lc_state = _CYCLE_STATE;
+	// Код функции
+	lc_state = _REGULAR_STATE;
 }
 
 void checkForStmt(struct ForStmtInfo * forstmt)
 {
+	lc_state = _CYCLE_STATE;
+	// Код функции
+	lc_state = _REGULAR_STATE;
 }
 
 void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 {
+	gl_state = _FUNC_STATE;
+	// Код функции
+	gl_state = _MAIN_STATE;
 }
 
 void checkContinueBreakStmt(enum StmtType type)
