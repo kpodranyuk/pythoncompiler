@@ -84,9 +84,12 @@ void checkForStmt(struct ForStmtInfo * forstmt)
 
 void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 {
-	gl_state = _FUNC_STATE;
+	enum GlobalState lastState = gl_state;
+	if(lastState == _MAIN_STATE)
+		gl_state = _FUNC_STATE;
 	// Код функции
-	gl_state = _MAIN_STATE;
+	if(lastState == _MAIN_STATE)
+		gl_state = _MAIN_STATE;
 }
 
 void checkContinueBreakStmt(enum StmtType type)
