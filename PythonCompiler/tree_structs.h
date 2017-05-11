@@ -21,6 +21,7 @@ enum ExprType
 	_POW,					// Возведение в степень
 	_ASSIGN,				// Присовение
 	_ARRID,					// Обращение по индексу массива
+	_ARRID_AND_ASSIGN,		// Присвоение нового значения элементу массива, взятого по индексу
 	_ARRINIT,				// Инициализация массива
 	_ARRACT,				// Действия над массивом
 	_VARVAL,				// Значение операнда
@@ -68,6 +69,8 @@ struct ExprInfo
 	struct ExprInfo * right;
 	// Указатель на следующий элемент (выражение)
 	struct ExprInfo * next;
+	// Указатель средний элемент(тернарная операция _ARRID_AND_ASSIGN)
+	struct ExprInfo * middle;
 	// Указатель на список аргументов выражения
 	struct ExprListInfo * arglist;
 	// Тип выражения
@@ -179,8 +182,8 @@ struct IfStmtInfo
 	struct StmtListInfo * stmtlist;
 	// Указатель на лист elif
 	struct ElifListInfo * eliflist;
-	// Указатель на тело else
-	struct StmtListInfo * elsestmtlist;
+	// Указатель на тело else(а так же else if)
+	struct IfStmtInfo * elsestmtlist;
 };
 
 /*
