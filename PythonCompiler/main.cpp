@@ -65,11 +65,12 @@ int main(int argc, char** argv) {
 		printf("tree was printed");
 		TreeTraversal* treeWalker = new TreeTraversal();
 		try{
-			treeWalker->fixTree(NULL);
+			treeWalker->fixTree(root);
+			printf("\nTree fixed successfully\n");
 		}
 		catch (char* message)
 		{
-			printf("\nMessage while traversing the tree: %s",message);
+			printf("\nMessage while traversing the tree: %s\nPlease, check syntax of python file.",message);
 		}
 	/*}*/
 	_getch();
