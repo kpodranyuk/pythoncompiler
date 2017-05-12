@@ -183,7 +183,8 @@ struct IfStmtInfo
 	// Указатель на лист elif
 	struct ElifListInfo * eliflist;
 	// Указатель на тело else(а так же else if)
-	struct IfStmtInfo * elsestmtlist;
+	// !!! БЫЛО IfStmtInfo !!!
+	struct StmtListInfo * elsestmtlist;
 };
 
 /*
