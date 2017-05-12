@@ -45,11 +45,25 @@ private:
 	*	---------- Методы класса ----------
 	*/
 
+	/* Удалить строку из вектора
+	* @author Kate
+	* \param[in] vec вектор строк
+	* \param[in] str строка
+	*/
+	void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str);
+
+	/* Проверить содержит ли вектор строку
+	* @author Kate
+	* \param[in] vec вектор строк
+	* \param[in] str строка
+	*/
+	bool containsString(std::vector<std::string>& vec, std::string str) const;
+
 	/* Проверить узел-выражение дерева
 	* @author Kate
 	* \param[in|out] expr узел выражения
 	*/
-	void checkExpr(struct ExprInfo * expr);
+	void checkExpr(struct ExprInfo * expr) throw(char*);
 
 	/* Проверить узел-развилку дерева
 	* @author Nikita
@@ -85,7 +99,7 @@ private:
 	* @author Kate
 	* \param[in|out] expr узел выражения
 	*/
-	void checkReturnStmt(struct ExprInfo * expr);
+	void checkReturnStmt(struct ExprInfo * expr) throw(char*);
 
 	/* Проверить узел оператора удаления значения
 	* @author Kate
@@ -98,11 +112,16 @@ private:
 	* \param[in|out] params список параметров функции при объявлении
 	*/
 	void checkFuncParams(struct DefFuncParamListInfo* params);
+
 	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
 	* @author Kate
 	* \param[in|out] root список корней дерева
 	*/
-	void checkStatementList(struct StmtListInfo* root);
+	void checkStatementList(struct StmtListInfo* root) throw(char*);
+
+	/*!
+	*	!!!!! Публичная часть класса !!!!!
+	*/
 public:
 	// Конструктор по умолчанию
 	TreeTraversal();
