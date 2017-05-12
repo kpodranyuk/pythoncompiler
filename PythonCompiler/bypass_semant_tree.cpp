@@ -1,14 +1,32 @@
 #include "bypass_semant_tree.h"
-#include <vector>
 
-enum GlobalState gl_state;
+// Конструктор по умолчанию
+TreeTraversal::TreeTraversal()
+{
+}
 
-enum LocalState lc_state;
+// Проверка дерева (первый обход)
+void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
+{
+	if(root == NULL)
+		throw "Root of tree is a null pointer\n";
+	checkStatementList(root);
+}
 
-void checkStatementList(struct StmtListInfo* root)
+// Составление таблиц (второй обход)
+void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
+{
+}
+
+// Печать аттрибутированного дерева (третий обход - ?)
+void TreeTraversal::printTree(const struct StmtListInfo* treeRoot)
+{
+}
+
+void TreeTraversal::checkStatementList(struct StmtListInfo* root)
 {
 	// Если список корней дерева null - выходим из функции
-	if(root==NULL) return ;
+	//if(root==NULL) return ;
 	// Иначе
 	// Создаем локальный указатель на элемент входного дерева
 	struct StmtInfo* begining;
@@ -60,29 +78,29 @@ void checkStatementList(struct StmtListInfo* root)
 	}
 }
 
-void checkExpr(struct ExprInfo * expr)
+void TreeTraversal::checkExpr(struct ExprInfo * expr)
 {
 }
 
-void checkIfStmt(struct IfStmtInfo * ifstmt)
+void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt)
 {
 }
 
-void checkWhileStmt(struct WhileStmtInfo * whilestmt)
-{
-	lc_state = _CYCLE_STATE;
-	// Код функции
-	lc_state = _REGULAR_STATE;
-}
-
-void checkForStmt(struct ForStmtInfo * forstmt)
+void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt)
 {
 	lc_state = _CYCLE_STATE;
 	// Код функции
 	lc_state = _REGULAR_STATE;
 }
 
-void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
+void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt)
+{
+	lc_state = _CYCLE_STATE;
+	// Код функции
+	lc_state = _REGULAR_STATE;
+}
+
+void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 {
 	enum GlobalState lastState = gl_state;
 	if(lastState == _MAIN_STATE)
@@ -92,18 +110,18 @@ void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 		gl_state = _MAIN_STATE;
 }
 
-void checkContinueBreakStmt(enum StmtType type)
+void TreeTraversal::checkContinueBreakStmt(enum StmtType type)
 {
 }
 
-void checkReturnStmt(struct ExprInfo * expr)
+void TreeTraversal::checkReturnStmt(struct ExprInfo * expr)
 {
 }
 
-void checkDelStmt(struct ExprInfo * expr)
+void TreeTraversal::checkDelStmt(struct ExprInfo * expr)
 {
 }
 
-void checkFuncParams(struct DefFuncParamListInfo* params)
+void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
 {
 }
