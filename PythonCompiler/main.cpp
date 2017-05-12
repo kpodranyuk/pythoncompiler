@@ -4,6 +4,7 @@
 #include <iostream>
 #include <process.h>
 #include "tree_print.h"
+#include "bypass_semant_tree.h"
 #include "parser.tab.h"
 
 extern FILE* yyin;
@@ -62,6 +63,14 @@ int main(int argc, char** argv) {
 		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTree.txt",NULL);
 		// ¬ыводим сообщение о том, что дерево напечатано
 		printf("tree was printed");
+		TreeTraversal* treeWalker = new TreeTraversal();
+		try{
+			treeWalker->fixTree(NULL);
+		}
+		catch (char* message)
+		{
+			printf("\nMessage while traversing the tree: %s",message);
+		}
 	/*}*/
 	_getch();
 	return 0;
