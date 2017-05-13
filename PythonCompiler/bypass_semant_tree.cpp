@@ -144,13 +144,16 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 		// Иначе если слева взятие по индексу
 		else if(expr->left->type==_ARRID)
 		{
+			// Считаем, что проверять левую часть не нужно - на этап генерации кода
+			// Проверяем правую часть
+			checkExpr(expr->right);
 			// Проверяем, что взятие производится уже по объявленному массиву
-			struct ExprInfo* arr = expr->left;
+			/*struct ExprInfo* arr = expr->left;
 			if(arr->left->type==_OPERAND)
 				checkExpr(arr->left);
 			// Иначе если взятие не относится к операнду, выбрасываем исключение
 			else
-				throw "Can't use [brackets] for anything except arrays.";
+				throw "Can't use [brackets] for anything except arrays.";*/
 		}
 		// Иначе бросаем исключение, что нельзя присвоить значение чему-то кроме операнда или элемента массива
 		else
@@ -165,10 +168,30 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	else if(expr->type==_ARRACT)
 	{
 		// Проверяем, чтобы массив был операндом и был в списке переменных
-		if(expr->left->type==_OPERAND)
+		/*if(expr->left->type==_OPERAND)
 			checkExpr(expr->left);
 		else
-			throw "Can't use methods to anything except arrays.";
+			throw "Can't use methods to anything except arrays.";*/
+		// Считаем, что проверять левую часть не нужно - на этап генерации кода
+		// Проверяем правую часть
+		checkExpr(expr->right);
+	}
+	// Если инициализация массива 
+	else if(expr->type==_ARRINIT)
+	{
+		// Считаем, что проверять левую часть не нужно - на этап генерации кода
+		// Создаем локальный указатель на начала списка элементов
+		struct ExprInfo* begining;
+		// Считаем первый элемент списка начальным
+		begining = expr->arglist->first;
+		// Пока текущий элемент списка не последний..
+		while(begining!=NULL)
+		{
+			// Проверяем текущий элемент списка
+			checkExpr(begining);
+			// Считаем следующий элемент списка новым текущим
+			begining = begining->next;
+		}
 	}
 	else if(expr->type==_FUNCCALL)
 	{
