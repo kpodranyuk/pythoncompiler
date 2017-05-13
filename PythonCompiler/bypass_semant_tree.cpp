@@ -1,36 +1,11 @@
 #include "bypass_semant_tree.h"
 
+#pragma warning(disable : 4996)
+
+
 // Конструктор по умолчанию
 TreeTraversal::TreeTraversal()
 {
-}
-
-bool TreeTraversal::containsString(std::vector<std::string>& vec, std::string str) const
-{
-	std::vector<std::string>::const_iterator iter;  // Объявляем итератор для списка строк
-	bool contains = false;							// Объявляем флаг того, что строка найдена в списке
-	// Для каждого элемента списка и пока не найдено значение..
-	for(iter=vec.begin(); iter<vec.end()&&!contains; iter++) 
-	{
-		// Проверяем, равна ли текущая строка нужной
-		contains=(*iter).compare(str)==0;
-	}
-	return contains;
-}
-
-void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str)
-{
-	std::vector<std::string>::const_iterator iter;  // Объявляем итератор для списка строк
-	// Для каждого элемента списка и пока не найдено значение..
-	for(iter=vec.begin(); iter<vec.end(); iter++) 
-	{
-		// Проверяем, равна ли текущая строка нужной
-		if((*iter).compare(str)==0)
-		{
-			vec.erase(iter);
-			break;
-		}
-	}
 }
 
 // Проверка дерева (первый обход)
@@ -232,10 +207,36 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt)
 
 void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 {
+	// Проверяем текущее состояние анализатора
 	enum GlobalState lastState = gl_state;
+	// Если вызов функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
 		gl_state = _FUNC_STATE;
 	// Код функции
+	// Создаем указатель на структуру с заголовком входной функции
+	struct FunctionHeader* curHeader = new struct FunctionHeader;
+	// Копируем в него имя функции
+	curHeader->functionName = new char [strlen(funcdefstmt->functionName)+1];
+	strcpy(curHeader->functionName,funcdefstmt->functionName);
+	// И передаем указатель на список параметров
+	curHeader->params=funcdefstmt->params;
+	// Если такая функция еще не была объявлена
+	if(!containsFuncHeader(this->funcNames,curHeader))
+	{
+		// Добавляем ее заголовок в массив функций
+		this->funcNames.push_back(curHeader);
+		// Проверяем ее тело
+		checkStatementList(funcdefstmt->body);
+	}
+	// Иначе выбрасываем исключение
+	else
+	{
+		char* errStr = new char[30+strlen(curHeader->functionName)];
+		strcpy(errStr,"Can't define same function: ");
+		strcat(errStr,curHeader->functionName);
+		throw errStr;
+	}
+	// Если был вызов функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
 		gl_state = _MAIN_STATE;
 }
@@ -264,4 +265,114 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr)
 
 void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
 {
+}
+
+
+/*!
+*	---------------- БЛОК ВСПОМОГАТЕЛЬНЫХ МЕТОДОВ ДЛЯ РАБОТЫ СО СПИСКАМИ И КОНТЕЙНЕРАМИ ----------------
+*/
+
+bool TreeTraversal::isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const
+{
+	return strcmp(first->functionName,second->functionName)==0&&isEqualDefFuncParams(first->params,second->params);
+}
+
+bool TreeTraversal::isEqualDefFuncParams(struct DefFuncParamListInfo* first, struct DefFuncParamListInfo* second) const
+{
+	struct DefFuncParamInfo* beginFirst = first->first;
+	struct DefFuncParamInfo* beginSecond = second->first;
+	while(beginFirst!=NULL&&beginSecond!=NULL)
+	{
+		// Равны, когда равны названия и значения (если есть)
+		// Если неравны имена параметров - списки не равны
+		if(strcmp(beginFirst->paramName,beginSecond->paramName)!=0)
+			return false;
+		// Если не равны значения параметров - списки не равны
+		if(!isEqualVarVals(beginFirst->paramVal,beginSecond->paramVal))
+			return false;
+		// Так как элементы равны, сдвигаемся к сравнению следующих элементов
+		beginFirst = beginFirst->next;
+		beginSecond = beginSecond->next;
+	}
+	// Если списки равны, то оба указателя - нулл, иначе - не равны
+	return beginFirst==NULL&&beginSecond==NULL;
+}
+
+bool TreeTraversal::isEqualVarVals(struct ValInfo* first, struct ValInfo* second) const
+{
+	// Если оба нулл, то равны
+	if(first==NULL&&second==NULL)
+		return true;
+	// Если оба не нулл..
+	else if(first!=NULL&&second!=NULL)
+	{
+		// Если равны типы, значения целого числа, логические значения и строковые значения, то равны
+		return (first->type==second->type&&
+			first->intVal==second->intVal&&
+			first->logVal==second->logVal&&
+			(first->stringVal==NULL&&second->stringVal==NULL||
+			first->stringVal!=NULL&&second->stringVal!=NULL&&
+			strcmp(first->stringVal,second->stringVal)==0));
+	}
+	return false;
+}
+
+bool TreeTraversal::containsFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func) const
+{
+	std::vector<struct FunctionHeader*>::const_iterator iter;  // Объявляем итератор для списка функций
+	bool contains = false;							// Объявляем флаг того, что функция не найдена в списке
+	// Для каждого элемента списка и пока не найдено значение..
+	for(iter=vec.begin(); iter<vec.end()&&!contains; iter++) 
+	{
+		// Проверяем, равна ли текущая функция нужной
+		contains=isEqualFuncHeaders((*iter),func);
+	}
+	return contains;
+}
+
+void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func)
+{
+	std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
+	// Для каждого элемента списка и пока не найдено значение..
+	for(iter=vec.begin(); iter<vec.end(); iter++) 
+	{
+		// Проверяем, равна ли текущая функция нужной
+		if(isEqualFuncHeaders((*iter),func))
+		{
+			// Удаляем нужное значение
+			vec.erase(iter);
+			// Выходим из цикла
+			break;
+		}
+	}
+}
+
+bool TreeTraversal::containsString(std::vector<std::string>& vec, std::string str) const
+{
+	std::vector<std::string>::const_iterator iter;  // Объявляем итератор для списка строк
+	bool contains = false;							// Объявляем флаг того, что строка не найдена в списке
+	// Для каждого элемента списка и пока не найдено значение..
+	for(iter=vec.begin(); iter<vec.end()&&!contains; iter++) 
+	{
+		// Проверяем, равна ли текущая строка нужной
+		contains=(*iter).compare(str)==0;
+	}
+	return contains;
+}
+
+void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str)
+{
+	std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
+	// Для каждого элемента списка и пока не найдено значение..
+	for(iter=vec.begin(); iter<vec.end(); iter++) 
+	{
+		// Проверяем, равна ли текущая строка нужной
+		if((*iter).compare(str)==0)
+		{
+			// Удаляем нужное значение
+			vec.erase(iter);
+			// Выходим из цикла
+			break;
+		}
+	}
 }

@@ -31,6 +31,15 @@ private:
 		_CYCLE_STATE,	// Анализатор внутри цикла
 		_REGULAR_STATE	// Анализатор не внутри цикла
 	} lc_state;
+
+	/*
+	* Хранит в себе заголовок функции
+	*/
+	struct FunctionHeader{
+		char* functionName;						// Имя функции
+		struct DefFuncParamListInfo* params;		// Параметры функции
+	};
+
 	/*
 	* Хранит в себе список инициализированных переменных
 	*/
@@ -38,19 +47,54 @@ private:
 	/*
 	* Хранит в себе список объявленных функций
 	*/
-	std::vector<std::string> funcNames;
+	std::vector<struct FunctionHeader*> funcNames;
 
 
 	/*
 	*	---------- Методы класса ----------
 	*/
 
+	/* Проверить, равны ли два заголовка функции
+	* @author Kate
+	* \param[in] first заголовок первой функции
+	* \param[in] second заголовок второй функции
+	*/
+	bool isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const;
+
+	/* Проверить, равны ли два списка параметров функции при объявлении
+	* @author Kate
+	* \param[in] first первый список
+	* \param[in] second второй список
+	*/
+	bool isEqualDefFuncParams(struct DefFuncParamListInfo* first, struct DefFuncParamListInfo* second) const;
+
+	/* Проверить, равны ли два значения
+	* @author Kate
+	* \param[in] first первое значение
+	* \param[in] second второе значение
+	*/
+	bool isEqualVarVals(struct ValInfo* first, struct ValInfo* second) const;
+
+	/* Удалить функцию из вектора
+	* @author Kate
+	* \param[in|out] vec вектор функций
+	* \param[in] func функция
+	*/
+	void deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func);
+
+	/* Проверить содержит ли вектор функцию
+	* @author Kate
+	* \param[in] vec вектор функций
+	* \param[in] func функция
+	*/
+	bool containsFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func) const;
+
 	/* Удалить строку из вектора
 	* @author Kate
-	* \param[in] vec вектор строк
+	* \param[in|out] vec вектор строк
 	* \param[in] str строка
 	*/
-	void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str);
+	void deleteString(std::vector<std::string>& vec, std::string str);
 
 	/* Проверить содержит ли вектор строку
 	* @author Kate
