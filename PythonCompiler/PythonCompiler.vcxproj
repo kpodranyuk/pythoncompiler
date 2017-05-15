@@ -74,9 +74,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bypass_semant_tree.h" />
-    <ClInclude Include="functions.h" />
     <ClInclude Include="parser.tab.h" />
     <ClInclude Include="semant_state.h" />
+    <ClInclude Include="struct_functions.h" />
     <ClInclude Include="tree_print.h" />
     <ClInclude Include="tree_structs.h" />
   </ItemGroup>

@@ -1,5 +1,5 @@
 %{
-#include "functions.h"
+#include "struct_functions.h"
 #include <string.h>
 #include <math.h>
 #include <process.h>
