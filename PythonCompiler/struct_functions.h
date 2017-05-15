@@ -11,40 +11,7 @@
 * \param[in] exprlist указатель на лист
 * \return указатель на лист
 */
-struct ExprListInfo * createExprList(struct ExprInfo * expr, struct ExprListInfo * exprlist)
-{
-	// Если список из пустых аргументов 
-	if(exprlist==NULL&&expr==NULL)
-	{
-		// Создаем пустой список и возвращаем его
-		struct ExprListInfo * newExprList=(struct ExprListInfo*)malloc(sizeof(struct ExprListInfo));
-		newExprList->first=NULL;
-		newExprList->last=NULL;
-		return newExprList;
-	}
-	// Если ничего нового в узел не добавляется
-	if(expr==NULL)
-	{
-		return exprlist;
-	}
-	// Считаем, что следующего элемента у выражения нет
-	expr->next=NULL;
-	// Если входного списка нет
-	if(exprlist==NULL)
-	{
-		// Создаем новый список, единственным элементом считаем входной
-		struct ExprListInfo * newExprList=(struct ExprListInfo*)malloc(sizeof(struct ExprListInfo));
-		newExprList->first=expr;
-		newExprList->last=expr;
-		// Возвращаем его
-		return newExprList;
-	}
-	// Иначе связываем входной список со входным элементом
-	exprlist->last->next=expr;
-	exprlist->last=expr;
-	// Возвращаем обновленный входной список
-	return exprlist;
-}
+struct ExprListInfo * createExprList(struct ExprInfo * expr, struct ExprListInfo * exprlist);
 
 /* Создание простого узла из выражения (операнда или значения)
 * @author Kate
@@ -53,27 +20,7 @@ struct ExprListInfo * createExprList(struct ExprInfo * expr, struct ExprListInfo
 * \param[in] val значение операнда
 * \return указатель на узел
 */
-struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val)
-{
-	// Выделяем память под узел
-	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-	// Присваиваем тип
-	expr->type=type;
-	// Если передано имя операнда..
-	if(opName!=NULL)
-	{
-		// Выделяем память в поле под имя операнда и перекопируем
-		expr->idName = (char*)malloc(sizeof(strlen(opName)+1));
-		strcpy(expr->idName, opName);
-	}
-	// Иначе присваиваем NULL
-	else
-		expr->idName=NULL;
-	// Присваиваем переданное значение операнда
-	expr->exprVal=val;
-	// Возвращаем созданный узел
-	return expr;
-}
+struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val);
 
 /* Создание узла выражения из выражений
 * @author Kate
@@ -82,42 +29,14 @@ struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValIn
 * \param[in] right правое выражение
 * \return указатель на новый узел
 */
-struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right)
-{
-	// Выделяем память под новый узел-выражение
-	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-	// Присваиваем тип
-	expr->type=type;
-	// Считаем, что у узла есть только левый и правый дочерний узлы
-	expr->arglist=NULL;
-	expr->exprVal=NULL;
-	expr->idName=NULL;
-	expr->left=left;
-	expr->right=right;
-	// Возвращаем новый созданный узел
-	return expr;
-}
+struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right);
 
 /* Создание узла выражения инициализации массива
 * \param[in] type тип выражения
 * \param[in] exprlist лист выражений
 * \return указатель на новый узел
 */
-struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * exprlist)
-{
-	// Выделяем память под новый узел-выражение
-	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-	// Присваиваем тип
-	expr->type=type;
-	// Считаем, что у узла есть только список экспрешенов
-	expr->arglist=exprlist;
-	expr->exprVal=NULL;
-	expr->idName=NULL;
-	expr->left=NULL;
-	expr->right=NULL;
-	// Возвращаем новый созданный узел
-	return expr;
-}
+struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * exprlist);
 
 /* Создание узла выражения действия над массивом
 * \param[in] type тип выражения
@@ -126,21 +45,7 @@ struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * ex
 * \param[in] actName имя применяемой операции к массиву
 * \return указатель на новый узел
 */
-struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right, char * actName)
-{
-	// Выделяем память под новый узел-выражение
-	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-	// Присваиваем тип
-	expr->type=type;
-	expr->idName = (char*)malloc(sizeof(strlen(actName)+1));
-	strcpy(expr->idName, actName);
-	expr->left=left;
-	expr->right=right;
-	expr->arglist=NULL;
-	expr->exprVal=NULL;
-	// Возвращаем новый созданный узел
-	return expr;
-}
+struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right, char * actName);
 
 /* Создание узла выражения из вызова функции
 * @author Kate
@@ -149,24 +54,7 @@ struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, st
 * \param[in] args список аргументов
 * \return указатель на новый узел
 */
-struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, struct ExprListInfo* args)
-{
-	// Выделяем память под узел
-	struct ExprInfo* expr = (struct ExprInfo*)malloc(sizeof(struct ExprInfo));
-	// Переприсваиваем тип и аргументы
-	expr->type=type;
-	expr->arglist=args;
-	// Выделяем память под имя функции
-	expr->idName=(char*)malloc(sizeof(strlen(funcName)+1));
-	strcpy(expr->idName,funcName);
-	// Считаем остальное отсутствующим
-	expr->exprVal=NULL;
-	expr->left=NULL;
-	expr->right=NULL;
-	expr->next=NULL;
-	// Возвращаем узел
-	return expr;
-}
+struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, struct ExprListInfo* args);
 
 /* Создание узла из типа выражения
 * @author Kate
@@ -175,29 +63,7 @@ struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, 
 * \param[in] stringVal строковое значение 
 * \param[in] numVal целочисленное значение 
 */
-struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal)
-{
-	// Выделяем память под узел
-	struct ValInfo* val = (struct ValInfo*)malloc(sizeof(struct ValInfo));
-	// Переприсваиваем тип и логическое значение
-	val->type = type;
-	val->logVal = logVal;
-	// Если задано строковое значение
-	/*if(stringVal!=NULL)
-	{
-		// Выделяем память и перекопируем значение
-		val->stringVal = (char*)malloc(sizeof(strlen(stringVal)+1));
-		strcpy(val->stringVal, stringVal);
-	}
-	// Иначе переприсваиваем
-	else*/
-		val->stringVal = stringVal;
-	// Переприсваиваем целочисленное значение
-	val->intVal = numVal;
-	// Возвращаем созданный узел
-	return val;
-}
-
+struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal);
 
 /* Создание списка параметров функции
 * @author Kate
@@ -205,45 +71,7 @@ struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, i
 * \param[in] params список параметров
 * \return указатель на новый список
 */
-struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct ValInfo* newParamVal, struct DefFuncParamListInfo* params)
-{
-	// Если список из пустых аргументов 
-	if(newParamName==NULL&&params==NULL&&newParamVal==NULL)
-	{
-		// Создаем пустой список и возвращаем его
-		struct DefFuncParamListInfo * newParamList=(struct DefFuncParamListInfo*)malloc(sizeof(struct DefFuncParamListInfo));
-		newParamList->first=NULL;
-		newParamList->last=NULL;
-		return newParamList;
-	}
-	// Если ничего нового в узел не добавляется
-	if(newParamName==NULL)
-	{
-		return params;
-	}
-	// Создаем новый узел-элемент
-	struct DefFuncParamInfo* newParam = (struct DefFuncParamInfo*)malloc(sizeof(struct DefFuncParamInfo));
-	newParam->paramName = (char*)malloc(strlen(newParamName)+1);
-	strcpy(newParam->paramName,newParamName);
-	// Считаем, что следующего элемента у выражения нет
-	newParam->next=NULL;
-	newParam->paramVal=newParamVal;
-	// Если входного списка нет
-	if(params==NULL)
-	{
-		// Создаем новый список, единственным элементом считаем входной
-		struct DefFuncParamListInfo * newParamList=(struct DefFuncParamListInfo*)malloc(sizeof(struct DefFuncParamListInfo));
-		newParamList->first=newParam;
-		newParamList->last=newParam;
-		// Возвращаем его
-		return newParamList;
-	}
-	// Иначе связываем входной список со входным элементом
-	params->last->next=newParam;
-	params->last=newParam;
-	// Возвращаем обновленный входной список
-	return params;
-}
+struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct ValInfo* newParamVal, struct DefFuncParamListInfo* params);
 
 /* Создание узла объявления функции
 * @author Kate
@@ -252,17 +80,7 @@ struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, stru
 * \param[in] funcBody тело функции
 * \return указатель на узел объявления функции
 */
-struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* params, struct StmtListInfo* funcBody)
-{
-	if(funcName==NULL||funcBody==NULL) 
-		return NULL;
-	struct FuncDefInfo* func = (struct FuncDefInfo*)malloc(sizeof(struct FuncDefInfo));
-	func->functionName = (char*)malloc(strlen(funcName)+1);
-	strcpy(func->functionName,funcName);
-	func->params=params;
-	func->body=funcBody;
-	return func;
-}
+struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* params, struct StmtListInfo* funcBody);
 
 /* Создание стейтмента для определения функции
 * @author Kate
@@ -270,139 +88,62 @@ struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* p
 * \param[in] funcDef указатель на объявление функции
 * \return указатель на стейтмент
 */
-struct StmtInfo* createFromFuncDefStatement(enum StmtType type, struct FuncDefInfo* funcDef)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->funcdefstmt=funcDef;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo* createFromFuncDefStatement(enum StmtType type, struct FuncDefInfo* funcDef);
 
 /* Создание стейтмент листа
 * \param[in] stmt указатель на добавляемый стейтмент
 * \param[in] stmtlist указатель на стейтмент лист
 * \return указатель на стейтмент лист
 */
-struct StmtListInfo * createStatementList(struct StmtInfo * stmt, struct StmtListInfo * stmtlist)
-{
-	//если ничего нового в узел не добавляется(stmt_list и после него идет line_sep, то возвращаем тот же  stmtlist)
-	if(stmt==NULL)
-	{
-		return stmtlist;
-	}
-
-	stmt->next=NULL;
-	//если новый узел
-	if(stmtlist==NULL)
-	{
-		//создаем новый узел
-		struct StmtListInfo * newStmtList=(struct StmtListInfo*)malloc(sizeof(struct StmtListInfo));
-		newStmtList->first=stmt;
-		newStmtList->last=stmt;
-		return newStmtList;
-	}
-
-	stmtlist->last->next=stmt;
-	stmtlist->last=stmt;
-	return stmtlist;
-}
+struct StmtListInfo * createStatementList(struct StmtInfo * stmt, struct StmtListInfo * stmtlist);
 
 /* Создание стейтмента для выражения
 * \param[in] type тип стейтмента
 * \param[in] ifstmt указатель на if стейтмент
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromExprStatement(enum StmtType type, struct ExprInfo * exprstmt)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->expr=exprstmt;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromExprStatement(enum StmtType type, struct ExprInfo * exprstmt);
 
 /* Создание стейтмента для развилки
 * \param[in] type тип стейтмента
 * \param[in] ifstmt указатель на if стейтмент
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromIfStatement(enum StmtType type, struct IfStmtInfo * ifstmt)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->ifstmt=ifstmt;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromIfStatement(enum StmtType type, struct IfStmtInfo * ifstmt);
 
 /* Создание стейтмента для цикла for
 * \param[in] type тип стейтмента
 * \param[in] forstmt указатель на for стейтмент
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromForStatement(enum StmtType type, struct ForStmtInfo * forstmt)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->forstmt=forstmt;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromForStatement(enum StmtType type, struct ForStmtInfo * forstmt);
 
 /* Создание стейтмента для цикла while
 * \param[in] type тип стейтмента
 * \param[in] whilestmt указатель на while стейтмент
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromWhileStatement(enum StmtType type, struct WhileStmtInfo * whilestmt)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->whilestmt=whilestmt;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromWhileStatement(enum StmtType type, struct WhileStmtInfo * whilestmt);
 
 /* Создание стейтмента для continue, break
 * \param[in] type тип стейтмента
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromContinueBreakStatement(enum StmtType type)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromContinueBreakStatement(enum StmtType type);
 
 /* Создание стейтмента для return
 * \param[in] type тип стейтмента
 * \param[in] expr возвращаемое выражение
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromReturnStatement(enum StmtType type, struct ExprInfo * expr)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->expr=expr;
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromReturnStatement(enum StmtType type, struct ExprInfo * expr);
 
 /* Создание стейтмента для del
 * \param[in] type тип стейтмента
 * \param[in] operand очищаемый операнд
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromDelStatement(enum StmtType type, char * operand)
-{
-	struct StmtInfo * stmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
-	stmt->type=type;
-	stmt->expr=createSimpleExpr(_OPERAND, operand, NULL);
-	stmt->next=NULL;
-	return stmt;
-}
+struct StmtInfo * createFromDelStatement(enum StmtType type, char * operand);
 
 /* Создание if
 * \param[in] expr условное выражение
@@ -411,15 +152,7 @@ struct StmtInfo * createFromDelStatement(enum StmtType type, char * operand)
 * \param[in] elsestmtlist тело блока else
 * \return указатель на if стейтмент
 */
-struct IfStmtInfo * createIfStatement(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct ElifListInfo * eliflist, struct StmtListInfo * elsestmtlist)
-{
-	struct IfStmtInfo * ifstmt = (struct IfStmtInfo *)malloc(sizeof(struct IfStmtInfo));
-	ifstmt->expr=expr;
-	ifstmt->stmtlist=stmtlist;
-	ifstmt->eliflist=eliflist;
-	ifstmt->elsestmtlist=elsestmtlist;
-	return ifstmt;
-}
+struct IfStmtInfo * createIfStatement(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct ElifListInfo * eliflist, struct StmtListInfo * elsestmtlist);
 
 /* Создание elif листа
 * \param[in] expr условное выражение
@@ -427,24 +160,7 @@ struct IfStmtInfo * createIfStatement(struct ExprInfo * expr, struct StmtListInf
 * \param[in] eliflist указатель на список elif-ов
 * \return указатель на список
 */
-struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct ElifListInfo * eliflist)
-{
-	struct ElifListInfo * elif = (struct ElifListInfo *)malloc(sizeof(struct ElifListInfo));
-	elif->expr=expr;
-	elif->stmtlist=stmtlist;
-	elif->next=NULL;
-
-	if(eliflist==NULL)
-	{
-		return elif;
-	}
-	else 
-	{
-		eliflist->next=elif;
-		return eliflist;
-	}
-}
-
+struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct ElifListInfo * eliflist);
 
 /* Создание for
 * \param[in] counter счетчик цикла
@@ -453,16 +169,7 @@ struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo
 * \param[in] elsestmt тело else после цикла
 * \return указатель for
 */
-struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
-{
-	struct ForStmtInfo * forstmt = (struct ForStmtInfo *)malloc(sizeof(struct ForStmtInfo));
-	forstmt->counter=(char*)malloc(sizeof(strlen(counter)+1));
-	strcpy(forstmt->counter, counter);
-	forstmt->expr=expr;
-	forstmt->stmtlist=stmtlist;
-	forstmt->elsestmt=elsestmt;
-	return forstmt; 
-}
+struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt);
 
 /* Создание while
 * \param[in] expr условие выполнения
@@ -470,11 +177,4 @@ struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, 
 * \param[in] elsestmt тело else после цикла
 * \return указатель while
 */
-struct WhileStmtInfo * createWhileStatement(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
-{
-	struct WhileStmtInfo * whilestmt = (struct WhileStmtInfo *)malloc(sizeof(struct WhileStmtInfo));
-	whilestmt->expr=expr;
-	whilestmt->stmtlist=stmtlist;
-	whilestmt->elsestmt=elsestmt;
-	return whilestmt; 
-}
+struct WhileStmtInfo * createWhileStatement(struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt);
