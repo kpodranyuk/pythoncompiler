@@ -76,6 +76,8 @@ private:
 
 	// Создаем вектор элементов таблиц глобального кода
 	std::vector<struct TableElement*> globalTable;
+	std::string currentFuncName;
+	int ValNum;
 
 	/*
 	* Хранит в себе список инициализированных переменных
@@ -209,6 +211,18 @@ private:
 	* \param[in|out] root список корней дерева
 	*/
 	void checkStatementList(struct StmtListInfo* root) throw(char*);
+
+	/* Проверить узел-выражение дерева для составления таблицы
+	* @author Kate
+	* \param[in] expr узел выражения
+	*/
+	void parseExprForTable(const struct ExprInfo * expr, std::vector<struct TableElement*>& table, int* constNum);
+
+	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
+	* @author Kate
+	* \param[in|out] root список корней дерева
+	*/
+	void parseStmtListForTable(const struct StmtListInfo* root, std::vector<struct TableElement*>& table, int* constNum);
 
 	/*!
 	*	!!!!! Публичная часть класса !!!!!

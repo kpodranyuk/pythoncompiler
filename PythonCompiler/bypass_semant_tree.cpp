@@ -55,28 +55,35 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	this->lc_state=_REGULAR_STATE;
 	// Запускаем проверку дерева
 	//checkStatementList(root);
-	if(globalTable.empty())
-	{
-		// Открываем файл глобальных констант
-		FILE* global = fopen("global.csv","wt");
-		// Пишем заголовок таблицы
-		fprintf(global,"%s\n","\"Constant number\";\"String number\";\"Type\";\"Constant value\"");
-		int constantNumber=1;
-		// Добавляем в таблицу константу Code
-		globalTable.push_back(makeTableEl(constantNumber++,NULL,_UTF8,std::string("Code")));
-		// Добавляем в таблицу константу класса main
-		globalTable.push_back(makeTableEl(constantNumber++,NULL,_UTF8,std::string("Main")));
-		// Создаем для нее константу типа Class
-		globalTable.push_back(makeTableEl(constantNumber++,1,_CLASS,std::string("2")));
-		// Добавляем в таблицу константу класса Value
-		globalTable.push_back(makeTableEl(constantNumber++,NULL,_UTF8,std::string("Value")));
-		// Создаем для нее константу типа Class
-		globalTable.push_back(makeTableEl(constantNumber++,NULL,_CLASS,std::string("4")));
-	}
+	currentFuncName="global";
+	int* constNumber = new int;
+	*constNumber=1;
+	parseStmtListForTable(treeRoot,this->globalTable,constNumber);
+}
+
+void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::vector<struct TableElement*>& table, int* constNum)
+{
+	currentFuncName+=".csv";
+	// Открываем файл констант функции
+	FILE* tbl = fopen(currentFuncName.c_str(),"wt");
+	// Пишем заголовок таблицы
+	fprintf(tbl,"%s\n","\"Constant number\";\"String number\";\"Type\";\"Constant value\"");
+	int constantNumber=1;
+	// Добавляем в таблицу константу Code
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("Code")));
+	// Добавляем в таблицу константу класса main
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("Main")));
+	// Создаем для нее константу типа Class
+	table.push_back(makeTableEl((*constNum)++,1,_CLASS,std::string("2")));
+	// Добавляем в таблицу константу класса Value
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("Value")));
+	// Создаем для нее константу типа Class
+	table.push_back(makeTableEl((*constNum)++,NULL,_CLASS,std::string("4")));
+	ValNum=*constNum-1;
 	// Создаем локальный указатель на элемент входного дерева
 	struct StmtInfo* begining;
 	// Считаем первый элемент списка начальным
-	begining = treeRoot->first;
+	begining = root->first;
 	// Пока текущий элемент списка не последний..
 	while(begining!=NULL)
 	{
@@ -85,6 +92,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 		if(begining->type==_EXPR)
 		{
 			//checkExpr(begining->expr);
+			parseExprForTable(begining->expr,table,constNum);
 		}
 		else if(begining->type==_IF)
 		{
@@ -137,7 +145,203 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
 	}
+	std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
+	// Для каждого элемента списка и пока не найдено значение..
+	for(iter=table.begin(); iter<table.end(); iter++) 
+	{
+		std::string output="";
+		char buf[50]="";
+		output+="\"";
+		sprintf(buf,"%d",(*iter)->number);
+		output+=std::string(buf);
+		output+="\";\"";
+		if((*iter)->strNumber!=NULL)
+		{
+			sprintf(buf,"%d",(*iter)->strNumber);
+			output+=std::string(buf);
+		}
+		output+="\";\"";
+		sprintf(buf,"%d",(*iter)->type);
+		output+=std::string(buf);
+		output+="\";\"";
+		output+=(*iter)->val;
+		output+="\";";
+		fprintf(tbl,"%s\n",output.c_str());
+		//iter=table.erase(iter);
+	}
 }
+
+void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<struct TableElement*>& table, int* constNum)
+{
+	// Если операнд
+	if(expr->type==_OPERAND)
+	{
+		// Проверяем, что он уже объявлен
+		std::string opName = std::string(expr->idName);
+		if(!containsString(this->varNames,opName))
+		{
+			/*char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			// Если не объявлен, выдаем ошибку с именем операнда
+			char* errstr=new char[35+strlen(expr->idName)+62];
+			errstr[0]='\0';
+			strcpy(errstr,"Can't use undefined operand - ");
+			strcat(errstr,expr->idName);
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;*/
+		}
+	}
+	// Если присвоение
+	else if(expr->type==_ASSIGN)
+	{
+		// Слева от присовения может быть только либо операнд, либо взятие по индексу массива
+		// Если слева операнд
+		if(expr->left->type==_OPERAND)
+		{
+			// Проверяем, есть ли он уже в списке переменных
+			// И если нет, то добавляем
+			std::string opName = std::string(expr->left->idName);
+			if(!containsString(this->varNames,opName))
+			{
+				this->varNames.push_back(opName);
+				// Добавляем в таблицу данные о переменной
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,opName));
+				// Делаем привязку к типу
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,std::string("LValue;")));
+				// Делаем NameAndType
+				char buf[50]="";
+				sprintf(buf,"%d,%d",*constNum-3,*constNum-2);
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,std::string(buf)));
+				// Делаем fieldRef
+				buf[0]='\0';
+				sprintf(buf,"%d,%d",ValNum,*constNum-1);
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_FIELDREF,std::string(buf)));				
+			}
+			// Проверяем правую часть присвоения
+			parseExprForTable(expr->right,table,constNum);//checkExpr(expr->right);
+		}
+		// Иначе если слева взятие по индексу
+		else if(expr->left->type==_ARRID)
+		{
+			// Считаем, что проверять левую часть не нужно - на этап генерации кода
+			// Проверяем правую часть
+			parseExprForTable(expr->right,table,constNum); //checkExpr(expr->right);
+			// Проверяем, что взятие производится уже по объявленному массиву
+			/*struct ExprInfo* arr = expr->left;
+			if(arr->left->type==_OPERAND)
+				checkExpr(arr->left);
+			// Иначе если взятие не относится к операнду, выбрасываем исключение
+			else
+				throw "Can't use [brackets] for anything except arrays.";*/
+		}
+		// Иначе бросаем исключение, что нельзя присвоить значение чему-то кроме операнда или элемента массива
+		else
+		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			// Если не объявлен, выдаем ошибку с именем операнда
+			char* errstr=new char[64+62];
+			errstr[0]='\0';
+			strcpy(errstr,"Can't assign value to anything except operand or array element.");
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;
+		}
+	}
+	// Если действие - не, проверяем выражение
+	else if(expr->type==_NOT)
+	{
+		parseExprForTable(expr->left,table,constNum);//checkExpr(expr->left);
+	}
+	// Если действие над массивом - append/remove 
+	else if(expr->type==_ARRACT)
+	{
+		// Проверяем, чтобы массив был операндом и был в списке переменных
+		/*if(expr->left->type==_OPERAND)
+			checkExpr(expr->left);
+		else
+			throw "Can't use methods to anything except arrays.";*/
+		// Считаем, что проверять левую часть не нужно - на этап генерации кода
+		// Проверяем правую часть
+		parseExprForTable(expr->right,table,constNum);//checkExpr(expr->right);
+	}
+	// Если инициализация массива 
+	else if(expr->type==_ARRINIT)
+	{
+		// Считаем, что проверять левую часть не нужно - на этап генерации кода
+		// Создаем локальный указатель на начала списка элементов
+		struct ExprInfo* begining;
+		// Считаем первый элемент списка начальным
+		begining = expr->arglist->first;
+		// Пока текущий элемент списка не последний..
+		while(begining!=NULL)
+		{
+			// Проверяем текущий элемент списка
+			parseExprForTable(begining,table,constNum); //checkExpr(begining);
+			// Считаем следующий элемент списка новым текущим
+			begining = begining->next;
+		}
+	}
+	else if(expr->type==_FUNCCALL)
+	{
+		;
+		// TODO Придумать функцию для сверки вызова и объявления 
+	}
+	else if(expr->type==_UMINUS)
+	{
+		// Унарный минус может быть только перед целым числом или выражением, возвращающим целое число
+		// Проверим первое
+		if(expr->left->type==_VARVAL)
+		{
+			struct ValInfo* val = expr->left->exprVal;
+			if(val->type!=_NUMBER)
+			{
+				char* bufstr = new char [50];
+				sprintf(bufstr,"(%d.%d-%d.%d)",val->loc->firstLine,val->loc->firstColumn,val->loc->lastLine,val->loc->lastColumn);
+				// Если не объявлен, выдаем ошибку с именем операнда
+				char* errstr=new char[55+62];
+				errstr[0]='\0';
+				strcpy(errstr,"Can't make negative value of anything except integer.");
+				strcat(errstr,"\nLocation: ");
+				strcat(errstr,bufstr);
+				throw errstr;
+			}
+		}
+		else
+			parseExprForTable(expr->left,table,constNum);//checkExpr(expr->left);
+	}
+	else
+	{
+		if(expr->type!=_VARVAL)
+		{
+			parseExprForTable(expr->left,table,constNum);
+			parseExprForTable(expr->right,table,constNum);
+			//checkExpr(expr->left);
+			//checkExpr(expr->right);
+		}
+	}
+	//TODO Разобраться с реализацией присвоения элементу массива
+	/*else if(expr->type==_ARRID_AND_ASSIGN)
+	{
+	}*/
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Печать аттрибутированного дерева (третий обход - ?)
 void TreeTraversal::printTree(const struct StmtListInfo* treeRoot)
