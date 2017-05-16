@@ -453,7 +453,8 @@ void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*
 	// Код функции
 	checkExpr(whilestmt->expr);//проверка условного выражения
 	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
-	checkStatementList(whilestmt->elsestmt);//проверка блока else цикла
+	if(whilestmt->elsestmt!=NULL)
+		checkStatementList(whilestmt->elsestmt);//проверка блока else цикла
 
 	// Установка состояний при выходе из цикла
 	if(cycle==true)
@@ -482,7 +483,8 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	}
 	checkExpr(forstmt->expr);//проверка выражения, по чем проходит цикл
 	checkStatementList(forstmt->stmtlist);//проверка тела цикла
-	checkStatementList(forstmt->elsestmt);//проверка блока else цикла
+	if(forstmt->elsestmt!=NULL)
+		checkStatementList(forstmt->elsestmt);//проверка блока else цикла
 
 	// Установка состояний при выходе из цикла
 	if(cycle==true)
