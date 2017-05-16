@@ -65,7 +65,7 @@ int main(int argc, char** argv) {
 		printf("tree was printed");
 		TreeTraversal* treeWalker = new TreeTraversal();
 		try{
-			//treeWalker->fixTree(root);
+			treeWalker->fixTree(root);
 			printf("\nTree fixed successfully\n");
 			treeWalker->makeTables(root);
 			printf("\nTables made successfully\n");
@@ -74,6 +74,24 @@ int main(int argc, char** argv) {
 		{
 			printf("\nMessage while traversing the tree: %s\nPlease, check syntax of python file.",message);
 		}
+
+		/*Вывод исправленного дерева*/
+		nodeCount=0;
+		dotTree.clear();
+		dotTree.push_back("graph tree{");
+		printStatementList(root,&nodeCount,dotTree);
+		dotTree.push_back("}");
+		FILE* dotFileChange = fopen("dotTreeChanged.txt","wt");
+		for each (std::string curStr in dotTree)
+		{
+			fprintf(dotFileChange,"%s\n",curStr.c_str());
+		}
+		fclose(dotFileChange);
+		printf("tree changed was created\n");
+		// Ждем печать дерева
+		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTreeChanged.txt",NULL);
+		// Выводим сообщение о том, что дерево напечатано
+		printf("tree changed was printed");
 	/*}*/
 	_getch();
 	return 0;
