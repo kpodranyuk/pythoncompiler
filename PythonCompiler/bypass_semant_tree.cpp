@@ -156,10 +156,9 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 			char* bufstr = new char [50];
 			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
 			// Если не объявлен, выдаем ошибку с именем операнда
-			char* errstr=new char[64+strlen(expr->idName)+62];
+			char* errstr=new char[64+62];
 			errstr[0]='\0';
 			strcpy(errstr,"Can't assign value to anything except operand or array element.");
-			strcat(errstr,expr->idName);
 			strcat(errstr,"\nLocation: ");
 			strcat(errstr,bufstr);
 			throw errstr;
@@ -203,6 +202,10 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	{
 		;
 		// TODO Придумать функцию для сверки вызова и объявления 
+	}
+	else if(expr->type==_UMINUS)
+	{
+		checkExpr(expr->left);
 	}
 	else
 	{

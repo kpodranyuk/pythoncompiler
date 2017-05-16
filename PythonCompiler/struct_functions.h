@@ -38,7 +38,7 @@ struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValIn
 * \param[in] right правое выражение
 * \return указатель на новый узел
 */
-struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right);
+struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right, struct CodeLocation* operationLoc);
 
 /* Создание узла выражения инициализации массива
 * \param[in] type тип выражения
