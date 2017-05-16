@@ -514,28 +514,63 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 			checkExpr(expr->right);
 		}
 	}
-	//TODO Разобраться с реализацией присвоения элементу массива
-	/*else if(expr->type==_ARRID_AND_ASSIGN)
-	{
-	}*/
 }
 
 void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt)
 {
 }
 
-void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt)
+void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*)
 {
-	lc_state = _CYCLE_STATE;
+	// Проверка установка флагов и состояний при входе в цикл
+	bool cycle=false;
+	if(lc_state==_REGULAR_STATE)
+	{
+		lc_state = _CYCLE_STATE;
+		cycle=true;
+	}
+	
 	// Код функции
-	lc_state = _REGULAR_STATE;
+	checkExpr(whilestmt->expr);//проверка условного выражения
+	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
+	if(whilestmt->elsestmt!=NULL)
+		checkStatementList(whilestmt->elsestmt);//проверка блока else цикла
+
+	// Установка состояний при выходе из цикла
+	if(cycle==true)
+	{
+		lc_state = _REGULAR_STATE;
+	}
 }
 
-void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt)
+void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 {
-	lc_state = _CYCLE_STATE;
+	// Проверка установка флагов и состояний при входе в цикл
+	bool cycle=false;
+	if(lc_state==_REGULAR_STATE)
+	{
+		lc_state = _CYCLE_STATE;
+		cycle=true;
+	}
+	
 	// Код функции
-	lc_state = _REGULAR_STATE;
+	// Проверяем, есть ли он уже в списке переменных
+	// И если нет, то добавляем
+	std::string opName = std::string(forstmt->counter);
+	if(!containsString(this->varNames,opName))
+	{
+		this->varNames.push_back(opName);
+	}
+	checkExpr(forstmt->expr);//проверка выражения, по чем проходит цикл
+	checkStatementList(forstmt->stmtlist);//проверка тела цикла
+	if(forstmt->elsestmt!=NULL)
+		checkStatementList(forstmt->elsestmt);//проверка блока else цикла
+
+	// Установка состояний при выходе из цикла
+	if(cycle==true)
+	{
+		lc_state = _REGULAR_STATE;
+	}
 }
 
 void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)

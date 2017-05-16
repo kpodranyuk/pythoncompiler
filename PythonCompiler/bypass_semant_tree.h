@@ -176,13 +176,13 @@ private:
 	* @author Nikita
 	* \param[in|out] whilestmt узел цикла while
 	*/
-	void checkWhileStmt(struct WhileStmtInfo * whilestmt);
+	void checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*);
 
 	/* Проверить узел-цикл for дерева
 	* @author Nikita
 	* \param[in|out] forstmt узел цикла for
 	*/
-	void checkForStmt(struct ForStmtInfo * forstmt);
+	void checkForStmt(struct ForStmtInfo * forstmt) throw(char*);
 
 	/* Проверить узел определения функции дерева
 	* @author Kate
