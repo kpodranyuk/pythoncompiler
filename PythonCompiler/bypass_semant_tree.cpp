@@ -205,7 +205,26 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	}
 	else if(expr->type==_UMINUS)
 	{
-		checkExpr(expr->left);
+		// Унарный минус может быть только перед целым числом или выражением, возвращающим целое число
+		// Проверим первое
+		if(expr->left->type==_VARVAL)
+		{
+			struct ValInfo* val = expr->left->exprVal;
+			if(val->type!=_NUMBER)
+			{
+				char* bufstr = new char [50];
+				sprintf(bufstr,"(%d.%d-%d.%d)",val->loc->firstLine,val->loc->firstColumn,val->loc->lastLine,val->loc->lastColumn);
+				// Если не объявлен, выдаем ошибку с именем операнда
+				char* errstr=new char[55+62];
+				errstr[0]='\0';
+				strcpy(errstr,"Can't make negative value of anything except integer.");
+				strcat(errstr,"\nLocation: ");
+				strcat(errstr,bufstr);
+				throw errstr;
+			}
+		}
+		else
+			checkExpr(expr->left);
 	}
 	else
 	{
