@@ -70,8 +70,9 @@ private:
 	* ключ - строка - область видимости (global или имя функции)
 	* значение - вектор элементов таблицы констант
 	*/
-	typedef std::map<const std::string, std::vector<struct TableElement*>> Table;
-
+	typedef std::map<std::string, std::vector<struct TableElement*> > Table;
+	typedef std::pair<std::string, std::vector<struct TableElement*> > TablePair;
+	std::vector<TablePair> prog;
 	Table programm_table;
 
 	// Создаем вектор элементов таблиц глобального кода
@@ -223,14 +224,26 @@ private:
 	/* Проверить узел-выражение дерева для составления таблицы
 	* @author Kate
 	* \param[in] expr узел выражения
+	* \param[in|out] table таблица
+	* \param[in|out] constNum номер константы
 	*/
 	void parseExprForTable(const struct ExprInfo * expr, std::vector<struct TableElement*>& table, int* constNum);
 
 	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
 	* @author Kate
-	* \param[in|out] root список корней дерева
+	* \param[in] root список корней дерева
+	* \param[in|out] table таблица
+	* \param[in|out] constNum номер константы
 	*/
 	void parseStmtListForTable(const struct StmtListInfo* root, std::vector<struct TableElement*>& table, int* constNum);
+
+	/* Проверить узел-объявление функции дерева для составления таблицы
+	* @author Kate
+	* \param[in] funcdefstmt узел выражения
+	* \param[in|out] table таблица
+	* \param[in|out] constNum номер константы
+	*/
+	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, std::vector<struct TableElement*>& table, int* constNum);
 
 	/*!
 	*	!!!!! Публичная часть класса !!!!!

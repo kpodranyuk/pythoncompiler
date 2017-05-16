@@ -105,9 +105,9 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 		// В зависимости от типа узла/элемента вызываем соответствующую функцию
 
 		// Вызываем функции только для тех типов, внутри которых может
-		// - быть объявление переменной
-		// - быть объявление массива
-		// - быть объявление функции
+		// - быть объявление переменной - в экспре
+		// - быть объявление массива - в экспре
+		// - быть объявление функции - отдельным узлом
 		if(begining->type==_EXPR)
 		{
 			//checkExpr(begining->expr);
@@ -128,6 +128,7 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 		else if(begining->type==_FUNC_DEF)
 		{
 			//checkFuncDefStmt(begining->funcdefstmt);
+			parseFuncDefForTable(begining->funcdefstmt,table,constNum);
 		}
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
@@ -207,6 +208,85 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 			// Проверяем правую часть
 			parseExprForTable(expr->right,table,constNum); //checkExpr(expr->right);
 		}*/
+	}
+}
+
+void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, std::vector<struct TableElement*>& table, int* constNum)
+{
+	// Проверяем текущее состояние анализатора
+	enum GlobalState lastState = gl_state;
+	// Если вызов функции из глобального кода, меняем состояние
+	if(lastState == _MAIN_STATE)
+		gl_state = _FUNC_STATE;
+	// Код функции
+	// Создаем указатель на структуру с заголовком входной функции
+	struct FunctionHeader* curHeader = new struct FunctionHeader;
+	// Копируем в него имя функции
+	curHeader->functionName = new char [strlen(funcdefstmt->functionName)+1];
+	strcpy(curHeader->functionName,funcdefstmt->functionName);
+	// И передаем указатель на список параметров
+	curHeader->params=funcdefstmt->params;
+	// Если такая функция еще не была объявлена
+	if(!containsFuncHeader(this->funcNames,curHeader))
+	{
+		// Добавляем ее заголовок в массив функций
+		this->funcNames.push_back(curHeader);
+		// Формируем тип
+		std::string type="";
+		if(curHeader->params->first==NULL)
+			type+="()";
+		else
+		{
+			struct DefFuncParamInfo* el = curHeader->params->first;
+			type+="(";
+			while(el!=NULL)
+			{
+				type+="LValue;";
+				el=el->next;
+			}
+			type+=")";
+		}
+		type+="LValue;";
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,type));
+		// Добавляем в таблицу данные о переменной
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,std::string(curHeader->functionName)));
+		// Делаем NameAndType
+		char buf[50]="";
+		sprintf(buf,"%d,%d",*constNum-2,*constNum-1);
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_NAMEnTYPE,std::string(buf)));
+		// Делаем methodRef
+		buf[0]='\0';
+		sprintf(buf,"%d,%d",ValNum,*constNum-1);
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_METHODREF,std::string(buf)));
+
+		currentFuncName=std::string(curHeader->functionName);
+
+		std::vector<struct TableElement*> funcTable;
+		int* funcConsts = new int;
+		*funcConsts=1;
+		// Проверяем ее тело
+		parseStmtListForTable(funcdefstmt->body,funcTable,funcConsts);//checkStatementList(funcdefstmt->body);
+		//programm_table.insert(TablePair(std::string(curHeader->functionName),funcTable));
+		prog.push_back(TablePair(std::string(curHeader->functionName),funcTable));
+	}
+	// Иначе выбрасываем исключение
+	/*else
+	{
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",funcdefstmt->nameLoc->firstLine,funcdefstmt->nameLoc->firstColumn,funcdefstmt->nameLoc->lastLine,funcdefstmt->nameLoc->lastColumn);
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errStr = new char[30+strlen(curHeader->functionName)+62];
+		strcpy(errStr,"Can't define same function: ");
+		strcat(errStr,curHeader->functionName);
+		strcat(errStr,"\nLocation: ");
+		strcat(errStr,bufstr);
+		throw errStr;
+	}*/
+	// Если был вызов функции из глобального кода, меняем состояние
+	if(lastState == _MAIN_STATE)
+	{
+		gl_state = _MAIN_STATE;
+		currentFuncName="global.csv";
 	}
 }
 
@@ -478,8 +558,27 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 	{
 		// Добавляем ее заголовок в массив функций
 		this->funcNames.push_back(curHeader);
+		// Добавляем аргументы функции в список констант
+		std::vector<std::string> onlyInHeader;
+		struct DefFuncParamInfo* el = curHeader->params->first;
+		while(el!=NULL)
+		{
+			if(!containsString(this->varNames,std::string(el->paramName)))
+			{
+				this->varNames.push_back(std::string(el->paramName));
+				onlyInHeader.push_back(std::string(el->paramName));
+			}
+			el=el->next;
+		}
 		// Проверяем ее тело
 		checkStatementList(funcdefstmt->body);
+
+		std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
+		// Для каждого элемента списка..
+		for(iter=onlyInHeader.begin(); iter<onlyInHeader.end(); iter++) 
+		{
+			deleteString(this->varNames,*iter);
+		}
 	}
 	// Иначе выбрасываем исключение
 	else
