@@ -1,4 +1,18 @@
+#include <stdio.h>
+#include <malloc.h>
+
 #pragma once
+
+/*
+* Хранит в себе позицию элемента кода программы
+*/
+struct CodeLocation
+{
+	int firstLine;		// Строка начала элемента
+	int firstColumn;	// Столбец начала элемента
+	int lastLine;		// Строка конца элемента
+	int lastColumn;		// Столбец конца элемента
+};
 
 /*
 * Хранит в себе типы выражения
@@ -57,6 +71,9 @@ struct ValInfo
 	int intVal;
 	// Значение выражения-логической переменной
 	bool logVal;
+
+	// Позиция в коде
+	struct CodeLocation* loc;
 };
 
 
@@ -82,6 +99,9 @@ struct ExprInfo
 	char* idName;
 	// Значение выражения-переменной
 	struct ValInfo* exprVal;
+
+	// Позиция в коде
+	struct CodeLocation* loc;
 };
 /*
 * Хранит в себе указатель на начало и конец списка выражений
@@ -104,6 +124,8 @@ struct DefFuncParamInfo
 	char* paramName;
 	// Значение параметра
 	struct ValInfo* paramVal;
+
+	struct CodeLocation* loc;
 };
 /*
 * Хранит в себе указатель на начало и конец списка параметров функции
@@ -120,6 +142,10 @@ struct FuncDefInfo
 {
 	// Имя функции
 	char* functionName;
+
+	// Позиция имени функции
+	struct CodeLocation* nameLoc;
+
 	// Параметры функции
 	struct DefFuncParamListInfo* params;
 	// Тело функции
@@ -162,6 +188,8 @@ struct StmtInfo
 	struct FuncDefInfo* funcdefstmt;
 	// Указатель на следующий стейтмент
 	struct StmtInfo * next;
+
+	struct CodeLocation* loc;
 };
 
 /*
