@@ -79,6 +79,7 @@ private:
 	std::string currentFuncName;
 	int ValNum;
 	int TypeNum;
+	int MassTypeNum;
 
 	/*
 	* Хранит в себе список инициализированных переменных

@@ -68,6 +68,11 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	* - объявлении массива
 	* - объявлении функции
 	*/
+	this->varNames.clear();
+	this->funcNames.clear();
+	ValNum=0;
+	TypeNum=0;
+	MassTypeNum=0;
 	parseStmtListForTable(treeRoot,this->globalTable,constNumber);
 }
 
@@ -90,9 +95,6 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 	// Создаем для нее константу типа Class
 	table.push_back(makeTableEl((*constNum)++,NULL,_CLASS,std::string("4")));
 	ValNum=*constNum-1;
-	// Делаем привязку к типу
-	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("LValue;")));
-	TypeNum=*constNum-1;
 	// Создаем локальный указатель на элемент входного дерева
 	struct StmtInfo* begining;
 	// Считаем первый элемент списка начальным
@@ -101,7 +103,11 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 	while(begining!=NULL)
 	{
 		// В зависимости от типа узла/элемента вызываем соответствующую функцию
-		// Запомнить номер текущего дочернего узла
+
+		// Вызываем функции только для тех типов, внутри которых может
+		// - быть объявление переменной
+		// - быть объявление массива
+		// - быть объявление функции
 		if(begining->type==_EXPR)
 		{
 			//checkExpr(begining->expr);
@@ -122,38 +128,6 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 		else if(begining->type==_FUNC_DEF)
 		{
 			//checkFuncDefStmt(begining->funcdefstmt);
-		}
-		else if(begining->type==_RETURN)
-		{
-			//checkReturnStmt(begining,begining->expr);
-		}
-		else if(begining->type==_BREAK || begining->type==_CONTINUE)
-		{
-			// Если мы сейчас находимся в главном коде программы, бросаем исключение
-			/*if(this->gl_state == _MAIN_STATE)
-			{
-				// Формируем строку с локацией токена
-				char* bufstr = new char [50];
-				sprintf(bufstr,"(%d.%d-%d.%d)",begining->loc->firstLine,begining->loc->firstColumn,begining->loc->lastLine,begining->loc->lastColumn);
-				// Соединяем все в строке сообщения
-				char* errStr = new char[31+62];
-				if(begining->type==_BREAK)
-					strcpy(errStr,"Found break in global code.");
-				else if(begining->type==_CONTINUE)
-					strcpy(errStr,"Found continue in global code.");
-				strcat(errStr,"\nLocation: ");
-				strcat(errStr,bufstr);
-				// Бросаем строку исключением
-				throw errStr;
-			}*/
-		}
-		else if(begining->type==_DEL)
-		{
-			checkDelStmt(begining->expr);
-		}
-		else
-		{
-			throw "Unrecognized type of tree node";
 		}
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
@@ -185,15 +159,8 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 
 void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<struct TableElement*>& table, int* constNum)
 {
-	// Если операнд
-	if(expr->type==_OPERAND)
-	{
-		// Подразумевается, что дерево уже проверенно и все корректно
-		// Так что здесь ничего не делается
-		;
-	}
 	// Если присвоение
-	else if(expr->type==_ASSIGN)
+	if(expr->type==_ASSIGN)
 	{
 		// Слева от присовения может быть только либо операнд, либо взятие по индексу массива
 		// Если слева операнд
@@ -205,11 +172,25 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 			if(!containsString(this->varNames,opName))
 			{
 				this->varNames.push_back(opName);
+				// Делаем привязку к типу
+				if(TypeNum==0&&expr->right->type!=_ARRINIT)
+				{
+					table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("LValue;")));
+					TypeNum=*constNum-1;
+				}
+				else if(MassTypeNum==0&&expr->right->type==_ARRINIT)
+				{
+					table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("[LValue;")));
+					MassTypeNum=*constNum-1;
+				}
 				// Добавляем в таблицу данные о переменной
 				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,opName));
 				// Делаем NameAndType
 				char buf[50]="";
-				sprintf(buf,"%d,%d",*constNum-1,TypeNum);
+				if(expr->right->type==_ARRINIT)
+					sprintf(buf,"%d,%d",*constNum-1,MassTypeNum);
+				else
+					sprintf(buf,"%d,%d",*constNum-1,TypeNum);
 				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,std::string(buf)));
 				// Делаем fieldRef
 				buf[0]='\0';
@@ -220,56 +201,13 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 			parseExprForTable(expr->right,table,constNum);//checkExpr(expr->right);
 		}
 		// Иначе если слева взятие по индексу
-		else if(expr->left->type==_ARRID)
+		/*else if(expr->left->type==_ARRID)
 		{
 			// Считаем, что проверять левую часть не нужно - на этап генерации кода
 			// Проверяем правую часть
 			parseExprForTable(expr->right,table,constNum); //checkExpr(expr->right);
-		}
+		}*/
 	}
-	// Если действие над массивом - append/remove 
-	else if(expr->type==_ARRACT)
-	{
-		// Считаем, что проверять левую часть не нужно - на этап генерации кода
-		// Проверяем правую часть
-		parseExprForTable(expr->right,table,constNum);//checkExpr(expr->right);
-	}
-	// Если инициализация массива 
-	else if(expr->type==_ARRINIT)
-	{
-		// Считаем, что проверять левую часть не нужно - на этап генерации кода
-		// Создаем локальный указатель на начала списка элементов
-		struct ExprInfo* begining;
-		// Считаем первый элемент списка начальным
-		begining = expr->arglist->first;
-		// Пока текущий элемент списка не последний..
-		while(begining!=NULL)
-		{
-			// Проверяем текущий элемент списка
-			parseExprForTable(begining,table,constNum); //checkExpr(begining);
-			// Считаем следующий элемент списка новым текущим
-			begining = begining->next;
-		}
-	}
-	/*else if(expr->type==_FUNCCALL)
-	{
-		;
-		// TODO Придумать функцию для сверки вызова и объявления 
-	}*/
-	else
-	{
-		if(expr->type!=_VARVAL)
-		{
-			parseExprForTable(expr->left,table,constNum);
-			parseExprForTable(expr->right,table,constNum);
-			//checkExpr(expr->left);
-			//checkExpr(expr->right);
-		}
-	}
-	//TODO Разобраться с реализацией присвоения элементу массива
-	/*else if(expr->type==_ARRID_AND_ASSIGN)
-	{
-	}*/
 }
 
 // Печать аттрибутированного дерева (третий обход - ?)
