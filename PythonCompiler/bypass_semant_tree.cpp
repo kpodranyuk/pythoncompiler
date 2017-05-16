@@ -321,19 +321,24 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 			// Проверяем правую часть присвоения
 			checkExpr(expr->right);
 		}
-		// Иначе если слева взятие по индексу
+		// Иначе если слева взятие по индексу, то меняем тип операции с _ASSIGN на _ARRID_AND_ASSIGN
 		else if(expr->left->type==_ARRID)
 		{
-			// Считаем, что проверять левую часть не нужно - на этап генерации кода
 			// Проверяем правую часть
 			checkExpr(expr->right);
-			// Проверяем, что взятие производится уже по объявленному массиву
-			/*struct ExprInfo* arr = expr->left;
+			// Проверяем, что взятие производится уже по объявленному массиву(если операнд маассив)
+			struct ExprInfo* arr = expr->left;
 			if(arr->left->type==_OPERAND)
 				checkExpr(arr->left);
-			// Иначе если взятие не относится к операнду, выбрасываем исключение
-			else
-				throw "Can't use [brackets] for anything except arrays.";*/
+			
+			// Изменяем узел
+			expr->type=_ARRID_AND_ASSIGN;
+			struct ExprInfo* leftNode = expr->left;
+			expr->left=leftNode->left;
+			expr->middle=leftNode->right;
+			leftNode->left=NULL;
+			leftNode->right=NULL;
+
 		}
 		// Иначе бросаем исключение, что нельзя присвоить значение чему-то кроме операнда или элемента массива
 		else

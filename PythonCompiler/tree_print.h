@@ -180,6 +180,14 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		printExpr(expr->left,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
+		if(expr->type==_ARRID_AND_ASSIGN)
+		{
+			// Запомнить номер текущего дочернего узла
+			node2=*nodeCount+1; 
+			printExpr(expr->middle,nodeCount,dotTree);
+			// Добавить в список связь между дочерним и родительским узлами
+			addLinkToStringList(node1,node2,dotTree);
+		}
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
 		printExpr(expr->right,nodeCount,dotTree);
@@ -681,6 +689,10 @@ char* makeExprNodename(enum ExprType type, char * idName)
 	else if(type==_ARRACT)
 	{
 		sprintf(decl,"[label=\"%s\" shape=box];", idName);
+	}
+	else if(type==_ARRID_AND_ASSIGN)
+	{
+		sprintf(decl,"[label=\"[]=\" shape=box];");
 	}
 	return decl;
 }
