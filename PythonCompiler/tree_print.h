@@ -227,7 +227,7 @@ char* makeStringForDot(char* string)
 	finalString[0]='\0';
 	int index = 0;
 	int finalLength = 0;
-	while(index<strlen(string))
+	while(index<(int)strlen(string))
 	{
 		if(string[index]=='\"')
 		{
@@ -513,7 +513,7 @@ void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vec
 
 void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree)
 {
-	int node1, node2; // Ќомер главного узла и номер дочернего узла
+	int node1; // Ќомер главного узла и номер дочернего узла
 	*nodeCount+=1;
 	node1=*nodeCount;
 
