@@ -3,6 +3,7 @@
 */
 #include "tree_structs.h"
 #include <vector>
+#include <map>
 
 #pragma warning(disable : 4290)
 
@@ -43,6 +44,40 @@ private:
 	};
 
 	/*
+	* Хранит в себе возможный тип константы элемента таблицы
+	*/
+	enum TableElemType{
+		_UTF8,	
+		_INT,
+		_NAMEnTYPE,
+		_FIELDREF,
+		_METHODREF,
+		_CLASS
+	};
+
+	/*
+	* Хранит в себе элемент таблицы констант
+	*/
+	struct TableElement{
+		int number;						// Номер константы
+		int strNumber;					// Номер строки
+		enum TableElemType type;		// Тип элемента
+		std::string val;				// Значение
+	};
+
+	/*
+	* Регистрация типа пары для map
+	* ключ - строка - область видимости (global или имя функции)
+	* значение - вектор элементов таблицы констант
+	*/
+	typedef std::map<const std::string, std::vector<struct TableElement*>> Table;
+
+	Table programm_table;
+
+	// Создаем вектор элементов таблиц глобального кода
+	std::vector<struct TableElement*> globalTable;
+
+	/*
 	* Хранит в себе список инициализированных переменных
 	*/
 	std::vector<std::string> varNames;
@@ -55,6 +90,15 @@ private:
 	/*
 	*	---------- Методы класса ----------
 	*/
+
+	/* Создать элемент строки таблицы констант
+	* @author Kate
+	* \param[in] num Номер константы
+	* \param[in] strNum Номер строки
+	* \param[in] type Тип элемента
+	* \param[in] val Значение
+	*/
+	struct TableElement* makeTableEl(int num, int strNum, enum TableElemType type, std::string val);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate

@@ -2,6 +2,19 @@
 
 #pragma warning(disable : 4996)
 
+/** Формат файла таблицы констант
+* столбцы: № константы; № строки (?); значение
+* запись в файл ведется в формате csv, разделитель - ;
+* запись заголовка: "Constant number";"String number";"Constant value";
+* пример записи константы: 1;;"utf-8";"Code"
+* таблицу констант для глобального кода всегда писать в файл global.csv
+* таблицу констант для функций писать в файл <func_name>.csv
+**/
+
+/* Напоминалка по Питону:
+* !!! Функция может видеть глобальные переменные, но глобальный код переменные функции - нет !!!
+* !!! Функция использует глобальне переменные, но не меняет их значение (по значению, не по ссылке) !!!
+*/
 
 // Конструктор по умолчанию
 TreeTraversal::TreeTraversal()
@@ -20,9 +33,110 @@ void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
 	checkStatementList(root);
 }
 
+TreeTraversal::TableElement* TreeTraversal::makeTableEl(int num, int strNum, enum TableElemType type, std::string val)
+{
+	struct TableElement* te = new struct TableElement;
+	te->number=num;
+	te->strNumber=strNum;
+	te->type=type;
+	te->val=val;
+	return te;
+}
+
 // Составление таблиц (второй обход)
 void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
+	
+	if(treeRoot == NULL)
+		throw "Root of tree is a null pointer\n";
+	currentFuncName=std::string("");
+	// Задаем начальные состояния
+	this->gl_state=_MAIN_STATE;
+	this->lc_state=_REGULAR_STATE;
+	// Запускаем проверку дерева
+	//checkStatementList(root);
+	if(globalTable.empty())
+	{
+		// Открываем файл глобальных констант
+		FILE* global = fopen("global.csv","wt");
+		// Пишем заголовок таблицы
+		fprintf(global,"%s\n","\"Constant number\";\"String number\";\"Type\";\"Constant value\"");
+		int constantNumber=1;
+		// Добавляем в таблицу константу Code
+		globalTable.push_back(makeTableEl(constantNumber++,NULL,_UTF8,std::string("Code")));
+		// Добавляем в таблицу константу класса main
+		globalTable.push_back(makeTableEl(constantNumber++,NULL,_UTF8,std::string("Main")));
+		// Создаем для нее константу типа Class
+		globalTable.push_back(makeTableEl(constantNumber++,1,_CLASS,std::string("2")));
+		// Добавляем в таблицу константу класса Value
+		globalTable.push_back(makeTableEl(constantNumber++,NULL,_UTF8,std::string("Value")));
+		// Создаем для нее константу типа Class
+		globalTable.push_back(makeTableEl(constantNumber++,NULL,_CLASS,std::string("4")));
+	}
+	// Создаем локальный указатель на элемент входного дерева
+	struct StmtInfo* begining;
+	// Считаем первый элемент списка начальным
+	begining = treeRoot->first;
+	// Пока текущий элемент списка не последний..
+	while(begining!=NULL)
+	{
+		// В зависимости от типа узла/элемента вызываем соответствующую функцию
+		// Запомнить номер текущего дочернего узла
+		if(begining->type==_EXPR)
+		{
+			//checkExpr(begining->expr);
+		}
+		else if(begining->type==_IF)
+		{
+			//checkIfStmt(begining->ifstmt);
+		}
+		else if(begining->type==_FOR)
+		{
+			//checkForStmt(begining->forstmt);
+		}
+		else if(begining->type==_WHILE)
+		{
+			//checkWhileStmt(begining->whilestmt);
+		}
+		else if(begining->type==_FUNC_DEF)
+		{
+			//checkFuncDefStmt(begining->funcdefstmt);
+		}
+		else if(begining->type==_RETURN)
+		{
+			//checkReturnStmt(begining,begining->expr);
+		}
+		else if(begining->type==_BREAK || begining->type==_CONTINUE)
+		{
+			// Если мы сейчас находимся в главном коде программы, бросаем исключение
+			/*if(this->gl_state == _MAIN_STATE)
+			{
+				// Формируем строку с локацией токена
+				char* bufstr = new char [50];
+				sprintf(bufstr,"(%d.%d-%d.%d)",begining->loc->firstLine,begining->loc->firstColumn,begining->loc->lastLine,begining->loc->lastColumn);
+				// Соединяем все в строке сообщения
+				char* errStr = new char[31+62];
+				if(begining->type==_BREAK)
+					strcpy(errStr,"Found break in global code.");
+				else if(begining->type==_CONTINUE)
+					strcpy(errStr,"Found continue in global code.");
+				strcat(errStr,"\nLocation: ");
+				strcat(errStr,bufstr);
+				// Бросаем строку исключением
+				throw errStr;
+			}*/
+		}
+		else if(begining->type==_DEL)
+		{
+			checkDelStmt(begining->expr);
+		}
+		else
+		{
+			throw "Unrecognized type of tree node";
+		}
+		// Считаем следующий элемент списка новым текущим
+		begining = begining->next;
+	}
 }
 
 // Печать аттрибутированного дерева (третий обход - ?)
