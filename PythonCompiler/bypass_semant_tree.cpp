@@ -63,11 +63,27 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 		}
 		else if(begining->type==_RETURN)
 		{
-			checkReturnStmt(begining->expr);
+			checkReturnStmt(begining,begining->expr);
 		}
 		else if(begining->type==_BREAK || begining->type==_CONTINUE)
 		{
-			//printContinueBreakStmt(_BREAK,nodeCount,dotTree);
+			// Если мы сейчас находимся в главном коде программы, бросаем исключение
+			if(this->gl_state == _MAIN_STATE)
+			{
+				// Формируем строку с локацией токена
+				char* bufstr = new char [50];
+				sprintf(bufstr,"(%d.%d-%d.%d)",begining->loc->firstLine,begining->loc->firstColumn,begining->loc->lastLine,begining->loc->lastColumn);
+				// Соединяем все в строке сообщения
+				char* errStr = new char[31+62];
+				if(begining->type==_BREAK)
+					strcpy(errStr,"Found break in global code.");
+				else if(begining->type==_CONTINUE)
+					strcpy(errStr,"Found continue in global code.");
+				strcat(errStr,"\nLocation: ");
+				strcat(errStr,bufstr);
+				// Бросаем строку исключением
+				throw errStr;
+			}
 		}
 		else if(begining->type==_DEL)
 		{
@@ -91,11 +107,15 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 		std::string opName = std::string(expr->idName);
 		if(!containsString(this->varNames,opName))
 		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
 			// Если не объявлен, выдаем ошибку с именем операнда
-			char* errstr=new char[35+strlen(expr->idName)];
+			char* errstr=new char[35+strlen(expr->idName)+62];
 			errstr[0]='\0';
 			strcpy(errstr,"Can't use undefined operand - ");
 			strcat(errstr,expr->idName);
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
 			throw errstr;
 		}
 	}
@@ -132,7 +152,18 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 		}
 		// Иначе бросаем исключение, что нельзя присвоить значение чему-то кроме операнда или элемента массива
 		else
-			throw "Can't assign value to anything except operand or array element.";
+		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			// Если не объявлен, выдаем ошибку с именем операнда
+			char* errstr=new char[64+strlen(expr->idName)+62];
+			errstr[0]='\0';
+			strcpy(errstr,"Can't assign value to anything except operand or array element.");
+			strcat(errstr,expr->idName);
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;
+		}
 	}
 	// Если действие - не, проверяем выражение
 	else if(expr->type==_NOT)
@@ -231,9 +262,14 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 	// Иначе выбрасываем исключение
 	else
 	{
-		char* errStr = new char[30+strlen(curHeader->functionName)];
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",funcdefstmt->nameLoc->firstLine,funcdefstmt->nameLoc->firstColumn,funcdefstmt->nameLoc->lastLine,funcdefstmt->nameLoc->lastColumn);
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errStr = new char[30+strlen(curHeader->functionName)+62];
 		strcpy(errStr,"Can't define same function: ");
 		strcat(errStr,curHeader->functionName);
+		strcat(errStr,"\nLocation: ");
+		strcat(errStr,bufstr);
 		throw errStr;
 	}
 	// Если был вызов функции из глобального кода, меняем состояние
@@ -245,11 +281,20 @@ void TreeTraversal::checkContinueBreakStmt(enum StmtType type)
 {
 }
 
-void TreeTraversal::checkReturnStmt(struct ExprInfo * expr) throw(char*)
+void TreeTraversal::checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * expr) throw(char*)
 {
 	// Если мы сейчас находимся в главном коде программы, бросаем исключение
 	if(this->gl_state == _MAIN_STATE)
-		throw "Found return in global code.";
+	{
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",retStmt->loc->firstLine,retStmt->loc->firstColumn,retStmt->loc->lastLine,retStmt->loc->lastColumn);
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errStr = new char[30+62];
+		strcpy(errStr,"Found return in global code.");
+		strcat(errStr,"\nLocation: ");
+		strcat(errStr,bufstr);
+		throw errStr;
+	}
 	// Иначе проверяем возвращаемое выражение
 	checkExpr(expr);
 }

@@ -4,6 +4,8 @@
 #include "tree_structs.h"
 #include <vector>
 
+#pragma warning(disable : 4290)
+
 /*
 * Класс обхода дерева программы
 */
@@ -141,9 +143,10 @@ private:
 
 	/* Проверить узел оператора возвращения из функции
 	* @author Kate
+	* \param[in|out] retStmt узел стейтмент
 	* \param[in|out] expr узел выражения
 	*/
-	void checkReturnStmt(struct ExprInfo * expr) throw(char*);
+	void checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * expr) throw(char*);
 
 	/* Проверить узел оператора удаления значения
 	* @author Kate
