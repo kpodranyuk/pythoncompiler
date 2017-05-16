@@ -163,7 +163,7 @@ def_param_listE: OPERAND	{$$ = createDefFuncParamListInfo($1,NULL,NULL); printf(
 | def_param_listE ',' OPERAND	{$$ = createDefFuncParamListInfo($3,NULL,$1); printf("BISON:\tfound def_param_listE: ,\n"); fprintf(logFileB,"BISON:\tfound def_param_listE: ,\n");}
 ;
 
-func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{$$=createFuncDef($2,$4,$9); printf("BISON:\tfound func_def: %s\n",$2); fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
+func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{$$=createFuncDef($2,$4,$9); printf("BISON:\tfound func_def: %s\nLocation: (%d.%d-%d.%d)\n",$2,@2.first_line,@2.first_column,@2.last_line,@2.last_column); fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
 ;
 func_call: OPERAND '(' param_list ')' {$$=createExprInfoFromFuncCall(_FUNCCALL,$1,$3); printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
 ;
