@@ -58,6 +58,12 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	currentFuncName="global";
 	int* constNumber = new int;
 	*constNumber=1;
+	/**
+	* В таблицу добавляются только классы (при создании, у нас только main и value)
+	* Поля класса - по идее, надо вынести все переменные глобального кода как локальные метода main
+	* Методы класса - функции
+	* Первая таблица - таблица глобального кода
+	*/
 	parseStmtListForTable(treeRoot,this->globalTable,constNumber);
 }
 
@@ -80,6 +86,9 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 	// Создаем для нее константу типа Class
 	table.push_back(makeTableEl((*constNum)++,NULL,_CLASS,std::string("4")));
 	ValNum=*constNum-1;
+	// Делаем привязку к типу
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("LValue;")));
+	TypeNum=*constNum-1;
 	// Создаем локальный указатель на элемент входного дерева
 	struct StmtInfo* begining;
 	// Считаем первый элемент списка начальным
@@ -161,8 +170,7 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 			output+=std::string(buf);
 		}
 		output+="\";\"";
-		sprintf(buf,"%d",(*iter)->type);
-		output+=std::string(buf);
+		output+=convertTypeToString((*iter)->type);
 		output+="\";\"";
 		output+=(*iter)->val;
 		output+="\";";
@@ -176,21 +184,9 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 	// Если операнд
 	if(expr->type==_OPERAND)
 	{
-		// Проверяем, что он уже объявлен
-		std::string opName = std::string(expr->idName);
-		if(!containsString(this->varNames,opName))
-		{
-			/*char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			// Если не объявлен, выдаем ошибку с именем операнда
-			char* errstr=new char[35+strlen(expr->idName)+62];
-			errstr[0]='\0';
-			strcpy(errstr,"Can't use undefined operand - ");
-			strcat(errstr,expr->idName);
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;*/
-		}
+		// Подразумевается, что дерево уже проверенно и все корректно
+		// Так что здесь ничего не делается
+		;
 	}
 	// Если присвоение
 	else if(expr->type==_ASSIGN)
@@ -207,11 +203,9 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 				this->varNames.push_back(opName);
 				// Добавляем в таблицу данные о переменной
 				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,opName));
-				// Делаем привязку к типу
-				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,std::string("LValue;")));
 				// Делаем NameAndType
 				char buf[50]="";
-				sprintf(buf,"%d,%d",*constNum-3,*constNum-2);
+				sprintf(buf,"%d,%d",*constNum-1,TypeNum);
 				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,std::string(buf)));
 				// Делаем fieldRef
 				buf[0]='\0';
@@ -227,41 +221,11 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 			// Считаем, что проверять левую часть не нужно - на этап генерации кода
 			// Проверяем правую часть
 			parseExprForTable(expr->right,table,constNum); //checkExpr(expr->right);
-			// Проверяем, что взятие производится уже по объявленному массиву
-			/*struct ExprInfo* arr = expr->left;
-			if(arr->left->type==_OPERAND)
-				checkExpr(arr->left);
-			// Иначе если взятие не относится к операнду, выбрасываем исключение
-			else
-				throw "Can't use [brackets] for anything except arrays.";*/
 		}
-		// Иначе бросаем исключение, что нельзя присвоить значение чему-то кроме операнда или элемента массива
-		else
-		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			// Если не объявлен, выдаем ошибку с именем операнда
-			char* errstr=new char[64+62];
-			errstr[0]='\0';
-			strcpy(errstr,"Can't assign value to anything except operand or array element.");
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
-		}
-	}
-	// Если действие - не, проверяем выражение
-	else if(expr->type==_NOT)
-	{
-		parseExprForTable(expr->left,table,constNum);//checkExpr(expr->left);
 	}
 	// Если действие над массивом - append/remove 
 	else if(expr->type==_ARRACT)
 	{
-		// Проверяем, чтобы массив был операндом и был в списке переменных
-		/*if(expr->left->type==_OPERAND)
-			checkExpr(expr->left);
-		else
-			throw "Can't use methods to anything except arrays.";*/
 		// Считаем, что проверять левую часть не нужно - на этап генерации кода
 		// Проверяем правую часть
 		parseExprForTable(expr->right,table,constNum);//checkExpr(expr->right);
@@ -283,34 +247,11 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 			begining = begining->next;
 		}
 	}
-	else if(expr->type==_FUNCCALL)
+	/*else if(expr->type==_FUNCCALL)
 	{
 		;
 		// TODO Придумать функцию для сверки вызова и объявления 
-	}
-	else if(expr->type==_UMINUS)
-	{
-		// Унарный минус может быть только перед целым числом или выражением, возвращающим целое число
-		// Проверим первое
-		if(expr->left->type==_VARVAL)
-		{
-			struct ValInfo* val = expr->left->exprVal;
-			if(val->type!=_NUMBER)
-			{
-				char* bufstr = new char [50];
-				sprintf(bufstr,"(%d.%d-%d.%d)",val->loc->firstLine,val->loc->firstColumn,val->loc->lastLine,val->loc->lastColumn);
-				// Если не объявлен, выдаем ошибку с именем операнда
-				char* errstr=new char[55+62];
-				errstr[0]='\0';
-				strcpy(errstr,"Can't make negative value of anything except integer.");
-				strcat(errstr,"\nLocation: ");
-				strcat(errstr,bufstr);
-				throw errstr;
-			}
-		}
-		else
-			parseExprForTable(expr->left,table,constNum);//checkExpr(expr->left);
-	}
+	}*/
 	else
 	{
 		if(expr->type!=_VARVAL)
@@ -326,22 +267,6 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 	{
 	}*/
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Печать аттрибутированного дерева (третий обход - ?)
 void TreeTraversal::printTree(const struct StmtListInfo* treeRoot)
@@ -656,6 +581,33 @@ void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
 /*!
 *	---------------- БЛОК ВСПОМОГАТЕЛЬНЫХ МЕТОДОВ ДЛЯ РАБОТЫ СО СПИСКАМИ И КОНТЕЙНЕРАМИ ----------------
 */
+
+std::string TreeTraversal::convertTypeToString(enum TableElemType type)
+{
+	std::string str="";
+	switch (type)
+	{
+	case(_UTF8):
+		str="UTF-8";
+		break;
+	case(_INT):
+		str="INT";
+		break;
+	case(_NAMEnTYPE):
+		str="Name&Type";
+		break;
+	case(_FIELDREF):
+		str="FieldRef";
+		break;
+	case(_METHODREF):
+		str="MethodRef";
+		break;
+	case(_CLASS):
+		str="Class";
+		break;		
+	}
+	return str;
+}
 
 bool TreeTraversal::isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const
 {

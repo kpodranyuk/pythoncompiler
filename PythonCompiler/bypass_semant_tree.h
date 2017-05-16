@@ -78,6 +78,7 @@ private:
 	std::vector<struct TableElement*> globalTable;
 	std::string currentFuncName;
 	int ValNum;
+	int TypeNum;
 
 	/*
 	* Хранит в себе список инициализированных переменных
@@ -92,6 +93,12 @@ private:
 	/*
 	*	---------- Методы класса ----------
 	*/
+
+	/* Тип элемента в строковом представлении
+	* @author Kate
+	* \param[in] type Тип элемента
+	*/
+	std::string convertTypeToString(enum TableElemType type);
 
 	/* Создать элемент строки таблицы констант
 	* @author Kate
