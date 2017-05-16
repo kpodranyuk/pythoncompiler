@@ -141,8 +141,8 @@ expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3, createCodeLocation(@2.first_
 | '(' expr ')'					{$$=$2; printf("BISON:\tfound expr: BRACKETS\n"); fprintf(logFileB,"BISON:\tfound expr: BRACKETS\n");}
 | expr '=' expr					{$$=createExprInfo(_ASSIGN,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: =\n"); fprintf(logFileB,"BISON:\tfound expr: =\n");}
 | expr '[' expr ']'				{$$=createExprInfo(_ARRID,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: index\n"); fprintf(logFileB,"BISON:\tfound expr: index\n");}
-| '[' param_list ']'			{$$=createInitListInfo(_ARRINIT,$2); printf("BISON:\tfound expr: initialize\n"); fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
-| expr '.' OPERAND '(' expr ')'  {$$=createActListInfo(_ARRACT,$1,$5,$3); printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
+| '[' param_list ']'			{$$=createInitListInfo(_ARRINIT,$2, createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); printf("BISON:\tfound expr: initialize\n"); fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
+| expr '.' OPERAND '(' expr ')'  {$$=createActListInfo(_ARRACT,$1,$5,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: actMas\n"); fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
 | var_val					{$$=createSimpleExpr(_VARVAL,NULL,$1,$1->loc); printf("BISON:\tfound expr: var_val\n"); fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
 | OPERAND 					{$$=createSimpleExpr(_OPERAND,$1,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); printf("BISON:\tfound expr: OPERAND\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {$$=$1; printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
@@ -167,7 +167,7 @@ func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT
 printf("BISON:\tfound func_def: %s\nLocation: (%d.%d-%d.%d)\n defLoc: (%d.%d-%d.%d)\n",$2,@2.first_line,@2.first_column,@2.last_line,@2.last_column,@1.first_line,@1.first_column,@1.last_line,@1.last_column); 
 fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
 ;
-func_call: OPERAND '(' param_list ')' {$$=createExprInfoFromFuncCall(_FUNCCALL,$1,$3); printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
+func_call: OPERAND '(' param_list ')' {$$=createExprInfoFromFuncCall(_FUNCCALL,$1,$3, createCodeLocation(@1.first_line,@1.first_column,@4.last_line,@4.last_column)); printf("BISON:\tfound func_call: FUNC_CALL\t%s\n",$1); fprintf(logFileB,"BISON:\tfound func_call: FUNC_CALL\t%s\n",$1);}
 ;
 line_sep:NEWLINE	{printf("BISON:\tfound line_sep\n"); fprintf(logFileB,"BISON:\tfound line_sep\n");}
 | EOF_TOKEN	{printf("BISON:\tfound line_sep\n"); fprintf(logFileB,"BISON:\tfound line_sep\n");}

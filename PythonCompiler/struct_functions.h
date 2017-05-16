@@ -45,7 +45,7 @@ struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struc
 * \param[in] exprlist лист выражений
 * \return указатель на новый узел
 */
-struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * exprlist);
+struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * exprlist, struct CodeLocation* bracket);
 
 /* —оздание узла выражени€ действи€ над массивом
 * \param[in] type тип выражени€
@@ -54,7 +54,7 @@ struct ExprInfo* createInitListInfo(enum ExprType type, struct ExprListInfo * ex
 * \param[in] actName им€ примен€емой операции к массиву
 * \return указатель на новый узел
 */
-struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right, char * actName);
+struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, struct ExprInfo* right, char * actName, struct CodeLocation* dotPos);
 
 /* —оздание узла выражени€ из вызова функции
 * @author Kate
@@ -63,7 +63,7 @@ struct ExprInfo* createActListInfo(enum ExprType type, struct ExprInfo* left, st
 * \param[in] args список аргументов
 * \return указатель на новый узел
 */
-struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, struct ExprListInfo* args);
+struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, struct ExprListInfo* args, struct CodeLocation* callL);
 
 /* —оздание узла из типа выражени€
 * @author Kate
