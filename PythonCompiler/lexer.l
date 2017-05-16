@@ -11,7 +11,7 @@ int current_line_indent = 0;   /* indentation of the current line */
 int indent_level = 0;          /* indentation level passed to the parser */
 void yyerror(const char* s);
 extern int yylex();
-int stringIndex, charIndex;			/**<Перменные, хранящие идексы лексемы*/
+int stringIndex=1, charIndex=0;			/**<Перменные, хранящие идексы лексемы*/
 /*!
 * Функция для определения координат лексемы
 * \param[in] index1 Начальное положение лексемы в строке
@@ -75,7 +75,7 @@ WHITE_SPACE[ \t]
 #[^\n]*/\n	{printf("FLEX:\tКомментарий\n");	fprintf(logFile,"FLEX:\tКомментарий\n"); }
 <INDENT_>" "      	{ charIndex+=1; current_line_indent++; }
 <INDENT_>"\t"     	{ charIndex+=4; current_line_indent+=4;}
-<INDENT_>"\n"     	{ charIndex=-1; stringIndex++; current_line_indent = 0; /*ignoring blank line */ }
+<INDENT_>"\n"     	{ charIndex=0; stringIndex++; current_line_indent = 0; /*ignoring blank line */ }
 <INDENT_>#[^\n]*  	{ charIndex=findLexemLocation(charIndex,stringIndex); current_line_indent = 0; /*ignoring blank line */ }
 <INDENT_>[^#]  		{
 						unput(*yytext);
@@ -377,11 +377,11 @@ del	{
 				return '.';
 			}
 {VAR}		{
-				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("FLEX:\tНашел идентификатор: %s\n", yytext);	
 				fprintf(logFile,"FLEX:\tНашел идентификатор: %s\n", yytext);	
 				yylval.StringVal=(char*)memset(malloc(strlen(yytext)+1),'\0',strlen(yytext)+1);	
 				strcpy(yylval.StringVal, yytext); 
+				charIndex=findLexemLocation(charIndex,stringIndex);
 				return OPERAND;
 			}
 {DIGIT}+	{
@@ -393,7 +393,7 @@ del	{
 			}
 {WHITE_SPACE}+	{charIndex=findLexemLocation(charIndex,stringIndex); /*puts("Нашел белый разделитель");		fprintf(logFile,"Нашел белый разделитель\n");*/}
 \n			{
-				charIndex=-1; 
+				charIndex=0; 
 				stringIndex++;
 				puts("FLEX:\tНовая строка");					
 				fprintf(logFile,"FLEX:\tНовая строка\n"); 
