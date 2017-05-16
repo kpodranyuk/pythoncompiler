@@ -1,9 +1,18 @@
 #include <stdio.h>
-#include <malloc.h>
 #include <string.h>
 #include "tree_structs.h"
 
 #pragma warning(disable : 4996)
+
+/* Создание позиции элемента кода программы
+* @author Kate
+* \param[in] FL Строка начала элемента
+* \param[in] FC Столбец начала элемента
+* \param[in] LL Строка конца элемента
+* \param[in] LC Столбец конца элемента
+* \return указатель на структуру позиции элемента кода программы
+*/
+struct CodeLocation* createCodeLocation(int FL, int FC, int LL, int LC);
 
 /* Создание листа выражений
 * @author Kate
@@ -20,7 +29,7 @@ struct ExprListInfo * createExprList(struct ExprInfo * expr, struct ExprListInfo
 * \param[in] val значение операнда
 * \return указатель на узел
 */
-struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val);
+struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValInfo* val, struct CodeLocation* loc);
 
 /* Создание узла выражения из выражений
 * @author Kate
@@ -63,7 +72,7 @@ struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, 
 * \param[in] stringVal строковое значение 
 * \param[in] numVal целочисленное значение 
 */
-struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal);
+struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal, struct CodeLocation* loc);
 
 /* Создание списка параметров функции
 * @author Kate
@@ -71,7 +80,7 @@ struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, i
 * \param[in] params список параметров
 * \return указатель на новый список
 */
-struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct ValInfo* newParamVal, struct DefFuncParamListInfo* params);
+struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, struct ValInfo* newParamVal, struct DefFuncParamListInfo* params, struct CodeLocation* loc);
 
 /* Создание узла объявления функции
 * @author Kate
@@ -80,7 +89,7 @@ struct DefFuncParamListInfo* createDefFuncParamListInfo(char* newParamName, stru
 * \param[in] funcBody тело функции
 * \return указатель на узел объявления функции
 */
-struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* params, struct StmtListInfo* funcBody);
+struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* params, struct StmtListInfo* funcBody, struct CodeLocation* nameL);
 
 /* Создание стейтмента для определения функции
 * @author Kate
@@ -129,21 +138,21 @@ struct StmtInfo * createFromWhileStatement(enum StmtType type, struct WhileStmtI
 * \param[in] type тип стейтмента
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromContinueBreakStatement(enum StmtType type);
+struct StmtInfo * createFromContinueBreakStatement(enum StmtType type, struct CodeLocation* loc);
 
 /* Создание стейтмента для return
 * \param[in] type тип стейтмента
 * \param[in] expr возвращаемое выражение
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromReturnStatement(enum StmtType type, struct ExprInfo * expr);
+struct StmtInfo * createFromReturnStatement(enum StmtType type, struct ExprInfo * expr, struct CodeLocation* loc);
 
 /* Создание стейтмента для del
 * \param[in] type тип стейтмента
 * \param[in] operand очищаемый операнд
 * \return указатель на стейтмент
 */
-struct StmtInfo * createFromDelStatement(enum StmtType type, char * operand);
+struct StmtInfo * createFromDelStatement(enum StmtType type, char * operand, struct CodeLocation* delLoc, struct CodeLocation* opLoc);
 
 /* Создание if
 * \param[in] expr условное выражение
