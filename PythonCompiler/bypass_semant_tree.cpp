@@ -314,8 +314,8 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 		}
 		else if(begining->type==_BREAK || begining->type==_CONTINUE)
 		{
-			// Если мы сейчас находимся в главном коде программы, бросаем исключение
-			if(this->gl_state == _MAIN_STATE)
+			// Если мы сейчас находимся не в цикле, бросаем исключение
+			if(this->gl_state == _REGULAR_STATE)
 			{
 				// Формируем строку с локацией токена
 				char* bufstr = new char [50];
