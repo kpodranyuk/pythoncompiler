@@ -65,8 +65,10 @@ int main(int argc, char** argv) {
 		printf("tree was printed");
 		TreeTraversal* treeWalker = new TreeTraversal();
 		try{
-			treeWalker->fixTree(root);
+			//treeWalker->fixTree(root);
 			printf("\nTree fixed successfully\n");
+			treeWalker->makeTables(root);
+			printf("\nTables made successfully\n");
 		}
 		catch (char* message)
 		{
