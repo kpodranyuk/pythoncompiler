@@ -63,6 +63,10 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	* Поля класса - по идее, надо вынести все переменные глобального кода как локальные метода main
 	* Методы класса - функции
 	* Первая таблица - таблица глобального кода
+	* То есть таблица обновляется только при
+	* - объявлении переменной
+	* - объявлении массива
+	* - объявлении функции
 	*/
 	parseStmtListForTable(treeRoot,this->globalTable,constNumber);
 }
