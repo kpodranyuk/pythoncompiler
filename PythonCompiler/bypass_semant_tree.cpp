@@ -480,8 +480,83 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	}
 	else if(expr->type==_FUNCCALL)
 	{
-		;
-		// TODO Придумать функцию для сверки вызова и объявления 
+		// У вызова функции два параметра - имя функции - операнд
+		// И парамлист - как список фактических аргументов
+		// Нужно проверить
+		// 1. Имена функций совпадают
+		// 2. Количество аргументов совпадают
+		// 3. При вызове "д = .." после параметров по значению
+		// 4. Количество аргументов по-умолчанию считать отдельно
+		// 5. Затереть переменную с тем же именем из списка
+		std::string name = std::string(expr->idName);
+		std::vector<struct FunctionHeader*>::const_iterator iter;  // Объявляем итератор для списка функций
+		bool contains = false;							// Объявляем флаг того, что функция не найдена в списке
+		// Для каждого элемента списка и пока не найдено значение..
+		for(iter=this->funcNames.begin(); iter<this->funcNames.end()&&!contains; iter++) 
+		{
+			// Проверяем, равна ли текущая функция нужной
+			contains=strcmp(name.c_str(),(*iter)->functionName);
+		}
+		// Если функция с таким именем объявлена..
+		if(contains)
+		{
+			struct DefFuncParamInfo* el = (*iter)->params->first;
+			int count = 0;
+			int count_of_def = 0;
+			while(el!=NULL)
+			{
+				if(el->paramVal==NULL)
+					count++;
+				else
+					count_of_def++;
+				el=el->next;
+			}
+			struct ExprInfo* call_el = expr->arglist->first;
+			int fact_count = 0;
+			int fact_count_def = 0;
+			std::vector<std::string> defaults;
+			while(call_el!=NULL)
+			{
+				if(call_el->type==_ASSIGN)
+				{
+					fact_count_def++;
+					if(call_el->left->type==_OPERAND)
+						defaults.push_back(std::string(call_el->left->idName));
+					else
+						throw ""; // Выбросить исключение
+				}
+				else
+				{
+					fact_count++;
+				}
+				checkExpr(call_el);
+				if(call_el->next!=NULL)
+				{
+					if(call_el->next->type!=_ASSIGN&&call_el->type==_ASSIGN)
+						throw ""; // Выбросить исключение
+				}
+				call_el=call_el->next;
+			}
+			// Если количество аргументов совпадает
+			if(count==fact_count)
+			{
+				if(count_of_def<=fact_count_def)
+				{
+					el = (*iter)->params->first;
+					while(el!=NULL)
+					{
+						if(el->paramVal!=NULL)
+						{
+							if(!containsString(defaults,std::string(el->paramName)))
+								throw ""; // Выбросить исключение
+						}
+						el=el->next;
+					}
+				}
+			}
+			else
+				throw ""; // Выбросить исключение
+		}
 	}
 	else if(expr->type==_UMINUS)
 	{
