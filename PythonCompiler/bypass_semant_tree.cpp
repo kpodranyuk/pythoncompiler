@@ -415,12 +415,22 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	// ≈сли действие над массивом - append/remove 
 	else if(expr->type==_ARRACT)
 	{
+		// ѕровер€ем, что бы действие было либо append либо remove
+		if(!(strcmp(expr->idName,"append")==0 || strcmp(expr->idName,"remove")==0))
+		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			char* errstr=new char[64+62];
+			errstr[0]='\0';
+			strcpy(errstr,"There is no such operation on the list.");
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;
+		}
 		// ѕровер€ем, чтобы массив был операндом и был в списке переменных
-		/*if(expr->left->type==_OPERAND)
+		if(expr->left->type==_OPERAND)
 			checkExpr(expr->left);
-		else
-			throw "Can't use methods to anything except arrays.";*/
-		// —читаем, что провер€ть левую часть не нужно - на этап генерации кода
+
 		// ѕровер€ем правую часть
 		checkExpr(expr->right);
 	}
