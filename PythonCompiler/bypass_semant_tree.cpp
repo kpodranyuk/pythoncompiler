@@ -5,7 +5,7 @@
 /** Формат файла таблицы констант
 * столбцы: № константы; № строки (?); значение
 * запись в файл ведется в формате csv, разделитель - ;
-* запись заголовка: "Constant number";"String number";"Constant value";
+* запись заголовка: "Constant number";"String number";"Type";"Static";"Constant value";
 * пример записи константы: 1;;"utf-8";"Code"
 * таблицу констант для глобального кода всегда писать в файл global.csv
 * таблицу констант для функций писать в файл <func_name>.csv
@@ -33,13 +33,14 @@ void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
 	checkStatementList(root);
 }
 
-TreeTraversal::TableElement* TreeTraversal::makeTableEl(int num, int strNum, enum TableElemType type, std::string val)
+struct TreeTraversal::TableElement* TreeTraversal::makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val)
 {
 	struct TableElement* te = new struct TableElement;
 	te->number=num;
 	te->strNumber=strNum;
 	te->type=type;
 	te->val=val;
+	te->isStatic=isStatic;
 	return te;
 }
 
@@ -82,18 +83,18 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 	// Открываем файл констант функции
 	FILE* tbl = fopen(currentFuncName.c_str(),"wt");
 	// Пишем заголовок таблицы
-	fprintf(tbl,"%s\n","\"Constant number\";\"String number\";\"Type\";\"Constant value\"");
+	fprintf(tbl,"%s\n","\"Constant number\";\"String number\";\"Type\";\"Static\";\"Constant value\"");
 	int constantNumber=1;
 	// Добавляем в таблицу константу Code
-	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("Code")));
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("Code")));
 	// Добавляем в таблицу константу класса main
-	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("Main")));
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("Main")));
 	// Создаем для нее константу типа Class
-	table.push_back(makeTableEl((*constNum)++,1,_CLASS,std::string("2")));
+	table.push_back(makeTableEl((*constNum)++,1,_CLASS,NULL,std::string("2")));
 	// Добавляем в таблицу константу класса Value
-	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("Value")));
+	table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("Value")));
 	// Создаем для нее константу типа Class
-	table.push_back(makeTableEl((*constNum)++,NULL,_CLASS,std::string("4")));
+	table.push_back(makeTableEl((*constNum)++,NULL,_CLASS,NULL,std::string("4")));
 	ValNum=*constNum-1;
 	// Создаем локальный указатель на элемент входного дерева
 	struct StmtInfo* begining;
@@ -151,6 +152,13 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, std::
 		output+="\";\"";
 		output+=convertTypeToString((*iter)->type);
 		output+="\";\"";
+		if((*iter)->isStatic==NULL)
+			output+="\";";
+		else if((*iter)->isStatic)
+			output+="1\";";
+		else
+			output+="0\";";
+		output+="\"";
 		output+=(*iter)->val;
 		output+="\";";
 		fprintf(tbl,"%s\n",output.c_str());
@@ -176,27 +184,27 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, std::vector<
 				// Делаем привязку к типу
 				if(TypeNum==0&&expr->right->type!=_ARRINIT)
 				{
-					table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("LValue;")));
+					table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("LValue;")));
 					TypeNum=*constNum-1;
 				}
 				else if(MassTypeNum==0&&expr->right->type==_ARRINIT)
 				{
-					table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,std::string("[LValue;")));
+					table.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("[LValue;")));
 					MassTypeNum=*constNum-1;
 				}
 				// Добавляем в таблицу данные о переменной
-				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,opName));
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,NULL,opName));
 				// Делаем NameAndType
 				char buf[50]="";
 				if(expr->right->type==_ARRINIT)
 					sprintf(buf,"%d,%d",*constNum-1,MassTypeNum);
 				else
 					sprintf(buf,"%d,%d",*constNum-1,TypeNum);
-				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,std::string(buf)));
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,NULL,std::string(buf)));
 				// Делаем fieldRef
 				buf[0]='\0';
 				sprintf(buf,"%d,%d",ValNum,*constNum-1);
-				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_FIELDREF,std::string(buf)));				
+				table.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_FIELDREF,NULL,std::string(buf)));				
 			}
 			// Проверяем правую часть присвоения
 			parseExprForTable(expr->right,table,constNum);//checkExpr(expr->right);
@@ -247,17 +255,17 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 			type+=")";
 		}
 		type+="LValue;";
-		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,type));
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,1,type));
 		// Добавляем в таблицу данные о переменной
-		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,std::string(curHeader->functionName)));
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,1,std::string(curHeader->functionName)));
 		// Делаем NameAndType
 		char buf[50]="";
 		sprintf(buf,"%d,%d",*constNum-2,*constNum-1);
-		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_NAMEnTYPE,std::string(buf)));
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_NAMEnTYPE,1,std::string(buf)));
 		// Делаем methodRef
 		buf[0]='\0';
 		sprintf(buf,"%d,%d",ValNum,*constNum-1);
-		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_METHODREF,std::string(buf)));
+		table.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_METHODREF,1,std::string(buf)));
 
 		currentFuncName=std::string(curHeader->functionName);
 

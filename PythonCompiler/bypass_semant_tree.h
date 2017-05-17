@@ -62,6 +62,7 @@ private:
 		int number;						// Номер константы
 		int strNumber;					// Номер строки
 		enum TableElemType type;		// Тип элемента
+		int isStatic;
 		std::string val;				// Значение
 	};
 
@@ -109,7 +110,7 @@ private:
 	* \param[in] type Тип элемента
 	* \param[in] val Значение
 	*/
-	struct TableElement* makeTableEl(int num, int strNum, enum TableElemType type, std::string val);
+	struct TableElement* makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate
