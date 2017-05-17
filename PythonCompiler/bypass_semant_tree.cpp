@@ -226,6 +226,36 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNu
 			parseExprForTable(expr->right,table,constNum); //checkExpr(expr->right);
 		}*/
 	}
+	if(expr->type==_VARVAL)
+		parseValTypeForTable(expr->exprVal,constNum,local);
+}
+
+void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int* constNum, int local)
+{
+	if(val->type==_TRUE)
+	{
+		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_INT,NULL,std::string("1"), local));
+	}
+	else if(val->type==_FALSE)
+	{
+		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_INT,NULL,std::string("0"), local));
+	}
+	else if(val->type==_NUMBER)
+	{
+		char* str = new char[50];
+		sprintf(str,"%d",val->intVal);
+		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_INT,NULL,std::string(str), local));
+	}
+	else
+	{
+		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_UTF8,NULL,std::string(val->stringVal), local));
+		int costNumForStr = *constNum-1;
+		char* str = new char[50];
+		sprintf(str,"%d",costNumForStr);
+		// ƒобавл€ем в таблицу данные о переменной
+		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_STRING,NULL,std::string(str), local));
+	}
+		
 }
 
 void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int* constNum, int local)
@@ -825,6 +855,9 @@ std::string TreeTraversal::convertTypeToString(enum TableElemType type)
 		break;
 	case(_INT):
 		str="INT";
+		break;
+	case(_STRING):
+		str="String";
 		break;
 	case(_NAMEnTYPE):
 		str="Name&Type";
