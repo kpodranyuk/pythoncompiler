@@ -631,6 +631,35 @@ void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 	}
 
 	/*Если все корректно, то преобразуем иф_стмт с elif-фами в иф_стмт без elif-ов*/
+	struct StmtListInfo* lastElseMainIf=ifstmt->elsestmtlist;//сохраняем последний else блок(он будет самым нижним в дереве)
+	if(ifstmt->eliflist!=NULL)
+	{
+		struct IfStmtInfo* currentIf = ifstmt;
+		struct ElifListInfo* elifListElement=ifstmt->eliflist;
+		while(elifListElement!=NULL)
+		{
+			// Создаем новый иф
+			struct IfStmtInfo * newIf = (struct IfStmtInfo *)malloc(sizeof(struct IfStmtInfo));
+			newIf->expr=elifListElement->expr;
+			newIf->stmtlist=elifListElement->stmtlist;
+			// Создать новый иф стмт
+			struct StmtInfo* newIfStmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
+			newIfStmt->type=_IF;
+			newIfStmt->ifstmt=newIf;
+			// Создать новый стмт лист
+			struct StmtListInfo* newStmtList = (struct StmtListInfo *)malloc(sizeof(struct StmtListInfo));
+			newStmtList->first=newIfStmt;
+			newStmtList->last=newIfStmt;
+			currentIf->elsestmtlist=newStmtList;
+			currentIf=newIf;
+			currentIf->eliflist=NULL;
+			elifListElement=elifListElement->next;
+		}
+		if(ifstmt->elsestmtlist!=NULL)
+		{
+			currentIf->elsestmtlist=ifstmt->elsestmtlist;
+		}
+	}
 }
 
 void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*)
