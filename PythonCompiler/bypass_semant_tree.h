@@ -62,8 +62,9 @@ private:
 		int number;						// Номер константы
 		int strNumber;					// Номер строки
 		enum TableElemType type;		// Тип элемента
-		int isStatic;
+		int isStatic;					// Является ли статичной
 		std::string val;				// Значение
+		int localFor;					// Номер константы на методРеф для которого этот элемент является локальным
 	};
 
 	/*
@@ -71,10 +72,10 @@ private:
 	* ключ - строка - область видимости (global или имя функции)
 	* значение - вектор элементов таблицы констант
 	*/
-	typedef std::map<std::string, std::vector<struct TableElement*> > Table;
+	/*typedef std::map<std::string, std::vector<struct TableElement*> > Table;
 	typedef std::pair<std::string, std::vector<struct TableElement*> > TablePair;
 	std::vector<TablePair> prog;
-	Table programm_table;
+	Table programm_table;*/
 
 	// Создаем вектор элементов таблиц глобального кода
 	std::vector<struct TableElement*> globalTable;
@@ -110,7 +111,7 @@ private:
 	* \param[in] type Тип элемента
 	* \param[in] val Значение
 	*/
-	struct TableElement* makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val);
+	struct TableElement* makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val, int local);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate
@@ -233,25 +234,25 @@ private:
 	* @author Kate
 	* \param[in] expr узел выражения
 	* \param[in|out] table таблица
-	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseExprForTable(const struct ExprInfo * expr, std::vector<struct TableElement*>& table, int* constNum);
+	void parseExprForTable(const struct ExprInfo * expr, int* constNum, int local);
 
 	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
 	* @author Kate
 	* \param[in] root список корней дерева
-	* \param[in|out] table таблица
 	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseStmtListForTable(const struct StmtListInfo* root, std::vector<struct TableElement*>& table, int* constNum);
+	void parseStmtListForTable(const struct StmtListInfo* root, int* constNum, int local);
 
 	/* Проверить узел-объявление функции дерева для составления таблицы
 	* @author Kate
 	* \param[in] funcdefstmt узел выражения
-	* \param[in|out] table таблица
 	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, std::vector<struct TableElement*>& table, int* constNum);
+	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int* constNum, int local);
 
 	/*!
 	*	!!!!! Публичная часть класса !!!!!
