@@ -49,6 +49,7 @@ private:
 	enum TableElemType{
 		_UTF8,	
 		_INT,
+		_STRING,
 		_NAMEnTYPE,
 		_FIELDREF,
 		_METHODREF,
@@ -253,6 +254,14 @@ private:
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
 	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int* constNum, int local);
+
+	/* Проверить узел-объявление функции дерева для составления таблицы
+	* @author Kate
+	* \param[in] funcdefstmt узел выражения
+	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
+	*/
+	void parseValTypeForTable(const struct ValInfo * val, int* constNum, int local);
 
 	/*!
 	*	!!!!! Публичная часть класса !!!!!
