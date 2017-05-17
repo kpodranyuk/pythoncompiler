@@ -170,7 +170,7 @@ private:
 	bool containsString(std::vector<std::string>& vec, std::string str) const;
 
 	/* ѕроверить узел-выражение дерева
-	* @author Kate
+	* @author Kate, Nikita
 	* \param[in|out] expr узел выражени€
 	*/
 	void checkExpr(struct ExprInfo * expr) throw(char*);
@@ -179,7 +179,7 @@ private:
 	* @author Nikita
 	* \param[in|out] ifstmt узел-развилка
 	*/
-	void checkIfStmt(struct IfStmtInfo * ifstmt);
+	void checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*);
 
 	/* ѕроверить узел-цикл while дерева
 	* @author Nikita
