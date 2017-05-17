@@ -516,8 +516,28 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	}
 }
 
-void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt)
+void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 {
+	/*Проверка иф_стмт на корректность*/
+	checkExpr(ifstmt->expr);//проверка условного выражения
+	checkStatementList(ifstmt->stmtlist);//проверка тела if-а
+	if(ifstmt->elsestmtlist!=NULL)
+		checkStatementList(ifstmt->elsestmtlist);//проверка тела else
+	// Проверка elif списка
+	if(ifstmt->eliflist!=NULL)
+	{
+		struct ElifListInfo* begin=ifstmt->eliflist;
+		while(begin!=NULL)
+		{
+			// Проверка условного выражения
+			checkExpr(begin->expr);
+			// Проверка тела
+			checkStatementList(begin->stmtlist);
+			begin=begin->next;
+		}
+	}
+
+	/*Если все корректно, то преобразуем иф_стмт с elif-фами в иф_стмт без elif-ов*/
 }
 
 void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*)
@@ -531,7 +551,7 @@ void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*
 	}
 	
 	// Код функции
-	checkExpr(whilestmt->expr);//проверка условного выражения
+	checkExpr(whilestmt->expr);//проверка условного выражения продолжения цикла
 	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
 	if(whilestmt->elsestmt!=NULL)
 		checkStatementList(whilestmt->elsestmt);//проверка блока else цикла
