@@ -116,6 +116,13 @@ private:
 	* \param[in] first заголовок первой функции
 	* \param[in] second заголовок второй функции
 	*/
+	void checkFuncCall(struct FunctionHeader* first, struct FunctionHeader* second) const;
+
+	/* Проверить, равны ли два заголовка функции
+	* @author Kate
+	* \param[in] first заголовок первой функции
+	* \param[in] second заголовок второй функции
+	*/
 	bool isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const;
 
 	/* Проверить, равны ли два списка параметров функции при объявлении
