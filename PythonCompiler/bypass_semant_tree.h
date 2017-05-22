@@ -198,7 +198,7 @@ private:
 	* @author Kate
 	* \param[in|out] funcdefstmt узел определения функции дерева
 	*/
-	void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt);
+	void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(char*);
 
 	/* Проверить узел операторов прерывания/продолжения цикла
 	* @author Nikita
@@ -217,7 +217,7 @@ private:
 	* @author Kate
 	* \param[in|out] expr узел выражения
 	*/
-	void checkDelStmt(struct ExprInfo * expr);
+	void checkDelStmt(struct ExprInfo * expr) throw(char*);
 
 	/* Проверить узел параметров функции при объявлении
 	* @author Kate

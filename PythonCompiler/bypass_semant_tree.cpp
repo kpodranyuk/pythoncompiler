@@ -731,7 +731,7 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	}
 }
 
-void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
+void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(char*)
 {
 	// ѕровер€ем текущее состо€ние анализатора
 	enum GlobalState lastState = gl_state;
@@ -830,7 +830,7 @@ void TreeTraversal::checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * 
 	checkExpr(expr);
 }
 
-void TreeTraversal::checkDelStmt(struct ExprInfo * expr)
+void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 {
 	// »з правил бизона известно, что выражением может быть только операнд
 	// ѕоэтому провер€ем, не удален ли уже операнд
