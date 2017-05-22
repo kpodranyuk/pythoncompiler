@@ -355,7 +355,7 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 		// Запомнить номер текущего дочернего узла
 		if(begining->type==_EXPR)
 		{
-			checkExpr(begining->expr);
+			checkExpr(begining->expr,false);
 		}
 		else if(begining->type==_IF)
 		{
@@ -394,7 +394,7 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 	}
 }
 
-void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
+void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 {
 	// Если операнд
 	if(expr->type==_OPERAND)
@@ -418,6 +418,19 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	// Если присвоение
 	else if(expr->type==_ASSIGN)
 	{
+		// Если присваивание уже было, то кидаем исключение
+		if(assign)
+		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			char* errstr=new char[64+62];
+			errstr[0]='\0';
+			strcpy(errstr,"Assignment operation can not be more than 2 times in the expression.");
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;
+		}
+
 		// Слева от присовения может быть только либо операнд, либо взятие по индексу массива
 		// Если слева операнд
 		if(expr->left->type==_OPERAND)
@@ -430,17 +443,15 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 				this->varNames.push_back(opName);
 			}
 			// Проверяем правую часть присвоения
-			checkExpr(expr->right);
+			checkExpr(expr->right,true);
 		}
 		// Иначе если слева взятие по индексу, то меняем тип операции с _ASSIGN на _ARRID_AND_ASSIGN
 		else if(expr->left->type==_ARRID)
 		{
 			// Проверяем правую часть
-			checkExpr(expr->right);
-			// Проверяем, что взятие производится уже по объявленному массиву(если операнд маассив)
-			struct ExprInfo* arr = expr->left;
-			if(arr->left->type==_OPERAND)
-				checkExpr(arr->left);
+			checkExpr(expr->right, true);
+			// Проверяем левую часть
+			checkExpr(expr->left,true);
 			
 			// Изменяем узел
 			expr->type=_ARRID_AND_ASSIGN;
@@ -468,7 +479,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 	// Если действие - не, проверяем выражение
 	else if(expr->type==_NOT)
 	{
-		checkExpr(expr->left);
+		checkExpr(expr->left,assign);
 	}
 	// Если действие над массивом - append/remove 
 	else if(expr->type==_ARRACT)
@@ -487,10 +498,10 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 		}
 		// Проверяем, чтобы массив был операндом и был в списке переменных
 		if(expr->left->type==_OPERAND)
-			checkExpr(expr->left);
+			checkExpr(expr->left,assign);
 
 		// Проверяем правую часть
-		checkExpr(expr->right);
+		checkExpr(expr->right,assign);
 	}
 	// Если инициализация массива 
 	else if(expr->type==_ARRINIT)
@@ -504,7 +515,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 		while(begining!=NULL)
 		{
 			// Проверяем текущий элемент списка
-			checkExpr(begining);
+			checkExpr(begining,assign);
 			// Считаем следующий элемент списка новым текущим
 			begining = begining->next;
 		}
@@ -560,7 +571,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 				{
 					fact_count++;
 				}
-				checkExpr(call_el);
+				checkExpr(call_el,assign);
 				if(call_el->next!=NULL)
 				{
 					if(call_el->next->type!=_ASSIGN&&call_el->type==_ASSIGN)
@@ -610,14 +621,14 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 			}
 		}
 		else
-			checkExpr(expr->left);
+			checkExpr(expr->left,assign);
 	}
 	else
 	{
 		if(expr->type!=_VARVAL)
 		{
-			checkExpr(expr->left);
-			checkExpr(expr->right);
+			checkExpr(expr->left,assign);
+			checkExpr(expr->right,assign);
 		}
 	}
 }
@@ -625,7 +636,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr) throw(char*)
 void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 {
 	/*Проверка иф_стмт на корректность*/
-	checkExpr(ifstmt->expr);//проверка условного выражения
+	checkExpr(ifstmt->expr,false);//проверка условного выражения
 	checkStatementList(ifstmt->stmtlist);//проверка тела if-а
 	if(ifstmt->elsestmtlist!=NULL)
 		checkStatementList(ifstmt->elsestmtlist);//проверка тела else
@@ -636,7 +647,7 @@ void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 		while(begin!=NULL)
 		{
 			// Проверка условного выражения
-			checkExpr(begin->expr);
+			checkExpr(begin->expr,false);
 			// Проверка тела
 			checkStatementList(begin->stmtlist);
 			begin=begin->next;
@@ -688,7 +699,7 @@ void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*
 	}
 	
 	// Код функции
-	checkExpr(whilestmt->expr);//проверка условного выражения продолжения цикла
+	checkExpr(whilestmt->expr,false);//проверка условного выражения продолжения цикла
 	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
 	if(whilestmt->elsestmt!=NULL)
 		checkStatementList(whilestmt->elsestmt);//проверка блока else цикла
@@ -718,7 +729,7 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	{
 		this->varNames.push_back(opName);
 	}
-	checkExpr(forstmt->expr);//проверка выражения, по чем проходит цикл
+	checkExpr(forstmt->expr,false);//проверка выражения, по чем проходит цикл
 	checkStatementList(forstmt->stmtlist);//проверка тела цикла
 	if(forstmt->elsestmt!=NULL)
 		checkStatementList(forstmt->elsestmt);//проверка блока else цикла
@@ -826,14 +837,14 @@ void TreeTraversal::checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * 
 		throw errStr;
 	}
 	// Иначе проверяем возвращаемое выражение
-	checkExpr(expr);
+	checkExpr(expr,false);
 }
 
 void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 {
 	// Из правил бизона известно, что выражением может быть только операнд
 	// Поэтому проверяем, не удален ли уже операнд
-	checkExpr(expr);
+	checkExpr(expr,false);
 	// Если операнд еще не удален, удаляем его из массива имен перменных
 	deleteString(this->varNames,std::string(expr->idName));
 }

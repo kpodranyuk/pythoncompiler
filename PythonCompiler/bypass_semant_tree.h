@@ -173,8 +173,9 @@ private:
 	/* ѕроверить узел-выражение дерева
 	* @author Kate, Nikita
 	* \param[in|out] expr узел выражени€
+	* \param[in] assign флаг, показывающий, что в выражении уже было присваивание
 	*/
-	void checkExpr(struct ExprInfo * expr) throw(char*);
+	void checkExpr(struct ExprInfo * expr, bool assign) throw(char*);
 
 	/* ѕроверить узел-развилку дерева
 	* @author Nikita
