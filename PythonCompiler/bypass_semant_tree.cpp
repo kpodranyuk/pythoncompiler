@@ -380,23 +380,7 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 		}
 		else if(begining->type==_BREAK || begining->type==_CONTINUE)
 		{
-			// Если мы сейчас находимся не в цикле, бросаем исключение
-			if(this->lc_state == _REGULAR_STATE)
-			{
-				// Формируем строку с локацией токена
-				char* bufstr = new char [50];
-				sprintf(bufstr,"(%d.%d-%d.%d)",begining->loc->firstLine,begining->loc->firstColumn,begining->loc->lastLine,begining->loc->lastColumn);
-				// Соединяем все в строке сообщения
-				char* errStr = new char[31+62];
-				if(begining->type==_BREAK)
-					strcpy(errStr,"Found break in global code.");
-				else if(begining->type==_CONTINUE)
-					strcpy(errStr,"Found continue in global code.");
-				strcat(errStr,"\nLocation: ");
-				strcat(errStr,bufstr);
-				// Бросаем строку исключением
-				throw errStr;
-			}
+			checkContinueBreakStmt(begining);
 		}
 		else if(begining->type==_DEL)
 		{
@@ -807,8 +791,25 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt)
 		gl_state = _MAIN_STATE;
 }
 
-void TreeTraversal::checkContinueBreakStmt(enum StmtType type)
+void TreeTraversal::checkContinueBreakStmt(struct StmtInfo* contBreakStmt) throw(char*)
 {
+	// Если мы сейчас находимся не в цикле, бросаем исключение
+	if(this->lc_state == _REGULAR_STATE)
+	{
+		// Формируем строку с локацией токена
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",contBreakStmt->loc->firstLine,contBreakStmt->loc->firstColumn,contBreakStmt->loc->lastLine,contBreakStmt->loc->lastColumn);
+		// Соединяем все в строке сообщения
+		char* errStr = new char[31+62];
+		if(contBreakStmt->type==_BREAK)
+			strcpy(errStr,"Found break in global code.");
+		else if(contBreakStmt->type==_CONTINUE)
+			strcpy(errStr,"Found continue in global code.");
+		strcat(errStr,"\nLocation: ");
+		strcat(errStr,bufstr);
+		// Бросаем строку исключением
+		throw errStr;
+	}
 }
 
 void TreeTraversal::checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * expr) throw(char*)

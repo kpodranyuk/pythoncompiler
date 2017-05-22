@@ -204,7 +204,7 @@ private:
 	* @author Nikita
 	* \param[in|out] type тип узла
 	*/
-	void checkContinueBreakStmt(enum StmtType type);
+	void checkContinueBreakStmt(struct StmtInfo* contBreakStmt) throw(char*);
 
 	/* Проверить узел оператора возвращения из функции
 	* @author Kate
