@@ -151,7 +151,7 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* 
 		if(begining->type==_EXPR)
 		{
 			//checkExpr(begining->expr);
-			parseExprForTable(begining->expr,constNum, local);
+			parseExprForTable(begining->expr,constNum, local, begining->expr->type);
 		}
 		else if(begining->type==_IF)
 		{
@@ -175,17 +175,17 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* 
 	}
 }
 
-void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNum, int local)
+void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNum, int local, enum ExprType typeAboveExpression)
 {
 	// Если одна из операций где идет инициализация или взятие элемента по индексу
 	if(expr->type==_ASSIGN || expr->type==_ARRID || expr->type==_ARRID_AND_ASSIGN)
 	{
-		parseExprForTable(expr->left, constNum, local);
+		parseExprForTable(expr->left, constNum, local, expr->type);
 		if(expr->type==_ARRID_AND_ASSIGN)
 		{
-			parseExprForTable(expr->middle, constNum, local);
+			parseExprForTable(expr->middle, constNum, local, expr->type);
 		}
-		parseExprForTable(expr->right, constNum, local);
+		parseExprForTable(expr->right, constNum, local, expr->type);
 	}
 
 	// Если операнд
@@ -193,17 +193,17 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNu
 	{
 		// Проверяем, есть ли он уже в списке переменных
 		// И если нет, то добавляем
-		std::string opName = std::string(expr->left->idName);
+		std::string opName = std::string(expr->idName);
 		if(!containsString(this->varNames,opName))
 		{
 			this->varNames.push_back(opName);
 			// Делаем привязку к типу
-			if(TypeNum==0&&expr->right->type!=_ARRINIT)
+			if(TypeNum==0&&typeAboveExpression!=_ARRINIT)
 			{
 				globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("LValue;"), local));
 				TypeNum=*constNum-1;
 			}
-			else if(MassTypeNum==0&&expr->right->type==_ARRINIT)
+			else if(MassTypeNum==0&&typeAboveExpression==_ARRINIT)
 			{
 				globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("[LValue;"), local));
 				MassTypeNum=*constNum-1;
@@ -212,7 +212,7 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNu
 			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,NULL,opName, local));
 			// Делаем NameAndType
 			char buf[50]="";
-			if(expr->right->type==_ARRINIT)
+			if(typeAboveExpression==_ARRINIT)
 				sprintf(buf,"%d,%d",*constNum-1,MassTypeNum);
 			else
 				sprintf(buf,"%d,%d",*constNum-1,TypeNum);

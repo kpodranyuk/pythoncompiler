@@ -232,12 +232,13 @@ private:
 	void checkStatementList(struct StmtListInfo* root) throw(char*);
 
 	/* ѕроверить узел-выражение дерева дл€ составлени€ таблицы
-	* @author Kate
+	* @author Kate, Nikita
 	* \param[in] expr узел выражени€
 	* \param[in|out] table таблица
 	* \param[in] local номер константы, дл€ которой все добавл€емые элементы таблицы будут локальными
+	* \param[in] typeAboveExpression тип над выражени€
 	*/
-	void parseExprForTable(const struct ExprInfo * expr, int* constNum, int local);
+	void parseExprForTable(const struct ExprInfo * expr, int* constNum, int local, enum ExprType typeAboveExpression);
 
 	/* ќбойти дерево (список стейтментов) и дополнить его аттрибутами
 	* @author Kate
