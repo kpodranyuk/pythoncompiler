@@ -676,6 +676,7 @@ void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 			struct StmtInfo* newIfStmt = (struct StmtInfo *)malloc(sizeof(struct StmtInfo));
 			newIfStmt->type=_IF;
 			newIfStmt->ifstmt=newIf;
+			newIfStmt->next=NULL;
 			// Создать новый стмт лист
 			struct StmtListInfo* newStmtList = (struct StmtListInfo *)malloc(sizeof(struct StmtListInfo));
 			newStmtList->first=newIfStmt;
@@ -687,8 +688,9 @@ void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 		}
 		if(ifstmt->elsestmtlist!=NULL)
 		{
-			currentIf->elsestmtlist=ifstmt->elsestmtlist;
+			currentIf->elsestmtlist=lastElseMainIf;
 		}
+		ifstmt->eliflist=NULL;
 	}
 }
 
