@@ -177,55 +177,54 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* 
 
 void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNum, int local)
 {
-	// Если присвоение
-	if(expr->type==_ASSIGN)
+	// Если одна из операций где идет инициализация или взятие элемента по индексу
+	if(expr->type==_ASSIGN || expr->type==_ARRID || expr->type==_ARRID_AND_ASSIGN)
 	{
-		// Слева от присовения может быть только либо операнд, либо взятие по индексу массива
-		// Если слева операнд
-		if(expr->left->type==_OPERAND)
+		parseExprForTable(expr->left, constNum, local);
+		if(expr->type==_ARRID_AND_ASSIGN)
 		{
-			// Проверяем, есть ли он уже в списке переменных
-			// И если нет, то добавляем
-			std::string opName = std::string(expr->left->idName);
-			if(!containsString(this->varNames,opName))
-			{
-				this->varNames.push_back(opName);
-				// Делаем привязку к типу
-				if(TypeNum==0&&expr->right->type!=_ARRINIT)
-				{
-					globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("LValue;"), local));
-					TypeNum=*constNum-1;
-				}
-				else if(MassTypeNum==0&&expr->right->type==_ARRINIT)
-				{
-					globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("[LValue;"), local));
-					MassTypeNum=*constNum-1;
-				}
-				// Добавляем в таблицу данные о переменной
-				globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,NULL,opName, local));
-				// Делаем NameAndType
-				char buf[50]="";
-				if(expr->right->type==_ARRINIT)
-					sprintf(buf,"%d,%d",*constNum-1,MassTypeNum);
-				else
-					sprintf(buf,"%d,%d",*constNum-1,TypeNum);
-				globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,NULL,std::string(buf), local));
-				// Делаем fieldRef
-				buf[0]='\0';
-				sprintf(buf,"%d,%d",ValNum,*constNum-1);
-				globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_FIELDREF,NULL,std::string(buf), local));				
-			}
-			// Проверяем правую часть присвоения
-			parseExprForTable(expr->right,constNum,local);//checkExpr(expr->right);
+			parseExprForTable(expr->middle, constNum, local);
 		}
-		// Иначе если слева взятие по индексу
-		/*else if(expr->left->type==_ARRID)
-		{
-			// Считаем, что проверять левую часть не нужно - на этап генерации кода
-			// Проверяем правую часть
-			parseExprForTable(expr->right,table,constNum); //checkExpr(expr->right);
-		}*/
+		parseExprForTable(expr->right, constNum, local);
 	}
+
+	// Если операнд
+	if(expr->type==_OPERAND)
+	{
+		// Проверяем, есть ли он уже в списке переменных
+		// И если нет, то добавляем
+		std::string opName = std::string(expr->left->idName);
+		if(!containsString(this->varNames,opName))
+		{
+			this->varNames.push_back(opName);
+			// Делаем привязку к типу
+			if(TypeNum==0&&expr->right->type!=_ARRINIT)
+			{
+				globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("LValue;"), local));
+				TypeNum=*constNum-1;
+			}
+			else if(MassTypeNum==0&&expr->right->type==_ARRINIT)
+			{
+				globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("[LValue;"), local));
+				MassTypeNum=*constNum-1;
+			}
+			// Добавляем в таблицу данные о переменной
+			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,NULL,opName, local));
+			// Делаем NameAndType
+			char buf[50]="";
+			if(expr->right->type==_ARRINIT)
+				sprintf(buf,"%d,%d",*constNum-1,MassTypeNum);
+			else
+				sprintf(buf,"%d,%d",*constNum-1,TypeNum);
+			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,NULL,std::string(buf), local));
+			// Делаем fieldRef
+			buf[0]='\0';
+			sprintf(buf,"%d,%d",ValNum,*constNum-1);
+			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_FIELDREF,NULL,std::string(buf), local));				
+		}
+	}
+
+	// Если константа
 	if(expr->type==_VARVAL)
 		parseValTypeForTable(expr->exprVal,constNum,local);
 }
