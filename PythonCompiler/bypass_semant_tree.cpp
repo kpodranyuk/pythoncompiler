@@ -394,6 +394,27 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 	}
 }
 
+bool TreeTraversal::exprContainsAssign(struct ExprInfo * expr)
+{
+	if(expr->type==_OPERAND || expr->type==_VARVAL)
+		return false;
+	if(expr->type==_ASSIGN || expr->type==_ARRID_AND_ASSIGN)
+		return true;
+	else
+	{
+		bool left=false, middle=false, right=false;
+	
+		if(expr->left!=NULL)
+			left=exprContainsAssign(expr->left);
+		if(expr->type==_ARRID_AND_ASSIGN)
+			middle=exprContainsAssign(expr->middle);
+		if(expr->right!=NULL)
+			right=exprContainsAssign(expr->right);
+
+		return left || middle || right;
+	}
+}
+
 void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 {
 	// Если операнд
@@ -496,11 +517,21 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 			strcat(errstr,bufstr);
 			throw errstr;
 		}
-		// Проверяем, чтобы массив был операндом и был в списке переменных
-		if(expr->left->type==_OPERAND)
-			checkExpr(expr->left,assign);
 
+		// Проверяем левую часть
+		checkExpr(expr->left,assign);
 		// Проверяем правую часть
+		if(exprContainsAssign(expr->right))
+		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			char* errstr=new char[64+62];
+			errstr[0]='\0';
+			strcpy(errstr,"Assignment operation should not be an argument.");
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;
+		}
 		checkExpr(expr->right,assign);
 	}
 	// Если инициализация массива 
@@ -636,6 +667,18 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 {
 	/*Проверка иф_стмт на корректность*/
+	if(exprContainsAssign(ifstmt->expr))
+	{
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",ifstmt->expr->loc->firstLine,ifstmt->expr->loc->firstColumn,ifstmt->expr->loc->lastLine,ifstmt->expr->loc->lastColumn);
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errstr=new char[55+62];
+		errstr[0]='\0';
+		strcpy(errstr,"Assignment operation must not be in a conditional expression.");
+		strcat(errstr,"\nLocation: ");
+		strcat(errstr,bufstr);
+		throw errstr;
+	}
 	checkExpr(ifstmt->expr,false);//проверка условного выражения
 	checkStatementList(ifstmt->stmtlist);//проверка тела if-а
 	if(ifstmt->elsestmtlist!=NULL)

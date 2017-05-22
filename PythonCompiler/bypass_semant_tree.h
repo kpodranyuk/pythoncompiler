@@ -170,6 +170,13 @@ private:
 	*/
 	bool containsString(std::vector<std::string>& vec, std::string str) const;
 
+	/* Проверить узел-выражение дерева на наличие операции "присваивание"
+	* @author Nikita
+	* \param[in|out] expr узел выражения
+	* \return признак есть ли операция "присваивание" или нет
+	*/
+	bool exprContainsAssign(struct ExprInfo * expr);
+
 	/* Проверить узел-выражение дерева
 	* @author Kate, Nikita
 	* \param[in|out] expr узел выражения
