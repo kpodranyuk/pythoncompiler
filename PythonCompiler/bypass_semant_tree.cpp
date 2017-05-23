@@ -504,6 +504,9 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 	// Если действие - не, проверяем выражение
 	else if(expr->type==_NOT)
 	{
+		// Проверка на присваивание внутри отрицания(питон так не разрешает)
+		if(exprContainsAssign(expr->left))
+			throw makeStringForException("Can't use assignment operation in NOT expression.",expr->loc);
 		checkExpr(expr->left,assign);
 	}
 	// Если действие над массивом - append/remove 
@@ -530,6 +533,9 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		// Пока текущий элемент списка не последний..
 		while(begining!=NULL)
 		{
+			// Проверка на присваивание внутри выражения
+			if(exprContainsAssign(begining))
+				throw makeStringForException("Can't use assignment operation in expression for array initialize.",expr->loc);
 			// Проверяем текущий элемент списка
 			checkExpr(begining,assign);
 			// Считаем следующий элемент списка новым текущим
