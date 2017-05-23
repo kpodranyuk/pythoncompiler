@@ -480,16 +480,8 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		checkExpr(expr->left,assign);
 		// Проверяем правую часть
 		if(exprContainsAssign(expr->right))
-		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			char* errstr=new char[64+62];
-			errstr[0]='\0';
-			strcpy(errstr,"Can't use assignment operation in expression for array index.");
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
-		}
+			throw makeStringForException("Can't use assignment operation in expression for array index.",expr->loc);
+
 		checkExpr(expr->right,assign);
 	}
 	// Если действие - не, проверяем выражение
@@ -983,16 +975,17 @@ char* TreeTraversal::makeStringForException(char* message, struct CodeLocation* 
 	char* bufstr;
 	if(location!=NULL)
 	{
-		bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",location->firstLine,location->firstColumn,location->lastLine,location->lastColumn);
+		bufstr = new char [62];
+		sprintf(bufstr,"Location:(%d.%d-%d.%d)",location->firstLine,location->firstColumn,location->lastLine,location->lastColumn);
 	}
 	else
 	{
 		bufstr = new char [2];
 		bufstr[0] = '\0';
 	}
-	char* finalString = new char [strlen(bufstr)+strlen(message)+1];
+	char* finalString = new char [strlen(bufstr)+strlen(message)+2];
 	strcpy(finalString,message);
+	strcat(finalString,"\n");
 	strcat(finalString,bufstr);
 	return finalString;
 }
