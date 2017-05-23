@@ -71,7 +71,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	* - объявлении функции
 	*/
 	this->varNames.clear();
-	this->funcNames.clear();
+	this->funcHeaders.clear();
 	ValNum=0;
 	TypeNum=0;
 	MassTypeNum=0;
@@ -273,10 +273,10 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 	// И передаем указатель на список параметров
 	curHeader->params=funcdefstmt->params;
 	// Если такая функция еще не была объявлена
-	if(!containsFuncHeader(this->funcNames,curHeader))
+	if(!containsFuncHeader(this->funcHeaders,curHeader))
 	{
 		// Добавляем ее заголовок в массив функций
-		this->funcNames.push_back(curHeader);
+		this->funcHeaders.push_back(curHeader);
 		// Формируем тип
 		std::string type="";
 		if(curHeader->params->first==NULL)
@@ -422,7 +422,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 	{
 		// Проверяем, что он уже объявлен
 		std::string opName = std::string(expr->idName);
-		if(!containsString(this->varNames,opName))
+		if(!containsString(this->varNames,opName)&&!containsString(this->funcNames,opName))
 		{
 			// Если не объявлен, выдаем ошибку с именем операнда
 			char* errstr=new char[35+strlen(expr->idName)];
@@ -448,6 +448,23 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 			if(!containsString(this->varNames,opName))
 			{
 				this->varNames.push_back(opName);
+				if(containsString(this->funcNames,opName))
+				{
+					this->deleteString(this->funcNames,opName);
+					std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
+					// Для каждого элемента списка и пока не найдено значение..
+					for(iter=this->funcHeaders.begin(); iter<this->funcHeaders.end(); iter++) 
+					{
+						// Проверяем, равна ли текущая функция нужной
+						if(strcmp((*iter)->functionName,opName.c_str())==0)
+						{
+							// Удаляем нужное значение
+							this->funcHeaders.erase(iter);
+							// Выходим из цикла
+							break;
+						}
+					}
+				}
 			}
 			// Проверяем правую часть присвоения
 			checkExpr(expr->right,true);
@@ -533,7 +550,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		std::vector<struct FunctionHeader*>::const_iterator iter;  // Объявляем итератор для списка функций
 		bool contains = false;							// Объявляем флаг того, что функция не найдена в списке
 		// Для каждого элемента списка и пока не найдено значение..
-		for(iter=this->funcNames.begin(); iter<this->funcNames.end()&&!contains; iter++) 
+		for(iter=this->funcHeaders.begin(); iter<this->funcHeaders.end()&&!contains; iter++) 
 		{
 			// Проверяем, равна ли текущая функция нужной
 			contains=strcmp(name.c_str(),(*iter)->functionName)==0;
@@ -774,10 +791,13 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 	// И передаем указатель на список параметров
 	curHeader->params=funcdefstmt->params;
 	// Если такая функция еще не была объявлена
-	if(!containsFuncHeader(this->funcNames,curHeader))
+	if(!containsFuncHeader(this->funcHeaders,curHeader))
 	{
 		// Добавляем ее заголовок в массив функций
-		this->funcNames.push_back(curHeader);
+		this->funcHeaders.push_back(curHeader);
+		if(containsString(this->varNames,curHeader->functionName))
+			deleteString(this->varNames,curHeader->functionName);
+		this->funcNames.push_back(curHeader->functionName);
 		// Добавляем аргументы функции в список констант
 		std::vector<std::string> onlyInHeader;
 		struct DefFuncParamInfo* el = curHeader->params->first;
@@ -844,8 +864,25 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 	// Из правил бизона известно, что выражением может быть только операнд
 	// Поэтому проверяем, не удален ли уже операнд
 	checkExpr(expr,false);
-	// Если операнд еще не удален, удаляем его из массива имен перменных
-	deleteString(this->varNames,std::string(expr->idName));
+	if(containsString(this->varNames,std::string(expr->idName)))
+		deleteString(this->varNames,std::string(expr->idName));
+	if(containsString(this->funcNames,std::string(expr->idName)))
+	{
+		deleteString(this->funcNames,std::string(expr->idName));
+		std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
+		// Для каждого элемента списка и пока не найдено значение..
+		for(iter=this->funcHeaders.begin(); iter<this->funcHeaders.end(); iter++) 
+		{
+			// Проверяем, равна ли текущая функция нужной
+			if(strcmp((*iter)->functionName,expr->idName)==0)
+			{
+				// Удаляем нужное значение
+				this->funcHeaders.erase(iter);
+				// Выходим из цикла
+				break;
+			}
+		}
+	}
 }
 
 void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)

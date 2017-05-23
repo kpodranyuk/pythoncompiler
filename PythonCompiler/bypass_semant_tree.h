@@ -90,9 +90,13 @@ private:
 	*/
 	std::vector<std::string> varNames;
 	/*
+	* Хранит в себе список имен объявленных функций
+	*/
+	std::vector<std::string> funcNames;
+	/*
 	* Хранит в себе список объявленных функций
 	*/
-	std::vector<struct FunctionHeader*> funcNames;
+	std::vector<struct FunctionHeader*> funcHeaders;
 
 
 	/*
