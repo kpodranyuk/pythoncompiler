@@ -1035,3 +1035,22 @@ void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str)
 		}
 	}
 }
+
+char* makeStringForException(char* message, struct CodeLocation* location)
+{
+	char* bufstr;
+	if(location!=NULL)
+	{
+		bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",location->firstLine,location->firstColumn,location->lastLine,location->lastColumn);
+	}
+	else
+	{
+		bufstr = new char [2];
+		bufstr[0] = '\0';
+	}
+	char* finalString = new char [strlen(bufstr)+strlen(message)+1];
+	strcpy(finalString,message);
+	strcat(finalString,bufstr);
+	return finalString;
+}

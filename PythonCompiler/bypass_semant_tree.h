@@ -272,6 +272,13 @@ private:
 	*/
 	void parseValTypeForTable(const struct ValInfo * val, int* constNum, int local);
 
+	/*
+	* Создать строку для выброса исключения
+	* \param[in] message сообщение об ошибке
+	* \param[in] location расположение ошибки
+	*/
+	char* makeStringForException(char* message, struct CodeLocation* location);
+
 	/*!
 	*	!!!!! Публичная часть класса !!!!!
 	*/
