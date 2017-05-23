@@ -25,7 +25,7 @@ TreeTraversal::TreeTraversal()
 void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
 {
 	if(root == NULL)
-		throw "Root of tree is a null pointer\n";
+		throw makeStringForException("Root of tree is a null pointer\n",NULL);
 	// Задаем начальные состояния
 	this->gl_state=_MAIN_STATE;
 	this->lc_state=_REGULAR_STATE;
@@ -50,7 +50,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
 	
 	if(treeRoot == NULL)
-		throw "Root of tree is a null pointer\n";
+		throw makeStringForException("Root of tree is a null pointer\n",NULL);
 	currentFuncName=std::string("");
 	// Задаем начальные состояния
 	this->gl_state=_MAIN_STATE;
@@ -387,7 +387,7 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 		}
 		else
 		{
-			throw "Unrecognized type of tree node";
+			throw makeStringForException("Unrecognized type of tree node",NULL);
 		}
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
@@ -424,16 +424,12 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		std::string opName = std::string(expr->idName);
 		if(!containsString(this->varNames,opName))
 		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
 			// Если не объявлен, выдаем ошибку с именем операнда
-			char* errstr=new char[35+strlen(expr->idName)+62];
+			char* errstr=new char[35+strlen(expr->idName)];
 			errstr[0]='\0';
 			strcpy(errstr,"Can't use undefined operand - ");
 			strcat(errstr,expr->idName);
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
+			throw makeStringForException(errstr,expr->loc);
 		}
 	}
 	// Если присвоение
@@ -441,17 +437,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 	{
 		// Если присваивание уже было, то кидаем исключение
 		if(assign)
-		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			char* errstr=new char[64+62];
-			errstr[0]='\0';
-			strcpy(errstr,"Assignment operation can not be more than 2 times in the expression.");
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
-		}
-
+			throw makeStringForException("Assignment operation can not be more than 2 times in the expression.",expr->loc);
 		// Слева от присовения может быть только либо операнд, либо взятие по индексу массива
 		// Если слева операнд
 		if(expr->left->type==_OPERAND)
@@ -485,17 +471,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		}
 		// Иначе бросаем исключение, что нельзя присвоить значение чему-то кроме операнда или элемента массива
 		else
-		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			// Если не объявлен, выдаем ошибку с именем операнда
-			char* errstr=new char[64+62];
-			errstr[0]='\0';
-			strcpy(errstr,"Can't assign value to anything except operand or array element.");
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
-		}
+			throw makeStringForException("Can't assign value to anything except operand or array element.",expr->loc);
 	}
 	// Проверка на то, что бы во взятие элемента по индексу не было операции "="
 	else if(expr->type==_ARRID)
@@ -526,31 +502,12 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 	{
 		// Проверяем, что бы действие было либо append либо remove
 		if(!(strcmp(expr->idName,"append")==0 || strcmp(expr->idName,"remove")==0))
-		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			char* errstr=new char[64+62];
-			errstr[0]='\0';
-			strcpy(errstr,"There is no such operation on the list.");
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
-		}
-
+			throw makeStringForException("There is no such operation on the list.",expr->loc);
 		// Проверяем левую часть
 		checkExpr(expr->left,assign);
 		// Проверяем правую часть
 		if(exprContainsAssign(expr->right))
-		{
-			char* bufstr = new char [50];
-			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
-			char* errstr=new char[64+62];
-			errstr[0]='\0';
-			strcpy(errstr,"Assignment operation should not be an argument.");
-			strcat(errstr,"\nLocation: ");
-			strcat(errstr,bufstr);
-			throw errstr;
-		}
+			throw makeStringForException("Assignment operation should not be an argument.",expr->loc);
 		checkExpr(expr->right,assign);
 	}
 	// Если инициализация массива 
@@ -658,17 +615,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		{
 			struct ValInfo* val = expr->left->exprVal;
 			if(val->type!=_NUMBER)
-			{
-				char* bufstr = new char [50];
-				sprintf(bufstr,"(%d.%d-%d.%d)",val->loc->firstLine,val->loc->firstColumn,val->loc->lastLine,val->loc->lastColumn);
-				// Если не объявлен, выдаем ошибку с именем операнда
-				char* errstr=new char[55+62];
-				errstr[0]='\0';
-				strcpy(errstr,"Can't make negative value of anything except integer.");
-				strcat(errstr,"\nLocation: ");
-				strcat(errstr,bufstr);
-				throw errstr;
-			}
+				throw makeStringForException("Can't make negative value of anything except integer.",val->loc);
 		}
 		else
 			checkExpr(expr->left,assign);
@@ -687,17 +634,7 @@ void TreeTraversal::checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*)
 {
 	/*Проверка иф_стмт на корректность*/
 	if(exprContainsAssign(ifstmt->expr))
-	{
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",ifstmt->expr->loc->firstLine,ifstmt->expr->loc->firstColumn,ifstmt->expr->loc->lastLine,ifstmt->expr->loc->lastColumn);
-		// Если не объявлен, выдаем ошибку с именем операнда
-		char* errstr=new char[55+62];
-		errstr[0]='\0';
-		strcpy(errstr,"Assignment operation must not be in a conditional expression.");
-		strcat(errstr,"\nLocation: ");
-		strcat(errstr,bufstr);
-		throw errstr;
-	}
+		throw makeStringForException("Assignment operation must not be in a conditional expression.",ifstmt->expr->loc);
 	checkExpr(ifstmt->expr,false);//проверка условного выражения
 	checkStatementList(ifstmt->stmtlist);//проверка тела if-а
 	if(ifstmt->elsestmtlist!=NULL)
@@ -762,17 +699,7 @@ void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*
 	
 	// Код функции
 	if(exprContainsAssign(whilestmt->expr))
-	{
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",whilestmt->expr->loc->firstLine,whilestmt->expr->loc->firstColumn,whilestmt->expr->loc->lastLine,whilestmt->expr->loc->lastColumn);
-		// Если не объявлен, выдаем ошибку с именем операнда
-		char* errstr=new char[55+62];
-		errstr[0]='\0';
-		strcpy(errstr,"Assignment operation must not be in a conditional expression.");
-		strcat(errstr,"\nLocation: ");
-		strcat(errstr,bufstr);
-		throw errstr;
-	}
+		throw makeStringForException("Assignment operation must not be in a conditional expression.",whilestmt->expr->loc);
 	checkExpr(whilestmt->expr,false);//проверка условного выражения продолжения цикла
 	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
 	if(whilestmt->elsestmt!=NULL)
@@ -804,17 +731,7 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 		this->varNames.push_back(opName);
 	}
 	if(exprContainsAssign(forstmt->expr))
-	{
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",forstmt->expr->loc->firstLine,forstmt->expr->loc->firstColumn,forstmt->expr->loc->lastLine,forstmt->expr->loc->lastColumn);
-		// Если не объявлен, выдаем ошибку с именем операнда
-		char* errstr=new char[55+62];
-		errstr[0]='\0';
-		strcpy(errstr,"Assignment operation must not be in a conditional expression.");
-		strcat(errstr,"\nLocation: ");
-		strcat(errstr,bufstr);
-		throw errstr;
-	}
+		throw makeStringForException("Assignment operation must not be in a conditional expression.",forstmt->expr->loc);
 	checkExpr(forstmt->expr,false);//проверка выражения, по чем проходит цикл
 	checkStatementList(forstmt->stmtlist);//проверка тела цикла
 	if(forstmt->elsestmt!=NULL)
@@ -872,15 +789,11 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 	// Иначе выбрасываем исключение
 	else
 	{
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",funcdefstmt->nameLoc->firstLine,funcdefstmt->nameLoc->firstColumn,funcdefstmt->nameLoc->lastLine,funcdefstmt->nameLoc->lastColumn);
 		// Если не объявлен, выдаем ошибку с именем операнда
-		char* errStr = new char[30+strlen(curHeader->functionName)+62];
+		char* errStr = new char[30+strlen(curHeader->functionName)];
 		strcpy(errStr,"Can't define same function: ");
 		strcat(errStr,curHeader->functionName);
-		strcat(errStr,"\nLocation: ");
-		strcat(errStr,bufstr);
-		throw errStr;
+		throw makeStringForException(errStr,funcdefstmt->nameLoc);
 	}
 	// Если был вызов функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
@@ -892,19 +805,14 @@ void TreeTraversal::checkContinueBreakStmt(struct StmtInfo* contBreakStmt) throw
 	// Если мы сейчас находимся не в цикле, бросаем исключение
 	if(this->lc_state == _REGULAR_STATE)
 	{
-		// Формируем строку с локацией токена
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",contBreakStmt->loc->firstLine,contBreakStmt->loc->firstColumn,contBreakStmt->loc->lastLine,contBreakStmt->loc->lastColumn);
 		// Соединяем все в строке сообщения
-		char* errStr = new char[31+62];
+		char* errStr = new char[31];
 		if(contBreakStmt->type==_BREAK)
 			strcpy(errStr,"Found break in global code.");
 		else if(contBreakStmt->type==_CONTINUE)
 			strcpy(errStr,"Found continue in global code.");
-		strcat(errStr,"\nLocation: ");
-		strcat(errStr,bufstr);
 		// Бросаем строку исключением
-		throw errStr;
+		throw makeStringForException(errStr,contBreakStmt->loc);
 	}
 }
 
@@ -912,16 +820,7 @@ void TreeTraversal::checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * 
 {
 	// Если мы сейчас находимся в главном коде программы, бросаем исключение
 	if(this->gl_state == _MAIN_STATE)
-	{
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",retStmt->loc->firstLine,retStmt->loc->firstColumn,retStmt->loc->lastLine,retStmt->loc->lastColumn);
-		// Если не объявлен, выдаем ошибку с именем операнда
-		char* errStr = new char[30+62];
-		strcpy(errStr,"Found return in global code.");
-		strcat(errStr,"\nLocation: ");
-		strcat(errStr,bufstr);
-		throw errStr;
-	}
+		throw makeStringForException("Found return in global code.",retStmt->loc);
 	// Иначе проверяем возвращаемое выражение
 	checkExpr(expr,false);
 }
@@ -1077,4 +976,23 @@ void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str)
 			break;
 		}
 	}
+}
+
+char* TreeTraversal::makeStringForException(char* message, struct CodeLocation* location)
+{
+	char* bufstr;
+	if(location!=NULL)
+	{
+		bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",location->firstLine,location->firstColumn,location->lastLine,location->lastColumn);
+	}
+	else
+	{
+		bufstr = new char [2];
+		bufstr[0] = '\0';
+	}
+	char* finalString = new char [strlen(bufstr)+strlen(message)+1];
+	strcpy(finalString,message);
+	strcat(finalString,bufstr);
+	return finalString;
 }
