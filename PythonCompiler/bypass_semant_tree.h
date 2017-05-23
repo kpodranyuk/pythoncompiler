@@ -2,6 +2,7 @@
 * \file bypass_semant_tree.h хранит в себе код обхода дерева на этапе семантики
 */
 #include "tree_structs.h"
+#include "tables_struct.h"
 #include <vector>
 #include <map>
 
@@ -43,43 +44,8 @@ private:
 		struct DefFuncParamListInfo* params;		// Параметры функции
 	};
 
-	/*
-	* Хранит в себе возможный тип константы элемента таблицы
-	*/
-	enum TableElemType{
-		_UTF8,	
-		_INT,
-		_STRING,
-		_NAMEnTYPE,
-		_FIELDREF,
-		_METHODREF,
-		_CLASS
-	};
-
-	/*
-	* Хранит в себе элемент таблицы констант
-	*/
-	struct TableElement{
-		int number;						// Номер константы
-		int strNumber;					// Номер строки
-		enum TableElemType type;		// Тип элемента
-		int isStatic;					// Является ли статичной
-		std::string val;				// Значение
-		int localFor;					// Номер константы на методРеф для которого этот элемент является локальным
-	};
-
-	/*
-	* Регистрация типа пары для map
-	* ключ - строка - область видимости (global или имя функции)
-	* значение - вектор элементов таблицы констант
-	*/
-	/*typedef std::map<std::string, std::vector<struct TableElement*> > Table;
-	typedef std::pair<std::string, std::vector<struct TableElement*> > TablePair;
-	std::vector<TablePair> prog;
-	Table programm_table;*/
-
 	// Создаем вектор элементов таблиц глобального кода
-	std::vector<struct TableElement*> globalTable;
+	std::vector<struct ConstTable_Elem*> globalTable;
 	std::string currentFuncName;
 	int ValNum;
 	int TypeNum;
@@ -116,7 +82,7 @@ private:
 	* \param[in] type Тип элемента
 	* \param[in] val Значение
 	*/
-	struct TableElement* makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val, int local);
+	struct ConstTable_Elem* makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val, int local);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate

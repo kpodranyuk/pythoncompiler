@@ -33,9 +33,9 @@ void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
 	checkStatementList(root);
 }
 
-struct TreeTraversal::TableElement* TreeTraversal::makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val, int local)
+struct ConstTable_Elem* TreeTraversal::makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val, int local)
 {
-	struct TableElement* te = new struct TableElement;
+	struct ConstTable_Elem* te = new struct ConstTable_Elem;
 	te->number=num;
 	te->strNumber=strNum;
 	te->type=type;
