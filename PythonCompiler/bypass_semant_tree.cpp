@@ -536,68 +536,88 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		for(iter=this->funcNames.begin(); iter<this->funcNames.end()&&!contains; iter++) 
 		{
 			// Проверяем, равна ли текущая функция нужной
-			contains=strcmp(name.c_str(),(*iter)->functionName);
+			contains=strcmp(name.c_str(),(*iter)->functionName)==0;
+			if(contains)
+				break;
 		}
 		// Если функция с таким именем объявлена..
 		if(contains)
 		{
+			// Создаем указатель на элемент списка аргументов объявления функции
 			struct DefFuncParamInfo* el = (*iter)->params->first;
+			// Счетчик количества аргументов функции
 			int count = 0;
+			// Счетчик количества аргументов функции по умолчанию
 			int count_of_def = 0;
+			std::vector<std::string> def_defaults;
+			// Пока не пройдены все параметры
+			// Считаем количество обычных аргументов и по умолчанию
 			while(el!=NULL)
 			{
 				if(el->paramVal==NULL)
 					count++;
 				else
+				{
 					count_of_def++;
+					def_defaults.push_back(el->paramName);
+				}
 				el=el->next;
 			}
+			// Создаем указатель на элемент списка аргументов вызова функции
 			struct ExprInfo* call_el = expr->arglist->first;
+			// Счетчик фактического количества аргументов
 			int fact_count = 0;
+			// Счетчик фактических параметров функции
 			int fact_count_def = 0;
 			std::vector<std::string> defaults;
+			// Для каждого фактического аргумента
 			while(call_el!=NULL)
 			{
+				// Если тип - присвоение
 				if(call_el->type==_ASSIGN)
 				{
+					// Увеличиваем счетчик фактических параметров
 					fact_count_def++;
+					// Если слева - операнд, то прояеряем его имя
 					if(call_el->left->type==_OPERAND)
-						defaults.push_back(std::string(call_el->left->idName));
+					{
+						// Проверить, что имя аргумента содержится в списке параметров функции
+						if(!containsString(def_defaults,std::string(call_el->left->idName)))
+							throw makeStringForException("Can't assign value to param that isn't default",call_el->loc); 
+					}
+					// Иначе выбрасываем исключение
 					else
-						throw ""; // Выбросить исключение
+						throw makeStringForException("Can't assign value to anything except operand",call_el->loc); 
+					if(exprContainsAssign(call_el->right))
+						throw makeStringForException("Can't use multiple assignment",call_el->loc); 
+					checkExpr(call_el->right,false);
 				}
+				// Иначе..
 				else
 				{
+					//Увеличиваем счетчик фактических аргументов
 					fact_count++;
+					checkExpr(call_el,true);
 				}
-				checkExpr(call_el,assign);
 				if(call_el->next!=NULL)
 				{
 					if(call_el->next->type!=_ASSIGN&&call_el->type==_ASSIGN)
-						throw ""; // Выбросить исключение
+						throw makeStringForException("Wrong order of factual parametrs",call_el->loc);
 				}
 				call_el=call_el->next;
 			}
 			// Если количество аргументов совпадает
 			if(count==fact_count)
 			{
-				if(count_of_def<=fact_count_def)
-				{
-					el = (*iter)->params->first;
-					while(el!=NULL)
-					{
-						if(el->paramVal!=NULL)
-						{
-							if(!containsString(defaults,std::string(el->paramName)))
-								throw ""; // Выбросить исключение
-						}
-						el=el->next;
-					}
-				}
+				// Если количество параметров по умолчанию в объявлении меньше, чем при вызове
+				if(count_of_def<fact_count_def)
+					throw makeStringForException("Wrong amount of func parametrs in call",expr->loc);					
 			}
 			else
-				throw ""; // Выбросить исключение
+				throw makeStringForException("Wrong amount of params for function call",expr->loc); // Выбросить исключение
 		}
+		else
+			throw makeStringForException("Can't call undefined function",expr->loc); // Выбросить исключение
 	}
 	else if(expr->type==_UMINUS)
 	{
