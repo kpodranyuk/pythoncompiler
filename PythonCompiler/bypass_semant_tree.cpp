@@ -742,6 +742,18 @@ void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*
 	}
 	
 	// Код функции
+	if(exprContainsAssign(whilestmt->expr))
+	{
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",whilestmt->expr->loc->firstLine,whilestmt->expr->loc->firstColumn,whilestmt->expr->loc->lastLine,whilestmt->expr->loc->lastColumn);
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errstr=new char[55+62];
+		errstr[0]='\0';
+		strcpy(errstr,"Assignment operation must not be in a conditional expression.");
+		strcat(errstr,"\nLocation: ");
+		strcat(errstr,bufstr);
+		throw errstr;
+	}
 	checkExpr(whilestmt->expr,false);//проверка условного выражения продолжения цикла
 	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
 	if(whilestmt->elsestmt!=NULL)
@@ -771,6 +783,18 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	if(!containsString(this->varNames,opName))
 	{
 		this->varNames.push_back(opName);
+	}
+	if(exprContainsAssign(forstmt->expr))
+	{
+		char* bufstr = new char [50];
+		sprintf(bufstr,"(%d.%d-%d.%d)",forstmt->expr->loc->firstLine,forstmt->expr->loc->firstColumn,forstmt->expr->loc->lastLine,forstmt->expr->loc->lastColumn);
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errstr=new char[55+62];
+		errstr[0]='\0';
+		strcpy(errstr,"Assignment operation must not be in a conditional expression.");
+		strcat(errstr,"\nLocation: ");
+		strcat(errstr,bufstr);
+		throw errstr;
 	}
 	checkExpr(forstmt->expr,false);//проверка выражения, по чем проходит цикл
 	checkStatementList(forstmt->stmtlist);//проверка тела цикла
