@@ -497,6 +497,25 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 			throw errstr;
 		}
 	}
+	// Проверка на то, что бы во взятие элемента по индексу не было операции "="
+	else if(expr->type==_ARRID)
+	{
+		// Проверяем левую часть
+		checkExpr(expr->left,assign);
+		// Проверяем правую часть
+		if(exprContainsAssign(expr->right))
+		{
+			char* bufstr = new char [50];
+			sprintf(bufstr,"(%d.%d-%d.%d)",expr->loc->firstLine,expr->loc->firstColumn,expr->loc->lastLine,expr->loc->lastColumn);
+			char* errstr=new char[64+62];
+			errstr[0]='\0';
+			strcpy(errstr,"Can't use assignment operation in expression for array index.");
+			strcat(errstr,"\nLocation: ");
+			strcat(errstr,bufstr);
+			throw errstr;
+		}
+		checkExpr(expr->right,assign);
+	}
 	// Если действие - не, проверяем выражение
 	else if(expr->type==_NOT)
 	{
