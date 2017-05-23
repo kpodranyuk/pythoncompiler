@@ -88,6 +88,9 @@ struct ExprInfo* createSimpleExpr(enum ExprType type, char* opName, struct ValIn
 	expr->exprVal=val;
 
 	expr->loc=loc;
+	expr->left=NULL;
+	expr->right=NULL;
+	expr->middle=NULL;
 
 	// Возвращаем созданный узел
 	return expr;
@@ -113,6 +116,7 @@ struct ExprInfo* createExprInfo(enum ExprType type, struct ExprInfo* left, struc
 	expr->left=left;
 	expr->right=right;
 	expr->loc=operationLoc;
+	expr->middle=NULL;
 	// Возвращаем новый созданный узел
 	return expr;
 }
