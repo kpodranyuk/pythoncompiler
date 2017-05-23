@@ -744,6 +744,8 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 	if(lastState == _MAIN_STATE)
 		gl_state = _FUNC_STATE;
 	// Код функции
+	// Проверяем параметры функции
+	checkFuncParams(funcdefstmt->params);
 	// Создаем указатель на структуру с заголовком входной функции
 	struct FunctionHeader* curHeader = new struct FunctionHeader;
 	// Копируем в него имя функции
@@ -828,6 +830,29 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 
 void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
 {
+	// Проверка параметров функции при объявлении заключается лишь в том,
+	// что аргументы по умолчанию должны быть указаны после всех аргументов без значения
+	// Если у функции нет аргументов, то проверка не нужна
+	// Иначе
+	if(params!=NULL)
+	{
+		// Объявляем элемент для обхода списков
+		struct DefFuncParamInfo* element = params->first;
+		// Для каждого аргумента функции
+		while(element!=NULL)
+		{
+			// Если есть следующий элемент..
+			if(element->next!=NULL)
+			{
+				// Если текущий элемент - параметр по умолчанию, а следующий - простой операнд
+				// То выбрасываем исключение
+				if(element->paramVal!=NULL&&element->next->paramVal==NULL)
+					throw makeStringForException("Wrong order of function params",element->loc);
+			}
+			// Переходим к следующему элементу
+			element=element->next;
+		}
+	}
 }
 
 
