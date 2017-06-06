@@ -103,7 +103,7 @@ struct MethodTable_Elem
 {
 	int methodName;	// Ссылка на имя поля в таблице констант
 	int methodDesc;	// Ссылка на дескриптор поля в таблице константс
-	const int attrs = 1;	// Количество аттрибутов метода
+	static const int attrs = 1;	// Количество аттрибутов метода
 	//TODO сделать ссылку на таблицу аттрибутов метода
 	struct CodeAttr* methodAttr;
 	struct MethodTable_Elem* next;	// Указатель на следующий элемент таблицы
@@ -116,11 +116,11 @@ struct CodeAttr
 {
 	int attrName;	// Ссылка на аттрибут Code в таблице констант
 	int attrLength;	// Длина атрибута (кроме первых 6 байт, описывающих имя и длину)
-	const int stackSize = 1200;	// Размер стека операндов
+	static const int stackSize = 1200;	// Размер стека операндов
 	int localVarsCount;	// Количество локальных переменных метода
 	int byteCodeLength;	// Длина байт-кода (размер кода метода в байтах)
-	const int exceptionsCount = 0;	// Количество записей в таблице исключений
-	const int attrsCount = 0;		// Количество аттрибутов
+	static const int exceptionsCount = 0;	// Количество записей в таблице исключений
+	static const int attrsCount = 0;		// Количество аттрибутов
 };
 
 /*
@@ -128,13 +128,13 @@ struct CodeAttr
 */
 enum OperType
 {
-	_INVOKESTATIC = 184,
-	_RETURN = 177,
-	_LDC = 18,
-	_ILOAD = 21,
-	_FLOAD = 23,
-	_IF_ICMPNE = 160,
-	_GOTO = 167
+	__INVOKESTATIC = 184,
+	__RETURN = 177,
+	__LDC = 18,
+	__ILOAD = 21,
+	__FLOAD = 23,
+	__IF_ICMPNE = 160,
+	__GOTO = 167
 };
 
 /*
@@ -160,7 +160,7 @@ struct Variable
 {
 	char * name; // Имя
 	int num; // Номер в таблице локальных переменных метода
-	const int type = 1; // Наш Value
+	static const int type = 1; // Наш Value
 
 	struct Variable * next; // Следубщая переменная
 };

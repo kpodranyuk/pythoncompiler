@@ -74,7 +74,7 @@ private:
 	* @author Kate
 	* \param[in] type Тип элемента
 	*/
-	std::string convertTypeToString(enum TableElemType type);
+	//std::string convertTypeToString(enum TableElemType type);
 
 	/* Создать элемент строки таблицы констант
 	* @author Nikita
@@ -258,6 +258,12 @@ private:
 	* \param[in|out] ct таблица констант
 	*/
 	void initializeConstTable(struct ConstTable_List* ct);
+
+	/*
+	* Добавить элемент таблицы в конец таблицы
+	* \param[in] ce элемент для добавления
+	*/
+	void appendToConstTable(struct ConstTable_Elem* ce);
 
 	/*!
 	*	!!!!! Публичная часть класса !!!!!
