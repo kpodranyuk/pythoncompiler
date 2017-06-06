@@ -2,7 +2,7 @@
 * \file bypass_semant_tree.h хранит в себе код обхода дерева на этапе семантики
 */
 #include "tree_structs.h"
-#include "tables_struct.h"
+#include "tables_structs.h"
 #include <vector>
 #include <map>
 
@@ -50,6 +50,8 @@ private:
 	int ValNum;
 	int TypeNum;
 	int MassTypeNum;
+
+	struct ClassTable_Elem* prog;
 
 	/*
 	* Хранит в себе список инициализированных переменных

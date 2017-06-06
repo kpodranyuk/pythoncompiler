@@ -3,6 +3,21 @@
 */
 
 /*
+* Хранить описание класса
+*/
+struct ClassTable_Elem
+{
+	int classConst; // Номер класса в таблице констант
+	int fieldCount; // Количество полей класса
+	int methodCount; // Количество методов в классе
+	struct FieldTable_Elem * firstField; // Указатель на первое поле класса
+	struct FieldTable_Elem * lastField; // Указатель на последнее поле класса
+	struct MethodTable_Elem * methodsfirst; // Указатель на первый метод класса(main)
+	struct MethodTable_Elem * methodslast; // Указатель на последний метод класса
+};
+
+
+/*
 * Хранит в себе возможный тип константы
 */
 enum ConstType
