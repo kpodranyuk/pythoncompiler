@@ -49,6 +49,8 @@ private:
 	int valClassDesc;	// —сылка на константу класса Value в таблице констант
 	int typeDesc;		// —сылка на константу дескриптора типа LValue;
 
+	struct ClassTable_Elem* prog;
+
 	/*
 	* ’ранит в себе список инициализированных переменных
 	*/
