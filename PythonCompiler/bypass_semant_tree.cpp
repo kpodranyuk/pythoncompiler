@@ -44,7 +44,7 @@ struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* num
 		te->value.utf8=new char[strlen(utf8)+1];
 		strcpy(te->value.utf8,utf8);
 	}
-	else if(type==CONST_STRING)
+	else if(type==CONST_STRING || type==CONST_CLASS)
 	{
 		te->value.args.arg1=arg1;
 	}
