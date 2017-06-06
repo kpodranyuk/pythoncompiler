@@ -55,7 +55,7 @@ private:
 	/*
 	* Хранит в себе список инициализированных переменных
 	*/
-	std::vector<std::string> varNames;
+	//std::vector<std::string> varNames;
 	/*
 	* Хранит в себе список имен объявленных функций
 	*/
@@ -65,6 +65,23 @@ private:
 	*/
 	std::vector<struct FunctionHeader*> funcHeaders;
 
+	/*
+	* Хранит в себе список инициализированных переменных
+	* Ключ - имя функции
+	* Глобальный год - global
+	*/
+	std::map<std::string,std::vector<std::string>> varDecls;
+
+	/*
+	* Хранит в себе список используемых переменных
+	* Ключ - имя функции
+	* НЕ ЗАПОЛНЯЕТСЯ В ГЛОБАЛЬНОМ КОДЕ
+	*/
+	std::map<std::string,std::vector<std::string>> varUsage;
+
+	/*
+	* Хранит в себе список стандартных функций языка
+	*/
 
 	/*
 	*	---------- Методы класса ----------
@@ -121,6 +138,13 @@ private:
 	* \param[in] func функция
 	*/
 	void deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func);
+
+	/* Удалить функцию из вектора
+	* @author Kate
+	* \param[in|out] vec вектор функций
+	* \param[in] func имя функции
+	*/
+	void deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, std::string funcName);
 
 	/* Проверить содержит ли вектор функцию
 	* @author Kate

@@ -67,8 +67,8 @@ int main(int argc, char** argv) {
 		try{
 			treeWalker->fixTree(root);
 			printf("\nTree fixed successfully\n");
-			treeWalker->makeTables(root);
-			printf("\nTables made successfully\n");
+			//treeWalker->makeTables(root);
+			//printf("\nTables made successfully\n");
 		}
 		catch (char* message)
 		{

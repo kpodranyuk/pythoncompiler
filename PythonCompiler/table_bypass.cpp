@@ -53,7 +53,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	* - объявлении массива
 	* - объявлении функции
 	*/
-	this->varNames.clear();
+//	this->varNames.clear();
 	this->funcHeaders.clear();
 	valClassDesc=0;
 	typeDesc=0;
@@ -126,14 +126,14 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNu
 		// Проверяем, есть ли он уже в списке переменных
 		// И если нет, то добавляем
 		std::string opName = std::string(expr->idName);
-		if(!containsString(this->varNames,opName))
+		/*if(!containsString(this->varNames,opName))
 		{
 			this->varNames.push_back(opName);
 			// Делаем привязку к типу
 			// Добавляем в таблицу данные о переменной
 			// Делаем NameAndType
 			// Делаем fieldRef				
-		}
+		}*/
 	}
 
 	// Если константа

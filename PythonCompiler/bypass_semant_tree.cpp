@@ -143,6 +143,23 @@ void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, s
 	}
 }
 
+void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, std::string funcName)
+{
+	std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
+	// Для каждого элемента списка и пока не найдено значение..
+	for(iter=vec.begin(); iter<vec.end(); iter++) 
+	{
+		// Проверяем, равна ли текущая функция нужной
+		if(strcmp((*iter)->functionName,funcName.c_str())==0)
+		{
+			// Удаляем нужное значение
+			vec.erase(iter);
+			// Выходим из цикла
+			break;
+		}
+	}
+}
+
 bool TreeTraversal::containsString(std::vector<std::string>& vec, std::string str) const
 {
 	std::vector<std::string>::const_iterator iter;  // Объявляем итератор для списка строк

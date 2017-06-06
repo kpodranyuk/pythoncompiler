@@ -32,6 +32,7 @@ void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
 	// Задаем начальные состояния
 	this->gl_state=_MAIN_STATE;
 	this->lc_state=_REGULAR_STATE;
+	currentFuncName="global";
 	// Запускаем проверку дерева
 	checkStatementList(root);
 }
@@ -90,12 +91,33 @@ void TreeTraversal::checkStatementList(struct StmtListInfo* root) throw(char*)
 
 void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 {
-	// Если операнд
+	// Если операнд (использование)
 	if(expr->type==_OPERAND)
 	{
-		// Проверяем, что он уже объявлен
+		// Получаем имя операнда
 		std::string opName = std::string(expr->idName);
-		if(!containsString(this->varNames,opName)&&!containsString(this->funcNames,opName))
+		bool operandExists=false;
+		// Проверяем, что он уже объявлен
+		// Если операнд встретился в глобальном коде
+		// Проверяем только его наличие в списке объявлений по ключу global
+		if(this->gl_state==_MAIN_STATE)
+			operandExists=containsString(this->varDecls.at("global"),opName);
+		// Иначе если операнд встретился внутри функции
+		else
+		{
+			// 1. Проверяем его наличие в списке объявлений данной локальной функции
+			operandExists=containsString(this->varDecls.at(currentFuncName),opName);
+			// 2. Если переменная не локальная, то ищем ее в глобальном коде..
+			if(!operandExists)
+			{
+				operandExists=containsString(this->varDecls.at("global"),opName);
+				// Если найдено использование глобальной переменной, то добавляем ее имя в usage
+				if(operandExists)
+					varUsage.at(currentFuncName).push_back(opName);
+			}
+		}
+		// 3. Если переменная не найдена, выбрасываем исключение
+		if(!operandExists)
 		{
 			// Если не объявлен, выдаем ошибку с именем операнда
 			char* errstr=new char[35+strlen(expr->idName)];
@@ -104,6 +126,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 			strcat(errstr,expr->idName);
 			throw makeStringForException(errstr,expr->loc);
 		}
+
 	}
 	// Если присвоение
 	else if(expr->type==_ASSIGN)
@@ -115,27 +138,53 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		// Если слева операнд
 		if(expr->left->type==_OPERAND)
 		{
-			// Проверяем, есть ли он уже в списке переменных
-			// И если нет, то добавляем
-			std::string opName = std::string(expr->left->idName);
-			if(!containsString(this->varNames,opName))
+			std::string opName = std::string(expr->idName);
+			// 1. Если код глобальный..
+			if(this->gl_state==_MAIN_STATE)
 			{
-				this->varNames.push_back(opName);
+				// 1.1. Проверяем, объявлена ли уже такая переменная
+				// 1.2. Если переменная не объявлена, то добавляем информацию о ее объявлении
+				if(!containsString(this->varDecls.at("global"),opName))
+					this->varDecls.at("global").push_back(opName);
+				// Удаляем функцию
 				if(containsString(this->funcNames,opName))
 				{
-					this->deleteString(this->funcNames,opName);
-					std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
-					// Для каждого элемента списка и пока не найдено значение..
-					for(iter=this->funcHeaders.begin(); iter<this->funcHeaders.end(); iter++) 
+					deleteString(this->funcNames,opName);
+					deleteFuncHeader(this->funcHeaders,opName);
+				}
+			}
+			// 2. Если код локальный..
+			else
+			{
+				// 2.1. Проверяем, есть ли локальная переменная с таким именем
+				// 2.2. Если переменной с таким именем нет
+				if(!containsString(this->varDecls.at(currentFuncName),opName))
+				{
+					// 2.2.1. Проверяем, есть ли глобальная переменная с таким именем
+					// 2.2.2. Если такая переменная есть в глобальном коде, то проверяем, использовалась ли она до этого в этой функции
+					if(containsString(this->varDecls.at("global"),opName))
 					{
-						// Проверяем, равна ли текущая функция нужной
-						if(strcmp((*iter)->functionName,opName.c_str())==0)
+						// 2.2.2.1. Если переменная использовалась, выдаем ошибку
+						if(containsString(this->varUsage.at(currentFuncName),opName))
 						{
-							// Удаляем нужное значение
-							this->funcHeaders.erase(iter);
-							// Выходим из цикла
-							break;
+							// Если не объявлен, выдаем ошибку с именем операнда
+							char* errstr=new char[35+strlen(expr->idName)];
+							errstr[0]='\0';
+							strcpy(errstr,"Variable referenced before assignment - ");
+							strcat(errstr,expr->idName);
+							throw makeStringForException(errstr,expr->loc);
 						}
+						else
+							this->varDecls.at(currentFuncName).push_back(opName);
+						// 2.2.2.2. Иначе добавляем переменную в список локальных переменных
+					}
+					else
+						this->varDecls.at(currentFuncName).push_back(opName);
+					// Удаляем функцию
+					if(containsString(this->funcNames,opName))
+					{
+						deleteString(this->funcNames,opName);
+						deleteFuncHeader(this->funcHeaders,opName);
 					}
 				}
 			}
@@ -434,9 +483,54 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	// Проверяем, есть ли он уже в списке переменных
 	// И если нет, то добавляем
 	std::string opName = std::string(forstmt->counter);
-	if(!containsString(this->varNames,opName))
+	// 1. Если код глобальный..
+	if(this->gl_state==_MAIN_STATE)
 	{
-		this->varNames.push_back(opName);
+		// 1.1. Проверяем, объявлена ли уже такая переменная
+		// 1.2. Если переменная не объявлена, то добавляем информацию о ее объявлении
+		if(!containsString(this->varDecls.at("global"),opName))
+			this->varDecls.at("global").push_back(opName);
+		// Удаляем функцию
+		if(containsString(this->funcNames,opName))
+		{
+			deleteString(this->funcNames,opName);
+			deleteFuncHeader(this->funcHeaders,opName);
+		}
+	}
+	// 2. Если код локальный..
+	else
+	{
+		// 2.1. Проверяем, есть ли локальная переменная с таким именем
+		// 2.2. Если переменной с таким именем нет
+		if(!containsString(this->varDecls.at(currentFuncName),opName))
+		{
+			// 2.2.1. Проверяем, есть ли глобальная переменная с таким именем
+			// 2.2.2. Если такая переменная есть в глобальном коде, то проверяем, использовалась ли она до этого в этой функции
+			if(containsString(this->varDecls.at("global"),opName))
+			{
+				// 2.2.2.1. Если переменная использовалась, выдаем ошибку
+				if(containsString(this->varUsage.at(currentFuncName),opName))
+				{
+					// Если не объявлен, выдаем ошибку с именем операнда
+					char* errstr=new char[35+strlen(opName.c_str())];
+					errstr[0]='\0';
+					strcpy(errstr,"Variable referenced before assignment - ");
+					strcat(errstr,opName.c_str());
+					throw makeStringForException(errstr,forstmt->expr->loc);
+				}
+				else
+					this->varDecls.at(currentFuncName).push_back(opName);
+				// 2.2.2.2. Иначе добавляем переменную в список локальных переменных
+			}
+			else
+				this->varDecls.at(currentFuncName).push_back(opName);
+			// Удаляем функцию
+			if(containsString(this->funcNames,opName))
+			{
+				deleteString(this->funcNames,opName);
+				deleteFuncHeader(this->funcHeaders,opName);
+			}
+		}
 	}
 	if(exprContainsAssign(forstmt->expr))
 		throw makeStringForException("Assignment operation must not be in a conditional expression.",forstmt->expr->loc);
@@ -456,10 +550,14 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 {
 	// Проверяем текущее состояние анализатора
 	enum GlobalState lastState = gl_state;
-	// Если вызов функции из глобального кода, меняем состояние
+	// Если объявление функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
 		gl_state = _FUNC_STATE;
+	// Иначе выдаем ошибку
+	else if(lastState == _FUNC_STATE)
+		throw makeStringForException("Can't define function inside function",funcdefstmt->nameLoc);
 	// Код функции
+	currentFuncName=std::string(funcdefstmt->functionName);
 	// Проверяем параметры функции
 	checkFuncParams(funcdefstmt->params);
 	// Создаем указатель на структуру с заголовком входной функции
@@ -470,34 +568,35 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 	// И передаем указатель на список параметров
 	curHeader->params=funcdefstmt->params;
 	// Если такая функция еще не была объявлена
-	if(!containsFuncHeader(this->funcHeaders,curHeader))
+	if(!containsFuncHeader(this->funcHeaders,curHeader)&&!containsString(this->funcNames,std::string(curHeader->functionName)))
 	{
 		// Добавляем ее заголовок в массив функций
 		this->funcHeaders.push_back(curHeader);
-		if(containsString(this->varNames,curHeader->functionName))
-			deleteString(this->varNames,curHeader->functionName);
+		// Удаляем переменную с таким именем
+		deleteString(this->varDecls.at("global"),curHeader->functionName);
 		this->funcNames.push_back(curHeader->functionName);
 		// Добавляем аргументы функции в список констант
 		std::vector<std::string> onlyInHeader;
 		struct DefFuncParamInfo* el = curHeader->params->first;
 		while(el!=NULL)
 		{
-			if(!containsString(this->varNames,std::string(el->paramName)))
+			this->varDecls.at(currentFuncName).push_back(el->paramName);
+			/*if(!containsString(this->varNames,std::string(el->paramName)))
 			{
 				this->varNames.push_back(std::string(el->paramName));
 				onlyInHeader.push_back(std::string(el->paramName));
-			}
+			}*/
 			el=el->next;
 		}
 		// Проверяем ее тело
 		checkStatementList(funcdefstmt->body);
 
-		std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
+		/*std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
 		// Для каждого элемента списка..
 		for(iter=onlyInHeader.begin(); iter<onlyInHeader.end(); iter++) 
 		{
 			deleteString(this->varNames,*iter);
-		}
+		}*/
 	}
 	// Иначе выбрасываем исключение
 	else
@@ -543,7 +642,7 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 	// Из правил бизона известно, что выражением может быть только операнд
 	// Поэтому проверяем, не удален ли уже операнд
 	checkExpr(expr,false);
-	if(containsString(this->varNames,std::string(expr->idName)))
+/*	if(containsString(this->varNames,std::string(expr->idName)))
 		deleteString(this->varNames,std::string(expr->idName));
 	if(containsString(this->funcNames,std::string(expr->idName)))
 	{
@@ -561,7 +660,7 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 				break;
 			}
 		}
-	}
+	}*/
 }
 
 void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
