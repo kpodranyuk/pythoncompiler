@@ -5,6 +5,7 @@
 #include "tables_structs.h"
 #include <vector>
 #include <map>
+#include <string>
 
 #pragma warning(disable : 4290)
 
