@@ -259,6 +259,12 @@ private:
 	*/
 	void initializeConstTable(struct ConstTable_List* ct);
 
+	/*
+	* Добавить элемент таблицы в конец таблицы
+	* \param[in] ce элемент для добавления
+	*/
+	void appendToConstTable(struct ConstTable_Elem* ce);
+
 	/*!
 	*	!!!!! Публичная часть класса !!!!!
 	*/
