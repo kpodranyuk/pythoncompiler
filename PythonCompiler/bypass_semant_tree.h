@@ -84,7 +84,7 @@ private:
 	* \param[in] arg1 первый аргумент ссылки(на имя)
 	* \param[in] arg2 второй аргумент ссылки(на тип)
 	*/
-	struct ConstTable_Elem* makeTableEl(enum ConstType type, int numberInTable, char * utf8, int val_int, int arg1, int arg2);
+	struct ConstTable_Elem* makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, int arg1, int arg2);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate

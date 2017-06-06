@@ -33,11 +33,11 @@ void TreeTraversal::fixTree(struct StmtListInfo* root) throw(char*)
 	checkStatementList(root);
 }
 
-struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int numberInTable, char * utf8, int val_int, int arg1, int arg2)
+struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, int arg1, int arg2)
 {
 	struct ConstTable_Elem* te = new struct ConstTable_Elem();
 	te->type=type;
-	te->numberInTable=numberInTable;
+	te->numberInTable=(*numberInTable)++;
 	te->next=NULL;
 	if(type==CONST_UTF8)
 	{
