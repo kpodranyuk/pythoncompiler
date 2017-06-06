@@ -96,3 +96,33 @@ struct CodeAttr
 	const int exceptionsCount = 0;	// Количество записей в таблице исключений
 	const int attrsCount = 0;		// Количество аттрибутов
 };
+
+/*
+* Хранит в себе возможный тип операции
+*/
+enum OperType
+{
+	_INVOKESTATIC = 184,
+	_RETURN = 177,
+	_LDC = 18,
+	_ILOAD = 21,
+	_FLOAD = 23,
+	_IF_ICMPNE = 160,
+	_GOTO = 167
+};
+
+/*
+* Хранит описание операции
+*/
+struct Operation
+{
+	enum OperType type; // Тип операции
+	/*Переменные, оперделенных размеров*/
+	unsigned char u1;
+	unsigned short int u2;
+	unsigned int u4;
+	short int s2;
+	int s4;
+
+	struct MC_Operation * next; // Указатель на следующую константу
+};
