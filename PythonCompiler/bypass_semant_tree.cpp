@@ -161,29 +161,9 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNu
 		{
 			this->varNames.push_back(opName);
 			// Делаем привязку к типу
-			if(TypeNum==0&&typeAboveExpression!=_ARRINIT)
-			{
-				globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("LValue;"), local));
-				TypeNum=*constNum-1;
-			}
-			else if(MassTypeNum==0&&typeAboveExpression==_ARRINIT)
-			{
-				globalTable.push_back(makeTableEl((*constNum)++,NULL,_UTF8,NULL,std::string("[LValue;"), local));
-				MassTypeNum=*constNum-1;
-			}
 			// Добавляем в таблицу данные о переменной
-			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_UTF8,NULL,opName, local));
 			// Делаем NameAndType
-			char buf[50]="";
-			if(typeAboveExpression==_ARRINIT)
-				sprintf(buf,"%d,%d",*constNum-1,MassTypeNum);
-			else
-				sprintf(buf,"%d,%d",*constNum-1,TypeNum);
-			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_NAMEnTYPE,NULL,std::string(buf), local));
-			// Делаем fieldRef
-			buf[0]='\0';
-			sprintf(buf,"%d,%d",ValNum,*constNum-1);
-			globalTable.push_back(makeTableEl((*constNum)++,expr->loc->firstLine,_FIELDREF,NULL,std::string(buf), local));				
+			// Делаем fieldRef				
 		}
 	}
 
@@ -196,26 +176,19 @@ void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int* constN
 {
 	if(val->type==_TRUE)
 	{
-		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_INT,NULL,std::string("1"), local));
+		;
 	}
 	else if(val->type==_FALSE)
 	{
-		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_INT,NULL,std::string("0"), local));
+		;
 	}
 	else if(val->type==_NUMBER)
 	{
-		char* str = new char[50];
-		sprintf(str,"%d",val->intVal);
-		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_INT,NULL,std::string(str), local));
+		;
 	}
 	else
 	{
-		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_UTF8,NULL,std::string(val->stringVal), local));
-		int costNumForStr = *constNum-1;
-		char* str = new char[50];
-		sprintf(str,"%d",costNumForStr);
-		// Добавляем в таблицу данные о переменной
-		globalTable.push_back(makeTableEl((*constNum)++,val->loc->firstLine,_STRING,NULL,std::string(str), local));
+		;
 	}
 		
 }
@@ -256,41 +229,19 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 			type+=")";
 		}
 		type+="LValue;";
-		globalTable.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,1,type, local));
 		// Добавляем в таблицу данные о переменной
-		globalTable.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_UTF8,1,std::string(curHeader->functionName), local));
 		// Делаем NameAndType
-		char buf[50]="";
-		sprintf(buf,"%d,%d",*constNum-2,*constNum-1);
-		globalTable.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_NAMEnTYPE,1,std::string(buf), local));
 		// Делаем methodRef
-		buf[0]='\0';
-		sprintf(buf,"%d,%d",ValNum,*constNum-1);
-		globalTable.push_back(makeTableEl((*constNum)++,funcdefstmt->nameLoc->firstLine,_METHODREF,1,std::string(buf), local));
-		local=*constNum-1;
 		//currentFuncName=std::string(curHeader->functionName);
 
 		std::vector<struct TableElement*> funcTable;
 		int* funcConsts = new int;
 		*funcConsts=1;
 		// Проверяем ее тело
-		parseStmtListForTable(funcdefstmt->body,constNum,local);//checkStatementList(funcdefstmt->body);
-		//programm_table.insert(TablePair(std::string(curHeader->functionName),funcTable));
-		//prog.push_back(TablePair(std::string(curHeader->functionName),funcTable));
+		parseStmtListForTable(funcdefstmt->body,constNum,local);
 	}
 	// Иначе выбрасываем исключение
-	/*else
-	{
-		char* bufstr = new char [50];
-		sprintf(bufstr,"(%d.%d-%d.%d)",funcdefstmt->nameLoc->firstLine,funcdefstmt->nameLoc->firstColumn,funcdefstmt->nameLoc->lastLine,funcdefstmt->nameLoc->lastColumn);
-		// Если не объявлен, выдаем ошибку с именем операнда
-		char* errStr = new char[30+strlen(curHeader->functionName)+62];
-		strcpy(errStr,"Can't define same function: ");
-		strcat(errStr,curHeader->functionName);
-		strcat(errStr,"\nLocation: ");
-		strcat(errStr,bufstr);
-		throw errStr;
-	}*/
+
 	// Если был вызов функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
 	{
@@ -886,7 +837,7 @@ void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
 *	---------------- БЛОК ВСПОМОГАТЕЛЬНЫХ МЕТОДОВ ДЛЯ РАБОТЫ СО СПИСКАМИ И КОНТЕЙНЕРАМИ ----------------
 */
 
-std::string TreeTraversal::convertTypeToString(enum TableElemType type)
+/*std::string TreeTraversal::convertTypeToString(enum TableElemType type)
 {
 	std::string str="";
 	switch (type)
@@ -914,7 +865,7 @@ std::string TreeTraversal::convertTypeToString(enum TableElemType type)
 		break;		
 	}
 	return str;
-}
+}*/
 
 bool TreeTraversal::isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const
 {

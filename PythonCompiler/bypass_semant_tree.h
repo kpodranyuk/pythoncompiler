@@ -74,7 +74,7 @@ private:
 	* @author Kate
 	* \param[in] type Тип элемента
 	*/
-	std::string convertTypeToString(enum TableElemType type);
+	//std::string convertTypeToString(enum TableElemType type);
 
 	/* Создать элемент строки таблицы констант
 	* @author Nikita
