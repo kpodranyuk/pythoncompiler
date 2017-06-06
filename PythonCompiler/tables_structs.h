@@ -124,5 +124,17 @@ struct Operation
 	short int s2;
 	int s4;
 
-	struct MC_Operation * next; // Указатель на следующую константу
+	struct Operation * next; // Указатель на следующую константу
+};
+
+/*
+* Хранит описание переменной
+*/
+struct Variable
+{
+	char * name; // Имя
+	int num; // Номер в таблице локальных переменных метода
+	const int type = 1; // Наш Value
+
+	struct Variable * next; // Следубщая переменная
 };
