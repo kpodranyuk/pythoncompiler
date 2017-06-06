@@ -55,9 +55,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	// Задаем начальные состояния
 	this->gl_state=_MAIN_STATE;
 	this->lc_state=_REGULAR_STATE;
-	// Запускаем проверку дерева
-	//checkStatementList(root);
-	currentFuncName="global.csv";
+	currentFuncName="global";
 	int* constNumber = new int;
 	*constNumber=1;
 	/**
@@ -72,64 +70,13 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	*/
 	this->varNames.clear();
 	this->funcHeaders.clear();
-	ValNum=0;
-	TypeNum=0;
-	MassTypeNum=0;
-	// Открываем файл констант функции
-	FILE* tbl = fopen(currentFuncName.c_str(),"wt");
-	// Пишем заголовок таблицы
-	fprintf(tbl,"%s\n","\"Constant number\";\"String number\";\"Type\";\"Static\";\"Constant value\";\"Local for\";");
+	valClassDesc=0;
+	typeDesc=0;
+	// TODO СОЗДАТЬ ФУНКЦИЮ ГЕНЕРАЦИИ ВСТАВКИ РТЛ ТАБЛИЦЫ
 	int constantNumber=1;
-	// Добавляем в таблицу константу Code
-	globalTable.push_back(makeTableEl((*constNumber)++,NULL,_UTF8,NULL,std::string("Code"),NULL));
-	// Добавляем в таблицу константу класса main
-	globalTable.push_back(makeTableEl((*constNumber)++,NULL,_UTF8,NULL,std::string("Main"),NULL));
-	// Создаем для нее константу типа Class
-	globalTable.push_back(makeTableEl((*constNumber)++,1,_CLASS,NULL,std::string("2"),NULL));
-	// Добавляем в таблицу константу класса Value
-	globalTable.push_back(makeTableEl((*constNumber)++,NULL,_UTF8,NULL,std::string("Value"),NULL));
-	// Создаем для нее константу типа Class
-	globalTable.push_back(makeTableEl((*constNumber)++,NULL,_CLASS,NULL,std::string("4"),NULL));
-	ValNum=*constNumber-1;
 	parseStmtListForTable(treeRoot,constNumber,NULL);
 	std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
-	// Для каждого элемента списка и пока не найдено значение..
-	for(iter=globalTable.begin(); iter<globalTable.end(); iter++) 
-	{
-		std::string output="";
-		char buf[50]="";
-		output+="\"";
-		sprintf(buf,"%d",(*iter)->number);
-		output+=std::string(buf);
-		output+="\";\"";
-		if((*iter)->strNumber!=NULL)
-		{
-			sprintf(buf,"%d",(*iter)->strNumber);
-			output+=std::string(buf);
-		}
-		output+="\";\"";
-		output+=convertTypeToString((*iter)->type);
-		output+="\";\"";
-		if((*iter)->isStatic==NULL)
-			output+="\";";
-		else if((*iter)->isStatic)
-			output+="1\";";
-		else
-			output+="0\";";
-		output+="\"";
-		output+=(*iter)->val;
-		output+="\";\"";
-		if((*iter)->localFor==NULL)
-			output+="\";";
-		else 
-		{
-			sprintf(buf,"%d",(*iter)->localFor);
-			output+=std::string(buf);
-			output+="\";";
-		}
-		fprintf(tbl,"%s\n",output.c_str());
-		//iter=table.erase(iter);
-	}
+	// TODO СОЗДАТЬ ФУНКЦИЮ ОБХОДА ТАБЛИЦ ДЛЯ ПЕЧАТИ
 }
 
 void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* constNum, int local)
