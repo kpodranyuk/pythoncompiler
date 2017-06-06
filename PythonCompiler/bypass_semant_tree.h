@@ -2,7 +2,7 @@
 * \file bypass_semant_tree.h хранит в себе код обхода дерева на этапе семантики
 */
 #include "tree_structs.h"
-#include "tables_struct.h"
+#include "tables_structs.h"
 #include <vector>
 #include <map>
 
@@ -45,11 +45,9 @@ private:
 	};
 
 	// —оздаем вектор элементов таблиц глобального кода
-	std::vector<struct ConstTable_Elem*> globalTable;
 	std::string currentFuncName;
-	int ValNum;
-	int TypeNum;
-	int MassTypeNum;
+	int valClassDesc;	// —сылка на константу класса Value в таблице констант
+	int typeDesc;		// —сылка на константу дескриптора типа LValue;
 
 	/*
 	* ’ранит в себе список инициализированных переменных
