@@ -1040,3 +1040,249 @@ char* TreeTraversal::makeStringForException(char* message, struct CodeLocation* 
 	strcat(finalString,bufstr);
 	return finalString;
 }
+
+void TreeTraversal::initializeConstTable(struct ConstTable_List* ct)
+{
+	// Номер константы
+	*(ct_consts->constnumber)=1;
+	// Выделяем память
+	ct=new struct ConstTable_List;
+	ct->first=new struct ConstTable_Elem;
+	// Инициализируем первый элемент
+	ct->first->type=CONST_UTF8;
+	ct->first->value.utf8="Code";
+	ct->first->next=NULL;
+	// Связываем первый и последний элементы
+	ct->last=ct->first;
+	// CT_AddConst(CONST_UTF8, NULL); - добавляет элемент в зависимости от типа
+	// Аналог создания элемента и помещения его на место последнего в список
+	
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "java/lang/Object";
+	CT_AddConst(CONST_CLASS, (void*)&constnumber);
+	objectClass = constnumber;
+
+	ct_consts->objectClass=*(ct_consts->constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "<init>";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "()V";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+
+	CONSTANT_INIT = constnumber;
+	ct_consts->init=*(ct_consts->constnumber);
+
+	CT_AddConst2(CONST_METHODREF, objectClass, constnumber);
+
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "Program";
+	CT_AddConst(CONST_CLASS, (void*)&constnumber);
+
+	programClass.classConst = constnumber;
+	prog->classConst=*(ct_consts->constnumber);
+
+	programClass.firstField = NULL;
+	prog->firstField=NULL;
+
+	// Запись имён функций
+	// Главная функция
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "main";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "([Ljava/lang/String;)V";
+	ct_consts->nameconstid = *(ct_consts->constnumber) - 1;
+	// Вспомогательные функции
+	
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "rtl/Value";
+	CT_AddConst(CONST_CLASS, (void*)&constnumber);
+	ct_consts->valueType = *(ct_consts->constnumber);
+	CT_AddConst2(CONST_METHODREF, mixedtype, CONSTANT_INIT);
+	/*CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "rtl/Undefined";
+	CT_AddConst(CONST_CLASS, (void*)&constnumber);
+	mixedtype = constnumber;
+	CT_AddConst2(CONST_METHODREF, mixedtype, CONSTANT_INIT);*/
+	// rtl
+	//----------------------------------
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "rtl/Lib";
+	CT_AddConst(CONST_CLASS, (void*)&constnumber);
+	ct_consts->rtlClass = *(ct_consts->constnumber);
+	
+	// print
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "print";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;)V";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, ct_consts->rtlClass, constnumber);
+	//----------------------------------
+
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "sub";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	arifmentic = constnumber;
+	ct_consts->arifmetic=*(ct_consts->constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "add";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "mul";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "div";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "mod";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "toIntBool";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;)I";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	/*CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "ListAdd";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+	list = constnumber;
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "ListSet";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Mixed;Lrtl/Mixed;Lrtl/Mixed;)V";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "ListGet";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Mixed;Lrtl/Mixed;)Lrtl/Mixed;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);*/
+
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "eq";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	logic = constnumber;
+	ct_consts->logic=*(ct_consts->constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL); // + 4
+	lastConst->value.utf8 = "less";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL); // + 8
+	lastConst->value.utf8 = "more";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);// + 12
+	lastConst->value.utf8 = "lessOrEq";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);// + 16
+	lastConst->value.utf8 = "moreOrEq";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);// + 20
+	lastConst->value.utf8 = "not";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);// + 24
+	lastConst->value.utf8 = "or";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);// + 28
+	lastConst->value.utf8 = "and";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	CT_AddConst(CONST_UTF8, NULL);// + 32
+	lastConst->value.utf8 = "notEq";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(Lrtl/Value;Lrtl/Value;)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	mixedclass = constnumber;//??
+	ct_consts->valueClass=*(ct_consts->constnumber);
+
+	// mixedFromInt 4
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "mixedFromInt";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(I)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	// mixedFromUndefined 8
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "mixedFromUndefined";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "()Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	// mixedFromFloat 12
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "mixedFromFloat";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "(F)Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+
+	// mixedFromList 16
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "mixedFromList";
+	CT_AddConst(CONST_UTF8, NULL);
+	lastConst->value.utf8 = "()Lrtl/Value;";
+	CT_AddConst2(CONST_NAMETYPE, constnumber - 1, constnumber);
+	CT_AddConst2(CONST_METHODREF, rtlclass, constnumber);
+}

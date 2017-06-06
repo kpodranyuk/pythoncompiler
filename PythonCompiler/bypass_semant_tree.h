@@ -44,12 +44,13 @@ private:
 		struct DefFuncParamListInfo* params;		// ѕараметры функции
 	};
 
-	// —оздаем вектор элементов таблиц глобального кода
 	std::string currentFuncName;
 	int valClassDesc;	// —сылка на константу класса Value в таблице констант
 	int typeDesc;		// —сылка на константу дескриптора типа LValue;
 
-	struct ClassTable_Elem* prog;
+	struct ClassTable_Elem* prog;			// ”казатель на таблицу класса
+	struct ConstTable_List* ct;				// ”казатель на таблицу констант
+	struct ConstTable_Consts* ct_consts;	// ”казатель на константы таблицы констант
 
 	/*
 	* ’ранит в себе список инициализированных переменных
@@ -250,6 +251,13 @@ private:
 	* \param[in] location расположение ошибки
 	*/
 	char* makeStringForException(char* message, struct CodeLocation* location);
+
+
+	/*
+	* »нициализировать таблицу констант
+	* \param[in|out] ct таблица констант
+	*/
+	void initializeConstTable(struct ConstTable_List* ct);
 
 	/*!
 	*	!!!!! ѕублична€ часть класса !!!!!
