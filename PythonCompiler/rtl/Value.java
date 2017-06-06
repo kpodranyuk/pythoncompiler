@@ -72,35 +72,6 @@ public abstract class Value {
     public Value mod(Value other) {
         throw new Error("Operation not allowed with these types.");
     }
-    /*** МЕТОДЫ ДЛЯ ХЕШ-ТАБЛИЦ***/
-    
-//    /**
-//     *
-//     * @param key
-//     * @return
-//     */
-//    public Value get(Value key) {
-//        throw new Error("Operation not allowed with these types.");
-//    }
-//
-//    /**
-//     *
-//     * @param key
-//     * @param val
-//     * @return
-//     */
-//    public Value put(Value key, Value val) {
-//        throw new Error("Operation not allowed with these types.");
-//    }
-//
-//    /**
-//     *
-//     * @param key
-//     * @return
-//     */
-//    public Value remove(Value key) {
-//        throw new Error("Operation not allowed with these types.");
-//    }
 
     /**
      * Операция отрицания

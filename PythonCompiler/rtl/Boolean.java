@@ -11,7 +11,7 @@ package rtl;
  */
 public class Boolean extends Value {
 
-    boolean value;
+    public boolean value;
 
     public Boolean(boolean val) {
         this.value = val;

@@ -110,7 +110,9 @@ public class Integer extends Value{
 
     @Override
     public int toIntBool() {
-        return this.value;
+        if(this.value != 0)
+            return 1;
+        return 0;
     }
 
     @Override

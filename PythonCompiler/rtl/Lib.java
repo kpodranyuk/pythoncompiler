@@ -94,9 +94,9 @@ public class Lib {
         return new String(s);
     }
 
-    /*public static Value mixedFromList() {
+    public static Value mixedFromList() {
         return new List();
-    }*/
+    }
 
     public static Value sub(Value m1, Value m2) {
         return m1.sub(m2);
@@ -158,24 +158,32 @@ public class Lib {
         return m1.and(m2);
     }
 
-    /*public static Mixed ListGet(Mixed list, Mixed index) {
+    public static Value ListGet(Value list, Value index) {
         if (((list instanceof List)) && ((index instanceof Integer))) {
-            return (Mixed) ((List) list).value.get(((Integer) index).value);
+            return (Value) ((List)list).value.get(((Integer)index).value);
         }
-        return mixedFromUndefined();
+        return mixedFromNone();
     }
 
-    public static void ListSet(Mixed list, Mixed index, Mixed val) {
+    public static void ListSet(Value list, Value index, Value val) {
         if (((list instanceof List)) && ((index instanceof Integer))) {
             ((List) list).value.set(((Integer) index).value, val);
         }
     }
 
-    public static Mixed ListAdd(Mixed list, Mixed val) {
+    public static Value ListAppend(Value list, Value val) {
         if ((list instanceof List)) {
             ((List) list).value.add(val);
-            return list;
         }
-        return mixedFromUndefined();
-    }*/
+        return mixedFromNone();
+    }
+    
+    public static Value ListRemove(Value list, Value val) {
+        if ((list instanceof List)) {
+            if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String) {
+               ((List) list).value.remove(val); 
+            }
+        }
+        return mixedFromNone();
+    }
 }

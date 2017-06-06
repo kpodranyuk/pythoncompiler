@@ -42,6 +42,29 @@ public class String extends Value {
     }
 
     @Override
+    public Value or(Value other) {
+        return super.or(other); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Value and(Value other) {
+        return super.and(other); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Value not() {
+        return super.not(); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public int toIntBool() {
+        if(this.value.isEmpty())
+            return 0;
+        return 1;
+    }
+    
+
+    @Override
     public boolean equals(Object other) {
         if ((other instanceof String)) {
             return this.value.equals(((String) other).value);
