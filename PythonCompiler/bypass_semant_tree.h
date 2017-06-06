@@ -45,11 +45,9 @@ private:
 	};
 
 	// —оздаем вектор элементов таблиц глобального кода
-	std::vector<struct ConstTable_Elem*> globalTable;
 	std::string currentFuncName;
-	int ValNum;
-	int TypeNum;
-	int MassTypeNum;
+	int valClassDesc;	// —сылка на константу класса Value в таблице констант
+	int typeDesc;		// —сылка на константу дескриптора типа LValue;
 
 	struct ClassTable_Elem* prog;
 
