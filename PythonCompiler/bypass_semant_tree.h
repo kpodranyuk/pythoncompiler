@@ -76,13 +76,15 @@ private:
 	std::string convertTypeToString(enum TableElemType type);
 
 	/* Создать элемент строки таблицы констант
-	* @author Kate
-	* \param[in] num Номер константы
-	* \param[in] strNum Номер строки
-	* \param[in] type Тип элемента
-	* \param[in] val Значение
+	* @author Nikita
+	* \param[in] type тип константы
+	* \param[in] numberInTable номер константы в таблице констант
+	* \param[in] utf8 значение константы(строка или название переменной или дескриптор)
+	* \param[in] val_int интовое значение константы
+	* \param[in] arg1 первый аргумент ссылки(на имя)
+	* \param[in] arg2 второй аргумент ссылки(на тип)
 	*/
-	struct ConstTable_Elem* makeTableEl(int num, int strNum, enum TableElemType type, int isStatic, std::string val, int local);
+	struct ConstTable_Elem* makeTableEl(enum ConstType type, int numberInTable, char * utf8, int val_int, int arg1, int arg2);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate
