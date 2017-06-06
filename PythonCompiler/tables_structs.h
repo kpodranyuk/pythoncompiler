@@ -79,6 +79,8 @@ struct ConstTable_Elem
 
         int val_int;	// Значение целого числа
     } value;
+
+	int numberInTable; // Номер константы в таблице
     
     struct ConstTable_Elem * next;	// Указатель на следующий элемент таблицы
 };
