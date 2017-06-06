@@ -1,7 +1,22 @@
 /*
 * \file tables_struct.h Содержит необходимые для генерации кода и таблиц структуры
 */
-
+/*
+* Хранит в себе ссылки основных элементов таблицы констант
+*/
+struct ConstTable_Consts
+{
+	int* constnumber;	// Счетчик констант в таблице констант
+	int objectClass;	// Номер класса Code
+	int rtlClass;		// Номер класса rtl
+	int valueType;		// Номер класса value
+	int valueClass;		// Номер первой операции-обертки конструктора
+	int arifmetic;		// Номер первой арифметической операции
+	//int list;
+	int logic;			// Номер первой логической операции
+	int nameconstid;	// Номер метода main
+	int init;			// Номер строки с конструктором по умолчанию
+};
 /*
 * Хранить описание класса
 */
@@ -30,6 +45,15 @@ enum ConstType
     CONST_FIELDREF  = 9,
     CONST_METHODREF = 10,
     CONST_NAMETYPE  = 12
+};
+
+/*
+* Хранит в себе информацию о таблице констант
+*/
+struct ConstTable_List
+{
+	struct ConstTable_Elem* first;
+	struct ConstTable_Elem* last;
 };
 
 /*
