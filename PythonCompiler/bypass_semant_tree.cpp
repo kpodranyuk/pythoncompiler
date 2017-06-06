@@ -1056,12 +1056,13 @@ void TreeTraversal::initializeConstTable(struct ConstTable_List* ct)
 	ct->last=ct->first;
 	// CT_AddConst(CONST_UTF8, NULL); - добавляет элемент в зависимости от типа
 	// Аналог создания элемента и помещения его на место последнего в список
-	
-	CT_AddConst(CONST_UTF8, NULL);
-	lastConst->value.utf8 = "java/lang/Object";
+	makeTableEl(CONST_UTF8,ct_consts->constnumber,"java/lang/Object",NULL,NULL,NULL);
+	//CT_AddConst(CONST_UTF8, NULL);
+	//lastConst->value.utf8 = "java/lang/Object";
 	CT_AddConst(CONST_CLASS, (void*)&constnumber);
 	objectClass = constnumber;
 
+	makeTableEl(CONST_CLASS,ct_consts->constnumber,"java/lang/Object",NULL,NULL,NULL);
 	ct_consts->objectClass=*(ct_consts->constnumber);
 
 	CT_AddConst(CONST_UTF8, NULL);
