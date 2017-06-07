@@ -30,6 +30,71 @@ struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* num
 	return te;
 }
 
+char* convertConstTypeToString(enum ConstType type)
+{
+	switch (type)
+	{
+	case CONST_UTF8:
+		return "UTF-8";
+	case CONST_INT:
+		return "INT";
+	case CONST_FLOAT:
+		return "FLOAT";
+	case CONST_CLASS:
+		return "Class";
+	case CONST_STRING:
+		return "STRING";
+	case CONST_FIELDREF:
+		return "FieldRef";
+	case CONST_METHODREF:
+		return "MethodRef";
+	case CONST_NAMETYPE:
+		return "Name&Type";
+	}
+}
+
+char* convertValToString(struct ConstTable_Elem* el)
+{
+	char* buf=new char;
+	char* final=new char;
+	if(el->type==CONST_UTF8)
+		return el->value.utf8;
+	else if(el->type==CONST_STRING || el->type==CONST_CLASS)
+	{
+		itoa(el->value.args.arg1,buf,10);
+		return buf;
+	}
+	else if(el->type==CONST_INT)
+	{
+		itoa(el->value.val_int,buf,10);
+		return buf;
+	}
+	else if(el->type==CONST_NAMETYPE || el->type==CONST_METHODREF || el->type==CONST_FIELDREF)
+	{
+		final=new char [35];
+		itoa(el->value.args.arg1,buf,10);
+		strcpy(final,buf);
+		strcat(final,", ");
+		itoa(el->value.args.arg2,buf,10);
+		strcat(final,buf);
+		return final;
+	}
+}
+
+char* convertTableElementToString(struct ConstTable_Elem* el)
+{
+	std::string final="\"";
+	final.append(std::to_string((long double)el->numberInTable));
+	final.append("\";\"");
+	final.append(convertConstTypeToString(el->type));
+	final.append("\";\"");
+	final.append(convertValToString(el));
+	final.append("\";");
+	char* strToRet = new char[final.length()+1];
+	strcpy(strToRet,final.c_str());
+	return strToRet;
+}
+
 // Составление таблиц (второй обход)
 void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
@@ -57,11 +122,23 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	this->funcHeaders.clear();
 	valClassDesc=0;
 	typeDesc=0;
+	this->ct_consts=new ConstTable_Consts;
+	this->ct_consts->constnumber=new int(0);
+	this->prog=new ClassTable_Elem;
 	// TODO СОЗДАТЬ ФУНКЦИЮ ГЕНЕРАЦИИ ВСТАВКИ РТЛ ТАБЛИЦЫ
-	int constantNumber=1;
-	parseStmtListForTable(treeRoot,constNumber,NULL);
-	std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
+	initializeConstTable();
+	//int constantNumber=1;
+	//parseStmtListForTable(treeRoot,constNumber,NULL);
+	//std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
 	// TODO СОЗДАТЬ ФУНКЦИЮ ОБХОДА ТАБЛИЦ ДЛЯ ПЕЧАТИ
+	FILE* table = fopen("const_table.csv","wt");
+	fprintf(table,"\"Constant number\";\"Type\";\"Constant value\";\n");
+	struct ConstTable_Elem* el = this->ct->first;
+	while(el!=NULL)
+	{
+		fprintf(table,"%s\n",convertTableElementToString(el));
+		el=el->next;
+	}
 }
 
 void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* constNum, int local)

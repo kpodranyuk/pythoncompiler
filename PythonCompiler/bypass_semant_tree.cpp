@@ -210,7 +210,7 @@ char* TreeTraversal::makeStringForException(char* message, struct CodeLocation* 
 	return finalString;
 }
 
-void TreeTraversal::initializeConstTable(struct ConstTable_List* ct)
+void TreeTraversal::initializeConstTable()
 {
 	// Номер константы
 	*(ct_consts->constnumber)=1;
@@ -221,6 +221,7 @@ void TreeTraversal::initializeConstTable(struct ConstTable_List* ct)
 	ct->first->type=CONST_UTF8;
 	ct->first->value.utf8="Code";
 	ct->first->next=NULL;
+	ct->first->numberInTable=(*(ct_consts->constnumber))++;
 	// Связываем первый и последний элементы
 	ct->last=ct->first;
 	// CT_AddConst(CONST_UTF8, NULL); - добавляет элемент в зависимости от типа

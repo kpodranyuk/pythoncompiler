@@ -282,7 +282,7 @@ private:
 	* Инициализировать таблицу констант
 	* \param[in|out] ct таблица констант
 	*/
-	void initializeConstTable(struct ConstTable_List* ct);
+	void initializeConstTable();
 
 	/*
 	* Добавить элемент таблицы в конец таблицы
