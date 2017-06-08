@@ -170,7 +170,12 @@ public class Lib {
             
             return ((List)list).value.get(newIndex);
         } else if (((list instanceof String)) && ((index instanceof Integer))) {
-            return ((String)list).charAt((Integer)index);
+            int newIndex = ((Integer) index).value;
+            if(newIndex<0) {
+                newIndex=flipIndex(newIndex, ((String) list).value.length());
+            }
+            
+            return ((String)list).charAt(new Integer(newIndex));
         }
         throw new Error("The index must be an integer and the operation must occur over the array.");
     }
