@@ -124,6 +124,24 @@ void TreeTraversal::appendToMethodTable(struct MethodTable_Elem* me)
 	last_el->next=this->methods->last;
 }
 
+void TreeTraversal::appendToVarsTable(struct Variable* v)
+{
+	if(this->vars->first==NULL)
+	{
+		this->vars->count=1;
+		v->next=NULL;
+		v->num=(this->vars->count)++;
+		this->vars->first=v;
+		this->vars->last=v;
+		return;
+	}
+	v->num=(this->vars->count)++;
+	struct Variable* last_v=this->vars->last;
+	this->vars->last=v;
+	this->vars->last->next=NULL;
+	last_v->next=this->vars->last;
+}
+
 bool TreeTraversal::isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const
 {
 	return strcmp(first->functionName,second->functionName)==0&&isEqualDefFuncParams(first->params,second->params);

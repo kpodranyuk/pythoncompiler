@@ -199,6 +199,16 @@ struct Operation
 };
 
 /*
+* Хранит в себе информацию о таблице локальных переменных методов
+*/
+struct VariableTable_List
+{
+	struct Variable* first;
+	struct Variable* last;
+	int count;
+};
+
+/*
 * Хранит описание переменной
 */
 struct Variable
@@ -206,6 +216,6 @@ struct Variable
 	char * name; // Имя
 	int num; // Номер в таблице локальных переменных метода
 	static const int type = 1; // Наш Value
-
-	struct Variable * next; // Следубщая переменная
+	int localFor;	// Номер методРефа, которому принадлежит функция
+	struct Variable * next; // Следующая переменная
 };

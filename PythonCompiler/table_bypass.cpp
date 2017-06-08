@@ -110,6 +110,38 @@ char* convertFieldElementToString(struct FieldTable_Elem* el)
 	return strToRet;
 }
 
+char* convertMethodElementToString(struct MethodTable_Elem* el)
+{
+	std::string final="\"";
+	final.append(std::to_string((long double)el->access));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->methodName));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->methodDesc));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->attrs));
+	final.append("\";");
+	char* strToRet = new char[final.length()+1];
+	strcpy(strToRet,final.c_str());
+	return strToRet;
+}
+
+char* convertVarElementToString(struct Variable* el)
+{
+	std::string final="\"";
+	final.append(std::to_string((long double)el->num));
+	final.append("\";\"");
+	final.append(std::string(el->name));
+	final.append("\";\"");
+	final.append(std::string("LValue;"));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->localFor));
+	final.append("\";");
+	char* strToRet = new char[final.length()+1];
+	strcpy(strToRet,final.c_str());
+	return strToRet;
+}
+
 // Составление таблиц (второй обход)
 void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
@@ -143,9 +175,19 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	this->prog=new ClassTable_Elem;
 	// TODO СОЗДАТЬ ФУНКЦИЮ ГЕНЕРАЦИИ ВСТАВКИ РТЛ ТАБЛИЦЫ
 	initializeConstTable();
+
 	fields=new FieldTable_List;
 	fields->first=NULL;
 	fields->last=NULL;
+
+	methods=new MethodTable_List;
+	methods->first=NULL;
+	methods->last=NULL;
+
+	vars=new VariableTable_List;
+	vars->first=NULL;
+	vars->last=NULL;
+
 	parseStmtListForTable(treeRoot,NULL);
 	//std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
 	// TODO СОЗДАТЬ ФУНКЦИЮ ОБХОДА ТАБЛИЦ ДЛЯ ПЕЧАТИ
@@ -167,6 +209,24 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 		fe=fe->next;
 	}
 	fclose(fieldT);
+	FILE* methodT = fopen("method_table.csv","wt");
+	fprintf(methodT,"\"Access\";\"Name Ref\";\"Desc\";\"Attr\";\n");
+	struct MethodTable_Elem* me = this->methods->first;
+	while(me!=NULL)
+	{
+		fprintf(methodT,"%s\n",convertMethodElementToString(me));
+		me=me->next;
+	}
+	fclose(methodT);
+	FILE* localsT = fopen("locals_table.csv","wt");
+	fprintf(localsT,"\"Number\";\"Name\";\"Type\";\"Local for\";\n");
+	struct Variable* v = this->vars->first;
+	while(v!=NULL)
+	{
+		fprintf(localsT,"%s\n",convertVarElementToString(v));
+		v=v->next;
+	}
+	fclose(localsT);
 }
 
 void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int local)
@@ -226,31 +286,46 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 	// Если операнд
 	if(expr->type==_OPERAND)
 	{
-		// Проверяем, есть ли он уже в списке переменных
-		// И если нет, то добавляем
-		std::string opName = std::string(expr->idName);
-		if(!containsString(this->varDecls["global"],opName))
+		if(local!=NULL)
 		{
-			struct FieldTable_Elem* curElem=new FieldTable_Elem;
-			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL));
-			curElem->fieldName=*(ct_consts->constnumber);
-			// Делаем привязку к типу
-			if(this->varDecls["global"].empty())
+			if(!containsString(this->varDecls[currentFuncName],std::string(expr->idName))&&!containsString(this->varDecls["global"],std::string(expr->idName))&&typeAboveExpression==_ASSIGN)
 			{
-				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL));
-				ct_consts->descId=*(ct_consts->constnumber);
-				// Делаем NameAndType
-				appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
+				struct Variable* var = new struct Variable;
+				var->name=new char[strlen(expr->idName)+1];
+				strcpy(var->name,expr->idName);
+				var->localFor=local;
+				appendToVarsTable(var);
+				this->varDecls[currentFuncName].push_back(std::string(expr->idName));
 			}
-			else
-				// Делаем NameAndType
-				appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
-			curElem->fieldDesc=ct_consts->descId;
-			// Делаем fieldRef
-			appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
-			this->varDecls["global"].push_back(opName);
-			appendToFieldTable(curElem);
 		}
+		else
+		{
+			// Проверяем, есть ли он уже в списке переменных
+			// И если нет, то добавляем
+			std::string opName = std::string(expr->idName);
+			if(!containsString(this->varDecls["global"],opName))
+			{
+				struct FieldTable_Elem* curElem=new FieldTable_Elem;
+				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL));
+				curElem->fieldName=*(ct_consts->constnumber);
+				// Делаем привязку к типу
+				if(this->varDecls["global"].empty())
+				{
+					appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL));
+					ct_consts->descId=*(ct_consts->constnumber);
+					// Делаем NameAndType
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
+				}
+				else
+					// Делаем NameAndType
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
+				curElem->fieldDesc=ct_consts->descId;
+				// Делаем fieldRef
+				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
+				this->varDecls["global"].push_back(opName);
+				appendToFieldTable(curElem);
+			}
+		}		
 	}
 	// Выражение, состоящие из списка выражений
 	else if(expr->type==_ARRINIT||expr->type==_FUNCCALL)
@@ -346,24 +421,41 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 		type+="LValue;";
 		char* Ctype=new char [strlen(type.c_str())+1];
 		strcpy(Ctype,type.c_str());
+		struct MethodTable_Elem* curElem=new MethodTable_Elem;
+		int mRef=0;
 		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,funcdefstmt->functionName,NULL,NULL,NULL));
+		curElem->methodAttr=NULL;
+		curElem->methodName=*(ct_consts->constnumber);
 		// Делаем привязку к типу
 		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,Ctype,NULL,NULL,NULL));
+		curElem->methodDesc=*(ct_consts->constnumber);
 		// Делаем NameAndType
 		appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 		// Делаем methodRef
 		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
-		std::vector<struct TableElement*> funcTable;
-		int* funcConsts = new int;
-		*funcConsts=1;
+		mRef=*(ct_consts->constnumber);
+		appendToMethodTable(curElem);
+		currentFuncName=std::string(funcdefstmt->functionName);
+		struct DefFuncParamInfo* el = curHeader->params->first;
+		while(el!=NULL)
+		{
+			struct Variable* var = new struct Variable;
+			var->name=new char[strlen(el->paramName)+1];
+			strcpy(var->name,el->paramName);
+			var->localFor=mRef;
+			appendToVarsTable(var);
+			this->varDecls[currentFuncName].push_back(std::string(var->name));
+			el=el->next;
+		}
+
 		// Проверяем ее тело
-		parseStmtListForTable(funcdefstmt->body,local);
+		parseStmtListForTable(funcdefstmt->body,mRef);
 	}
 	// Если был вызов функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
 	{
 		gl_state = _MAIN_STATE;
-		//currentFuncName="global.csv";
+		currentFuncName="global";
 		local=NULL;
 	}
 }
