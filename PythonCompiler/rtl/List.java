@@ -39,8 +39,40 @@ public class List extends Value {
             return 0;
         return 1;
     }
-    
   
+    @Override
+    public Value less(Value other) {
+        if(other instanceof List) {
+            List list = (List)other;
+            int sizeList;
+            // Находим наименьший из листов(размер)
+            if(this.value.size() > list.value.size()) {
+                sizeList=list.value.size();
+            } else {
+                sizeList=this.value.size();
+            }
+            
+            // Если листы равны, то результатом операции будет false
+            if(this.equals(list)) {
+                return new Boolean(false);
+            }
+            
+            // Проходим по всем элементам наименьшего листа
+            // Результатом лог выражения будет первое значение true или false
+            for(int i=0; i<sizeList; i++) {
+                if((this.value.get(i).less(list.value.get(i))).toIntBool()==1 && !this.value.get(i).equals(list.value.get(i))) {
+                    return new Boolean(true);
+                }
+            }
+            
+            return new Boolean(false);
+            
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
+    }
+    
+    
     @Override
     public boolean equals(Object paramObject) {
         Value obj = (Value) paramObject;

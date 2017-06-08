@@ -34,6 +34,22 @@ public class Boolean extends Value {
     }
 
     @Override
+    public Value less(Value other) {
+        if(other instanceof Boolean) {
+            Boolean bol = (Boolean)other;
+            if(this.toIntBool() < bol.toIntBool()) {
+                return new Boolean(true);
+            } else {
+                return new Boolean(false);
+            }     
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
+    }
+    
+    
+
+    @Override
     public int toIntBool() {
         return this.value ? 1 : 0;
     }

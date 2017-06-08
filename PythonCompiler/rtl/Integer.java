@@ -97,6 +97,20 @@ public class Integer extends Value{
         return 0;
     }
     
+    @Override
+    public Value less(Value other) {
+        if(other instanceof Integer) {
+            Integer in = (Integer)other;
+            if(this.value < in.value) {
+                return new Boolean(true);
+            } else {
+                return new Boolean(false);
+            }
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
+    }
+    
     
     @Override
     public boolean equals(Object other) {

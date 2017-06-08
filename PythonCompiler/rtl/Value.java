@@ -135,7 +135,7 @@ public abstract class Value {
      * @return новое значение
      */
     public Value less(Value other) {
-        return new Boolean(false);// TO DO вставить исключение
+        throw new Error("Operation not allowed with these types.");
     }
 
     /**
@@ -144,7 +144,7 @@ public abstract class Value {
      * @return новое значение
      */
     public Value more(Value other) {
-        return lessOrEq(other).not();// TO DO вставить исключение
+        return lessOrEq(other).not();
     }
 
     /**
@@ -153,7 +153,7 @@ public abstract class Value {
      * @return новое значение
      */
     public Value lessOrEq(Value other) {
-        return less(other).or(eq(other));// TO DO вставить исключение
+        return less(other).or(eq(other));
     }
 
     /**
@@ -162,7 +162,7 @@ public abstract class Value {
      * @return новое значение
      */
     public Value moreOrEq(Value other) {
-        return less(other).not();// TO DO вставить исключение
+        return less(other).not();
     }
 
 }
