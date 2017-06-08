@@ -82,6 +82,7 @@ private:
 	/*
 	* Хранит в себе список стандартных функций языка
 	*/
+	std::vector<std::string> libFuncs;
 
 	/*
 	*							---------- Методы класса ----------
@@ -157,6 +158,13 @@ private:
 	void checkFuncCall(struct FunctionHeader* first, struct FunctionHeader* second) const;
 
 	//!!!!!!!!!!!!!!!!!!!!!!!! ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ПЕРВОГО ОБХОДА !!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+	/* Проверить, является ли вызываемая функция библиотечной
+	* @author Kate
+	* \param[in] expr выражение вызова функции
+	* \return true, если является, иначе - false
+	*/
+	bool isLibFunctionCall(struct ExprInfo * expr);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate

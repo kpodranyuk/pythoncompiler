@@ -98,6 +98,16 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 	{
 		// Получаем имя операнда
 		std::string opName = std::string(expr->idName);
+		// Проверяем, что имя операнда не совпадает с именем библиотечной функции
+		if(containsString(this->libFuncs,opName))
+		{
+			// Если не объявлен, выдаем ошибку с именем операнда
+			char* errstr=new char[40+strlen(expr->idName)];
+			errstr[0]='\0';
+			strcpy(errstr,"Can't name operand as lib function - ");
+			strcat(errstr,expr->idName);
+			throw makeStringForException(errstr,expr->loc);
+		}
 		bool operandExists=false;
 		// Проверяем, что он уже объявлен
 		// Если операнд встретился в глобальном коде
@@ -135,12 +145,22 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 	{
 		// Если присваивание уже было, то кидаем исключение
 		if(assign)
-			throw makeStringForException("Assignment operation can not be more than 2 times in the expression.",expr->loc);
+			throw makeStringForException("Can't use assignment in the expression.",expr->loc);//("Assignment operation can not be more than 2 times in the expression.",expr->loc);
 		// Слева от присовения может быть только либо операнд, либо взятие по индексу массива
 		// Если слева операнд
 		if(expr->left->type==_OPERAND)
 		{
 			std::string opName = std::string(expr->left->idName);
+			// Проверяем, что имя операнда не совпадает с именем библиотечной функции
+			if(containsString(this->libFuncs,opName))
+			{
+				// Если не объявлен, выдаем ошибку с именем операнда
+				char* errstr=new char[40+strlen(expr->idName)];
+				errstr[0]='\0';
+				strcpy(errstr,"Can't name operand as lib function - ");
+				strcat(errstr,expr->idName);
+				throw makeStringForException(errstr,expr->loc);
+			}
 			// 1. Если код глобальный..
 			if(this->gl_state==_MAIN_STATE)
 			{
@@ -277,94 +297,97 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		// 4. Количество аргументов по-умолчанию считать отдельно
 		// 5. Затереть переменную с тем же именем из списка
 		std::string name = std::string(expr->idName);
-		std::vector<struct FunctionHeader*>::const_iterator iter;  // Объявляем итератор для списка функций
-		bool contains = false;							// Объявляем флаг того, что функция не найдена в списке
+		if(!isLibFunctionCall(expr))
+		{
+			std::vector<struct FunctionHeader*>::const_iterator iter;  // Объявляем итератор для списка функций
+				bool contains = false;							// Объявляем флаг того, что функция не найдена в списке
 		// Для каждого элемента списка и пока не найдено значение..
-		for(iter=this->funcHeaders.begin(); iter<this->funcHeaders.end()&&!contains; iter++) 
-		{
-			// Проверяем, равна ли текущая функция нужной
-			contains=strcmp(name.c_str(),(*iter)->functionName)==0;
+			for(iter=this->funcHeaders.begin(); iter<this->funcHeaders.end()&&!contains; iter++) 
+			{
+				// Проверяем, равна ли текущая функция нужной
+				contains=strcmp(name.c_str(),(*iter)->functionName)==0;
+				if(contains)
+					break;
+			}
+			// Если функция с таким именем объявлена..
 			if(contains)
-				break;
-		}
-		// Если функция с таким именем объявлена..
-		if(contains)
-		{
-			// Создаем указатель на элемент списка аргументов объявления функции
-			struct DefFuncParamInfo* el = (*iter)->params->first;
-			// Счетчик количества аргументов функции
-			int count = 0;
-			// Счетчик количества аргументов функции по умолчанию
-			int count_of_def = 0;
-			std::vector<std::string> def_defaults;
-			// Пока не пройдены все параметры
-			// Считаем количество обычных аргументов и по умолчанию
-			while(el!=NULL)
 			{
-				if(el->paramVal==NULL)
-					count++;
-				else
+				// Создаем указатель на элемент списка аргументов объявления функции
+				struct DefFuncParamInfo* el = (*iter)->params->first;
+				// Счетчик количества аргументов функции
+				int count = 0;
+				// Счетчик количества аргументов функции по умолчанию
+				int count_of_def = 0;
+				std::vector<std::string> def_defaults;
+				// Пока не пройдены все параметры
+				// Считаем количество обычных аргументов и по умолчанию
+				while(el!=NULL)
 				{
-					count_of_def++;
-					def_defaults.push_back(el->paramName);
-				}
-				el=el->next;
-			}
-			// Создаем указатель на элемент списка аргументов вызова функции
-			struct ExprInfo* call_el = expr->arglist->first;
-			// Счетчик фактического количества аргументов
-			int fact_count = 0;
-			// Счетчик фактических параметров функции
-			int fact_count_def = 0;
-			std::vector<std::string> defaults;
-			// Для каждого фактического аргумента
-			while(call_el!=NULL)
-			{
-				// Если тип - присвоение
-				if(call_el->type==_ASSIGN)
-				{
-					// Увеличиваем счетчик фактических параметров
-					fact_count_def++;
-					// Если слева - операнд, то прояеряем его имя
-					if(call_el->left->type==_OPERAND)
-					{
-						// Проверить, что имя аргумента содержится в списке параметров функции
-						if(!containsString(def_defaults,std::string(call_el->left->idName)))
-							throw makeStringForException("Can't assign value to param that isn't default",call_el->loc); 
-					}
-					// Иначе выбрасываем исключение
+					if(el->paramVal==NULL)
+						count++;
 					else
-						throw makeStringForException("Can't assign value to anything except operand",call_el->loc); 
-					if(exprContainsAssign(call_el->right))
-						throw makeStringForException("Can't use multiple assignment",call_el->loc); 
-					checkExpr(call_el->right,false);
+					{
+						count_of_def++;
+						def_defaults.push_back(el->paramName);
+					}
+					el=el->next;
 				}
-				// Иначе..
+				// Создаем указатель на элемент списка аргументов вызова функции
+				struct ExprInfo* call_el = expr->arglist->first;
+				// Счетчик фактического количества аргументов
+				int fact_count = 0;
+				// Счетчик фактических параметров функции
+				int fact_count_def = 0;
+				std::vector<std::string> defaults;
+				// Для каждого фактического аргумента
+				while(call_el!=NULL)
+				{
+					// Если тип - присвоение
+					if(call_el->type==_ASSIGN)
+					{
+						// Увеличиваем счетчик фактических параметров
+						fact_count_def++;
+						// Если слева - операнд, то прояеряем его имя
+						if(call_el->left->type==_OPERAND)
+						{
+							// Проверить, что имя аргумента содержится в списке параметров функции
+							if(!containsString(def_defaults,std::string(call_el->left->idName)))
+								throw makeStringForException("Can't assign value to param that isn't default",call_el->loc); 
+						}
+						// Иначе выбрасываем исключение
+						else
+							throw makeStringForException("Can't assign value to anything except operand",call_el->loc); 
+						if(exprContainsAssign(call_el->right))
+							throw makeStringForException("Can't use multiple assignment",call_el->loc); 
+						checkExpr(call_el->right,false);
+					}
+					// Иначе..
+					else
+					{
+						//Увеличиваем счетчик фактических аргументов
+						fact_count++;
+						checkExpr(call_el,true);
+					}
+					if(call_el->next!=NULL)
+					{
+						if(call_el->next->type!=_ASSIGN&&call_el->type==_ASSIGN)
+							throw makeStringForException("Wrong order of factual parametrs",call_el->loc);
+					}
+					call_el=call_el->next;
+				}
+				// Если количество аргументов совпадает
+				if(count==fact_count)
+				{
+					// Если количество параметров по умолчанию в объявлении меньше, чем при вызове
+					if(count_of_def<fact_count_def)
+						throw makeStringForException("Wrong amount of func parametrs in call",expr->loc);					
+				}
 				else
-				{
-					//Увеличиваем счетчик фактических аргументов
-					fact_count++;
-					checkExpr(call_el,true);
-				}
-				if(call_el->next!=NULL)
-				{
-					if(call_el->next->type!=_ASSIGN&&call_el->type==_ASSIGN)
-						throw makeStringForException("Wrong order of factual parametrs",call_el->loc);
-				}
-				call_el=call_el->next;
-			}
-			// Если количество аргументов совпадает
-			if(count==fact_count)
-			{
-				// Если количество параметров по умолчанию в объявлении меньше, чем при вызове
-				if(count_of_def<fact_count_def)
-					throw makeStringForException("Wrong amount of func parametrs in call",expr->loc);					
+					throw makeStringForException("Wrong amount of params for function call",expr->loc); // Выбросить исключение
 			}
 			else
-				throw makeStringForException("Wrong amount of params for function call",expr->loc); // Выбросить исключение
+				throw makeStringForException("Can't call undefined function",expr->loc); // Выбросить исключение
 		}
-		else
-			throw makeStringForException("Can't call undefined function",expr->loc); // Выбросить исключение
 	}
 	else if(expr->type==_UMINUS)
 	{
@@ -558,8 +581,18 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 	// Иначе выдаем ошибку
 	else if(lastState == _FUNC_STATE)
 		throw makeStringForException("Can't define function inside function",funcdefstmt->nameLoc);
+	// Проверяем, что имя операнда не совпадает с именем библиотечной функции
 	// Код функции
 	currentFuncName=std::string(funcdefstmt->functionName);
+	if(containsString(this->libFuncs,currentFuncName))
+	{
+		// Если не объявлен, выдаем ошибку с именем операнда
+		char* errstr=new char[50+strlen(currentFuncName.c_str())];
+		errstr[0]='\0';
+		strcpy(errstr,"Can't define function with lib function name - ");
+		strcat(errstr,currentFuncName.c_str());
+		throw makeStringForException(errstr,funcdefstmt->nameLoc);
+	}
 	// Проверяем параметры функции
 	checkFuncParams(funcdefstmt->params);
 	// Создаем указатель на структуру с заголовком входной функции

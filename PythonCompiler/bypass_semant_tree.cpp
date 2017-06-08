@@ -19,6 +19,10 @@
 // Конструктор по умолчанию
 TreeTraversal::TreeTraversal()
 {
+	libFuncs.push_back("print");
+	libFuncs.push_back("input");
+	libFuncs.push_back("repr");
+	libFuncs.push_back("int");
 }
 
 // Печать аттрибутированного дерева (третий обход - ?)
@@ -29,6 +33,58 @@ void TreeTraversal::printTree(const struct StmtListInfo* treeRoot)
 /*!
 *	---------------- БЛОК ВСПОМОГАТЕЛЬНЫХ МЕТОДОВ ДЛЯ РАБОТЫ СО СПИСКАМИ И КОНТЕЙНЕРАМИ ----------------
 */
+
+bool TreeTraversal::isLibFunctionCall(struct ExprInfo * expr)
+{
+	std::string opName = std::string(expr->idName);
+	if(!containsString(this->libFuncs,opName))
+		return false;
+	// Создаем указатель на элемент списка аргументов вызова функции
+	struct ExprInfo* call_el;
+	if(strcmp(opName.c_str(),"input")==0||strcmp(opName.c_str(),"print")==0)
+	{		
+		call_el = expr->arglist->first;
+		// Для каждого фактического аргумента
+		while(call_el!=NULL)
+		{
+			checkExpr(call_el,true);
+			call_el=call_el->next;
+		}
+	}
+	else if(strcmp(opName.c_str(),"repr")==0)
+	{
+		int paramsCount=0;
+		call_el = expr->arglist->first;
+		// Для каждого фактического аргумента
+		while(call_el!=NULL)
+		{
+			paramsCount++;
+			if(paramsCount>1)
+				throw makeStringForException("Too much params for call: repr",expr->loc);
+			checkExpr(call_el,true);
+			call_el=call_el->next;
+		}
+		if(paramsCount==0)
+			throw makeStringForException("Need param for call: repr",expr->loc);
+	}
+	else if(strcmp(opName.c_str(),"int")==0)
+	{
+		int paramsCount=0;
+		call_el = expr->arglist->first;
+		// Для каждого фактического аргумента
+		while(call_el!=NULL)
+		{
+			paramsCount++;
+			if(paramsCount>2)
+				throw makeStringForException("Too much params for call: int",expr->loc);
+			checkExpr(call_el,true);
+			call_el=call_el->next;
+		}
+		if(paramsCount==0)
+			throw makeStringForException("Need param for call: int",expr->loc);
+	}
+	return true;
+}
 
 void TreeTraversal::appendToConstTable(struct ConstTable_Elem* ce)
 {

@@ -58,7 +58,7 @@ int main(int argc, char** argv) {
 			fprintf(dotFile,"%s\n",curStr.c_str());
 		}
 		fclose(dotFile);
-		printf("tree was created\n");
+		puts("tree was created");
 		// Ждем печать дерева
 		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTree.txt",NULL);
 		// Выводим сообщение о том, что дерево напечатано
@@ -66,9 +66,9 @@ int main(int argc, char** argv) {
 		TreeTraversal* treeWalker = new TreeTraversal();
 		try{
 			treeWalker->fixTree(root);
-			printf("\nTree fixed successfully\n");
+			puts("Tree fixed successfully");
 			treeWalker->makeTables(root);
-			printf("\nTables made successfully\n");
+			puts("Tables made successfully");
 		}
 		catch (char* message)
 		{
@@ -87,11 +87,11 @@ int main(int argc, char** argv) {
 			fprintf(dotFileChange,"%s\n",curStr.c_str());
 		}
 		fclose(dotFileChange);
-		printf("tree changed was created\n");
+		puts("\ntree changed was created");
 		// Ждем печать дерева
 		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTreeChanged.txt",NULL);
 		// Выводим сообщение о том, что дерево напечатано
-		printf("tree changed was printed");
+		puts("tree changed was printed");
 	/*}*/
 	_getch();
 	return 0;
