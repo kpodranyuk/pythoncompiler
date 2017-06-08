@@ -64,27 +64,6 @@ public class List extends Value {
             return 0;
         return 1;
     }
-
-    @Override
-    public Value and(Value other) {
-        if(this.toIntBool() == 0 || other.toIntBool() == 0)
-            return new Boolean(false);
-        return new Boolean(true);
-    }
-
-    @Override
-    public Value or(Value other) {
-        if(this.toIntBool() == 0 && other.toIntBool() == 0)
-            return new Boolean(false);
-        return new Boolean(true);
-    }
-
-    @Override
-    public Value not() {
-        if(this.toIntBool() == 0)
-            return new Boolean(true);
-        return new Boolean(false);
-    }
     
     
     @Override
@@ -117,7 +96,9 @@ public class List extends Value {
 
     @Override
     public Value clone() {
-        return new None();
+        List list = new List();
+        list.value.add(this);
+        return list;
     }
 
     @Override

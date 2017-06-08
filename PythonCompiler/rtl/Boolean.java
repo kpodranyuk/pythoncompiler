@@ -18,24 +18,6 @@ public class Boolean extends Value {
     }
 
     @Override
-    public boolean equals(Object other) {
-        if ((other instanceof Boolean)) {
-            return this.value == ((Boolean) other).value;
-        }
-        return false;
-    }
-
-    @Override
-    public java.lang.String toString() {
-        return this.value ? "true" : "false";
-    }
-
-    @Override
-    public Value clone() {
-        return new Boolean(this.value);
-    }
-
-    @Override
     public Value add(Value other) {
         if ((other instanceof Boolean)) {
             return new Boolean((this.value) || (((Boolean) other).value));
@@ -52,28 +34,32 @@ public class Boolean extends Value {
     }
 
     @Override
-    public int hashCode() {
-        return this.value ? 1 : 0;
-    }
-
-    @Override
     public int toIntBool() {
         return this.value ? 1 : 0;
     }
-
+    
+    
     @Override
-    public Value not() {
-        return new Boolean(!this.value);
+    public boolean equals(Object other) {
+        if ((other instanceof Boolean)) {
+            return this.value == ((Boolean) other).value;
+        }
+        return false;
     }
 
     @Override
-    public Value and(Value m) {
-        return new Boolean((this.value) && (m.toIntBool() != 0));
+    public java.lang.String toString() {
+        return this.value ? "true" : "false";
     }
 
     @Override
-    public Value or(Value m) {
-        return new Boolean((this.value) && (m.toIntBool() != 0));
+    public Value clone() {
+        return new Boolean(this.value);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.value ? 1 : 0;
     }
 
 }

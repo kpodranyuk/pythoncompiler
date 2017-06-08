@@ -160,20 +160,32 @@ public class Lib {
 
     public static Value ListGet(Value list, Value index) {
         if (((list instanceof List)) && ((index instanceof Integer))) {
-            return (Value) ((List)list).value.get(((Integer)index).value);
+            int newIndex = ((Integer) index).value;
+            if(newIndex<0) {
+                newIndex=flipIndex(newIndex, ((List) list).value.size());
+            }
+            
+            return ((List)list).value.get(newIndex);
         }
-        return mixedFromNone();
+        throw new Error("The index must be an integer and the operation must occur over the array.");
     }
 
     public static void ListSet(Value list, Value index, Value val) {
         if (((list instanceof List)) && ((index instanceof Integer))) {
-            ((List) list).value.set(((Integer) index).value, val);
+            int newIndex = ((Integer) index).value;
+            if(newIndex<0) {
+                newIndex=flipIndex(newIndex, ((List) list).value.size());
+            }
+            ((List) list).value.set(newIndex, val);
         }
+        throw new Error("The index must be an integer and the operation must occur over the array.");
     }
 
     public static Value ListAppend(Value list, Value val) {
         if ((list instanceof List)) {
             ((List) list).value.add(val);
+        } else {
+            throw new Error("The operation is not applicable to an array.");
         }
         return mixedFromNone();
     }
@@ -182,8 +194,18 @@ public class Lib {
         if ((list instanceof List)) {
             if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String) {
                ((List) list).value.remove(val); 
+            } else {
+                throw new Error("Value must be a standard type.");
             }
+        } else {
+            throw new Error("The operation is not applicable to an array.");
         }
         return mixedFromNone();
+    }
+    
+    public static int flipIndex(int index, int size) {
+        int newIndex = index;
+        newIndex+=size;
+        return newIndex;
     }
 }

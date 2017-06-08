@@ -15,17 +15,7 @@ public class Integer extends Value{
     public Integer(int val) {
         this.value = val;
     }
-
-    @Override
-    public boolean equals(Object other) {
-        if ((other instanceof Integer)) {
-            return this.value == ((Integer) other).value;
-        }
-        /*if ((other instanceof Float)) {
-            return this.value == ((Float) other).value;
-        }*/
-        return false;
-    }
+    
 
     @Override
     public Value more(Value other) {
@@ -38,15 +28,7 @@ public class Integer extends Value{
         throw new Error("Operation not allowed with these types.");
     }
 
-    @Override
-    public java.lang.String toString() {
-        return "" + this.value;
-    }
-
-    @Override
-    public Value clone() {
-        return new Integer(this.value);
-    }
+   
 
     @Override
     public Value add(Value other) {
@@ -130,19 +112,26 @@ public class Integer extends Value{
         }
         return new Boolean(false);
     }
-
+    
+    
     @Override
-    public Value not() {
-        return new Boolean(this.value != 0).not();
+    public boolean equals(Object other) {
+        if ((other instanceof Integer)) {
+            return this.value == ((Integer) other).value;
+        }
+        /*if ((other instanceof Float)) {
+            return this.value == ((Float) other).value;
+        }*/
+        return false;
+    }
+    
+    @Override
+    public java.lang.String toString() {
+        return "" + this.value;
     }
 
     @Override
-    public Value and(Value m) {
-        return new Boolean(this.value != 0).and(m);
-    }
-
-    @Override
-    public Value or(Value m) {
-        return new Boolean(this.value != 0).or(m);
+    public Value clone() {
+        return new Integer(this.value);
     }
 }
