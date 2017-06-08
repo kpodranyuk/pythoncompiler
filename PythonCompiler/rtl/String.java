@@ -29,18 +29,25 @@ public class String extends Value {
 
     @Override
     public Value add(Value other) {
-        if ((other instanceof Integer)) {
-            return new String(this.value + ((Integer) other).value);
-        }
-        /*if ((other instanceof Float)) {
-            return new String(this.value + ((Float) other).value);
-        }*/
         if ((other instanceof String)) {
             return new String(this.value + ((String) other).value);
         }
         throw new Error("Operation not allowed with these types.");
     }
 
+    @Override
+    public Value mul(Value other) {
+        if ((other instanceof Integer)) {
+            java.lang.String res = new java.lang.String("");
+            int count = ((Integer) other).value;
+            for(int i=0; i<count; i++) {
+                res = res + this.value;
+            }
+            return new String(res);
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+    
     @Override
     public int toIntBool() {
         if(this.value.isEmpty())

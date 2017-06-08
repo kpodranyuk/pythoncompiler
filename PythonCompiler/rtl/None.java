@@ -10,11 +10,6 @@ package rtl;
  * @author Katie
  */
 public class None extends Value{
-
-    @Override
-    public Value not() {
-        return new Boolean(true);
-    }
     
     @Override
     public boolean equals(Object other) {
