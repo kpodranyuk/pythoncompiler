@@ -96,22 +96,6 @@ public class Integer extends Value{
             return 1;
         return 0;
     }
-
-    @Override
-    public Value less(Value other) {
-        if ((other instanceof Integer)) {
-            return new Boolean(this.value < ((Integer) other).value);
-        }
-        return new Boolean(false);
-    }
-
-    @Override
-    public Value eq(Value other) {
-        if ((other instanceof Integer)) {
-            return new Boolean(this.value == ((Integer) other).value);
-        }
-        return new Boolean(false);
-    }
     
     
     @Override

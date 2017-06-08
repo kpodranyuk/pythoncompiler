@@ -123,6 +123,9 @@ public abstract class Value {
      * @return новое значение
      */
     public Value eq(Value other) {
+        if(this.equals(other)) {
+            return new Boolean(true);
+        }
         return new Boolean(false);
     }
 

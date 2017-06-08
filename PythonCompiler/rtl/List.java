@@ -34,38 +34,13 @@ public class List extends Value {
     }
 
     @Override
-    public Value moreOrEq(Value other) {
-        return super.moreOrEq(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value lessOrEq(Value other) {
-        return super.lessOrEq(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value more(Value other) {
-        return super.more(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value less(Value other) {
-        return super.less(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value eq(Value other) {
-        return super.eq(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
     public int toIntBool() {
         if(this.value.size() == 0)
             return 0;
         return 1;
     }
     
-    
+  
     @Override
     public boolean equals(Object paramObject) {
         Value obj = (Value) paramObject;
