@@ -487,11 +487,10 @@ struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo
 * \param[in] elsestmt тело else после цикла
 * \return указатель for
 */
-struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
+struct ForStmtInfo * createForStatement(struct ExprInfo * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt)
 {
 	struct ForStmtInfo * forstmt = (struct ForStmtInfo *)malloc(sizeof(struct ForStmtInfo));
-	forstmt->counter=(char*)malloc(sizeof(strlen(counter)+1));
-	strcpy(forstmt->counter, counter);
+	forstmt->counter=counter;
 	forstmt->expr=expr;
 	forstmt->stmtlist=stmtlist;
 	forstmt->elsestmt=elsestmt;

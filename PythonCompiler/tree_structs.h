@@ -254,7 +254,7 @@ struct WhileStmtInfo
 struct ForStmtInfo
 {
 	// Счетчик цикла(переменная)
-	char* counter;
+	struct ExprInfo * counter;
 	// Указатель на выражение, по чем проходит цикл
 	struct ExprInfo * expr;
 	// Тело цикла

@@ -519,7 +519,7 @@ void TreeTraversal::parseIfForTable(const struct IfStmtInfo * ifstmt, int local)
 void TreeTraversal::parseForForTable(const struct ForStmtInfo * forstmt, int local)
 {
 	// Проверяем выражение счетчика цикла
-	parseExprForTable(forstmt->expr,local,__COUNTER);
+	parseExprForTable(forstmt->counter,local,__COUNTER);
 	// Проверяем тело цикла
 	parseStmtListForTable(forstmt->stmtlist,local);
 	// Проверяем else блок, если он есть

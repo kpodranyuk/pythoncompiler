@@ -509,7 +509,7 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	// Код функции
 	// Проверяем, есть ли он уже в списке переменных
 	// И если нет, то добавляем
-	std::string opName = std::string(forstmt->counter);
+	std::string opName = std::string(forstmt->counter->idName);
 	// 1. Если код глобальный..
 	if(this->gl_state==_MAIN_STATE)
 	{
