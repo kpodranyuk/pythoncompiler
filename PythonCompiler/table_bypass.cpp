@@ -142,6 +142,20 @@ char* convertVarElementToString(struct Variable* el)
 	return strToRet;
 }
 
+void TreeTraversal::findOpInCT(struct ExprInfo* expr,int local)
+{
+	std::vector<struct opInfo*>::iterator it;
+	for(it=ops.begin();it<ops.end();it++)
+	{
+		if(strcmp((*it)->opName,expr->idName)==0&&(*it)->local==local)
+		{
+			expr->locFor=(*it)->local;
+			expr->numberInTable=(*it)->FR;
+			break;
+		}
+	}
+}
+
 // Составление таблиц (второй обход)
 void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
@@ -281,7 +295,7 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int l
 	}
 }
 
-void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, enum ExprType typeAboveExpression)
+void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum ExprType typeAboveExpression)
 {
 	// Если операнд
 	if(expr->type==_OPERAND&&typeAboveExpression==__COUNTER	)
@@ -296,6 +310,13 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 				var->localFor=local;
 				appendToVarsTable(var);
 				this->varDecls[currentFuncName].push_back(std::string(expr->idName));
+				expr->locFor=local;
+				expr->numberInTable=this->vars->count-1;
+				struct opInfo* curOp = new struct opInfo;
+				curOp->local=local;
+				curOp->FR=expr->numberInTable;
+				curOp->opName=var->name;
+				this->ops.push_back(curOp);
 			}
 		}
 		else
@@ -324,9 +345,18 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
+				expr->locFor=NULL;
+				expr->numberInTable=*(ct_consts->constnumber);
+				struct opInfo* curOp = new struct opInfo;
+				curOp->local=NULL;
+				curOp->FR=expr->numberInTable;
+				curOp->opName=expr->idName;
+				this->ops.push_back(curOp);
 			}
 		}	
 	}
+	else if(expr->type==_OPERAND)
+		findOpInCT(expr, local);
 	else if(expr->type==_ASSIGN)
 	{
 		struct ExprInfo* leftE=expr->left;
@@ -340,7 +370,16 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 				var->localFor=local;
 				appendToVarsTable(var);
 				this->varDecls[currentFuncName].push_back(std::string(leftE->idName));
+				leftE->locFor=local;
+				leftE->numberInTable=this->vars->count-1;
+				struct opInfo* curOp = new struct opInfo;
+				curOp->local=local;
+				curOp->FR=leftE->numberInTable;
+				curOp->opName=var->name;
+				this->ops.push_back(curOp);
 			}
+			else
+				findOpInCT(leftE, local);
 		}
 		else
 		{
@@ -368,7 +407,16 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
+				leftE->locFor=NULL;
+				leftE->numberInTable=*(ct_consts->constnumber);
+				struct opInfo* curOp = new struct opInfo;
+				curOp->local=NULL;
+				curOp->FR=leftE->numberInTable;
+				curOp->opName=leftE->idName;
+				this->ops.push_back(curOp);
 			}
+			else
+				findOpInCT(leftE, local);
 		}	
 		parseExprForTable(expr->right, local, expr->type);
 	}
@@ -406,7 +454,7 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 	}
 }
 
-void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int local)
+void TreeTraversal::parseValTypeForTable(struct ValInfo * val, int local)
 {
 	if(val->type==_TRUE)
 	{
@@ -428,7 +476,7 @@ void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int local)
 		
 }
 
-void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int local)
+void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int local)
 {
 	// Проверяем текущее состояние анализатора
 	enum GlobalState lastState = gl_state;
@@ -491,6 +539,11 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 			var->localFor=mRef;
 			appendToVarsTable(var);
 			this->varDecls[currentFuncName].push_back(std::string(var->name));
+			struct opInfo* curOp = new struct opInfo;
+			curOp->local=mRef;
+			curOp->FR=this->vars->count-1;
+			curOp->opName=el->paramName;
+			this->ops.push_back(curOp);
 			el=el->next;
 		}
 
@@ -521,6 +574,8 @@ void TreeTraversal::parseForForTable(const struct ForStmtInfo * forstmt, int loc
 {
 	// Проверяем выражение счетчика цикла
 	parseExprForTable(forstmt->counter,local,__COUNTER);
+	// Проверяем выражение счетчика цикла
+	parseExprForTable(forstmt->expr,local,forstmt->expr->type);
 	// Проверяем тело цикла
 	parseStmtListForTable(forstmt->stmtlist,local);
 	// Проверяем else блок, если он есть

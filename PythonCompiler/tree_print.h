@@ -13,21 +13,21 @@
 
 /*---------	ОПЕРАЦИИ - КВАДРАТНЫЕ ФОРМЫ УЗЛОВ, ОПЕРАНДЫ - КРУГЛЫЕ (по умолчанию без тега shape)	---------*/
 
-void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
-void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree);
-void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree);
-void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree);
-void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree);
-void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree);
-void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
-void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
-void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree);
+void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree, bool attr);
 
 char* makeStringForDot(char* string);
 char* makeExprNodename(enum ExprType type, char * idName);
-void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree);
-void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree);
-void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree);
+void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
+void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr);
 void addDeclStringToStringList(char* string, int declNumber, std::vector<std::string>& dotTree);
 void addLinkToStringList(int firstNode, int secondNode, std::vector<std::string>& dotTree);
 /* Обойти дерево и "перевести" для печати на язык dot
@@ -36,7 +36,7 @@ void addLinkToStringList(int firstNode, int secondNode, std::vector<std::string>
 * \param[in|out] nodeCount текущий индекс узла
 * \param[in|out] dotTree список строк для хранения кода на dot
 */
-void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<std::string>& dotTree)
+void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	// Если список корней дерева null - выходим из функции
 	if(root==NULL) return ;
@@ -62,39 +62,39 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 		node2=*nodeCount+1; 
 		if(begining->type==_EXPR)
 		{
-			printExpr(begining->expr,nodeCount,dotTree);
+			printExpr(begining->expr,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_IF)
 		{
-			printIfStmt(begining->ifstmt,nodeCount,dotTree);
+			printIfStmt(begining->ifstmt,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_FOR)
 		{
-			printForStmt(begining->forstmt,nodeCount,dotTree);
+			printForStmt(begining->forstmt,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_WHILE)
 		{
-			printWhileStmt(begining->whilestmt,nodeCount,dotTree);
+			printWhileStmt(begining->whilestmt,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_FUNC_DEF)
 		{
-			printFuncDefStmt(begining->funcdefstmt,nodeCount,dotTree);
+			printFuncDefStmt(begining->funcdefstmt,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_RETURN)
 		{
-			printReturnStmt(begining->expr,nodeCount,dotTree);
+			printReturnStmt(begining->expr,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_BREAK)
 		{
-			printContinueBreakStmt(_BREAK,nodeCount,dotTree);
+			printContinueBreakStmt(_BREAK,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_CONTINUE)
 		{
-			printContinueBreakStmt(_CONTINUE,nodeCount,dotTree);
+			printContinueBreakStmt(_CONTINUE,nodeCount,dotTree, attr);
 		}
 		else if(begining->type==_DEL)
 		{
-			printDelStmt(begining->expr,nodeCount,dotTree);
+			printDelStmt(begining->expr,nodeCount,dotTree, attr);
 		}
 		else
 		{
@@ -108,7 +108,7 @@ void printStatementList(struct StmtListInfo* root, int* nodeCount, std::vector<s
 }
 
 
-void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
+void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
@@ -122,7 +122,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		addDeclStringToStringList("[label=\"NOT\" shape=box];",node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
-		printExpr(expr->left,nodeCount,dotTree);
+		printExpr(expr->left,nodeCount,dotTree, attr);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
 	}
@@ -130,8 +130,19 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	{
 		// Запомнить номер текущего "родительского" узла
 		node1=*nodeCount;
-		curNode = new char [50+strlen(expr->idName)+1];
-		sprintf(curNode,"[label=\"<ID>\n%s\"];",expr->idName);
+		if(attr)
+		{
+			curNode = new char [150+strlen(expr->idName)+1];
+			if(expr->locFor!=NULL)
+				sprintf(curNode,"[label=\"CT_#:%d, %d\n<ID>\n%s\"];",expr->locFor,expr->numberInTable,expr->idName);
+			else
+				sprintf(curNode,"[label=\"CT_#:%d\n<ID>\n%s\"];",expr->numberInTable,expr->idName);
+		}
+		else
+		{
+			curNode = new char [50+strlen(expr->idName)+1];
+			sprintf(curNode,"[label=\"<ID>\n%s\"];",expr->idName);
+		}
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(expr->type==_UMINUS)
@@ -141,7 +152,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		addDeclStringToStringList("[label=\"UMINUS\" shape=box];",node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
-		printExpr(expr->left,nodeCount,dotTree);
+		printExpr(expr->left,nodeCount,dotTree, attr);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
 	}
@@ -152,7 +163,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		//addDeclStringToStringList("[label=\"VARVAL\"];",node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount; 
-		printVarVal(expr->exprVal,nodeCount,dotTree);
+		printVarVal(expr->exprVal,nodeCount,dotTree, attr);
 		// Добавить в список связь между дочерним и родительским узлами
 		//addLinkToStringList(node1,node2,dotTree);
 	}
@@ -162,13 +173,13 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		node1=*nodeCount;
 		addDeclStringToStringList("[label=\"FUNC_CALL\"];",node1,dotTree);
 		// ВЫЗОВ
-		printFuncCall(expr,nodeCount,dotTree);
+		printFuncCall(expr,nodeCount,dotTree, attr);
 	}
 	else if(expr->type==_ARRINIT)
 	{
 		node1=*nodeCount;
 		addDeclStringToStringList("[label=\"INITIALIZATION_LIST\"];",node1,dotTree);
-		printExprList(expr->arglist,nodeCount,dotTree);
+		printExprList(expr->arglist,nodeCount,dotTree, attr);
 	}
 	else
 	{
@@ -177,26 +188,26 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		addDeclStringToStringList(makeExprNodename(expr->type, expr->idName),node1,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
-		printExpr(expr->left,nodeCount,dotTree);
+		printExpr(expr->left,nodeCount,dotTree, attr);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
 		if(expr->type==_ARRID_AND_ASSIGN)
 		{
 			// Запомнить номер текущего дочернего узла
 			node2=*nodeCount+1; 
-			printExpr(expr->middle,nodeCount,dotTree);
+			printExpr(expr->middle,nodeCount,dotTree, attr);
 			// Добавить в список связь между дочерним и родительским узлами
 			addLinkToStringList(node1,node2,dotTree);
 		}
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
-		printExpr(expr->right,nodeCount,dotTree);
+		printExpr(expr->right,nodeCount,dotTree, attr);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
 	}
 }
 
-void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree)
+void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1; // Номер главного узла и номер дочернего узла
 	//*nodeCount+=1; // Получить номер узла
@@ -261,7 +272,7 @@ char* makeStringForDot(char* string)
 	return finalString;
 }
 
-void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree)
+void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	// Создаем ExprInfo указатель на элемент входного дерева
 	struct ExprInfo* begining;
@@ -277,7 +288,7 @@ void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<s
 	{
 		// Запомнить номер текущего дочернего узла
 		node2=*nodeCount+1; 
-		printExpr(begining,nodeCount,dotTree);
+		printExpr(begining,nodeCount,dotTree, attr);
 		// Добавить в список связь между дочерним и родительским узлами
 		addLinkToStringList(node1,node2,dotTree);
 		// Считаем следующий элемент списка новым текущим
@@ -285,7 +296,7 @@ void printExprList(struct ExprListInfo * exprlist, int* nodeCount, std::vector<s
 	}
 }
 
-void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree)
+void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла if_stmt
@@ -300,13 +311,13 @@ void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::st
 	addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
 	addLinkToStringList(if_stmt,node1,dotTree);
 	node2=*nodeCount+1;
-	printExpr(ifstmt->expr,nodeCount,dotTree);
+	printExpr(ifstmt->expr,nodeCount,dotTree, attr);
 	addLinkToStringList(node1,node2,dotTree);
 
 	// Вывод тела условия
 	node1=if_stmt;
 	node2=*nodeCount+1;
-	printStatementList(ifstmt->stmtlist, nodeCount, dotTree);
+	printStatementList(ifstmt->stmtlist, nodeCount, dotTree, attr);
 	addLinkToStringList(node1,node2,dotTree);
 
 	// Вывод elif-ов
@@ -325,13 +336,13 @@ void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::st
 		addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
 		addLinkToStringList(elif_stmt,node1,dotTree);
 		node2=*nodeCount+1;
-		printExpr(begin->expr,nodeCount,dotTree);
+		printExpr(begin->expr,nodeCount,dotTree, attr);
 		addLinkToStringList(node1,node2,dotTree);
 
 		// Вывод тела
 		node1=elif_stmt;
 		node2=*nodeCount+1;
-		printStatementList(begin->stmtlist, nodeCount, dotTree);
+		printStatementList(begin->stmtlist, nodeCount, dotTree, attr);
 		addLinkToStringList(node1,node2,dotTree);
 
 		begin=begin->next;
@@ -345,13 +356,13 @@ void printIfStmt(struct IfStmtInfo * ifstmt, int* nodeCount, std::vector<std::st
 		addDeclStringToStringList("[label=\"ELSE BLOCK\"];",node1,dotTree);
 		addLinkToStringList(if_stmt,node1,dotTree);
 		node2=*nodeCount+1;
-		printStatementList(ifstmt->elsestmtlist, nodeCount, dotTree);
+		printStatementList(ifstmt->elsestmtlist, nodeCount, dotTree, attr);
 		addLinkToStringList(node1,node2,dotTree);
 	}
 }
 
 
-void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree)
+void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла while_stmt
@@ -366,13 +377,13 @@ void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vecto
 	addDeclStringToStringList("[label=\"CONDITION\"];",node1,dotTree);
 	addLinkToStringList(while_stmt,node1,dotTree);
 	node2=*nodeCount+1;
-	printExpr(whilestmt->expr,nodeCount,dotTree);
+	printExpr(whilestmt->expr,nodeCount,dotTree, attr);
 	addLinkToStringList(node1,node2,dotTree);
 
 	// Вывод тела цикла
 	node1=while_stmt;
 	node2=*nodeCount+1;
-	printStatementList(whilestmt->stmtlist, nodeCount, dotTree);
+	printStatementList(whilestmt->stmtlist, nodeCount, dotTree, attr);
 	addLinkToStringList(node1,node2,dotTree);
 
 	// Вывод блока else
@@ -383,12 +394,12 @@ void printWhileStmt(struct WhileStmtInfo * whilestmt, int* nodeCount, std::vecto
 		addDeclStringToStringList("[label=\"ELSE BLOCK\"];",node1,dotTree);
 		addLinkToStringList(while_stmt,node1,dotTree);
 		node2=*nodeCount+1;
-		printStatementList(whilestmt->elsestmt, nodeCount, dotTree);
+		printStatementList(whilestmt->elsestmt, nodeCount, dotTree, attr);
 		addLinkToStringList(node1,node2,dotTree);
 	}
 }
 
-void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree)
+void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла for_stmt
@@ -411,13 +422,13 @@ void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std:
 	addDeclStringToStringList("[label=\"BYPASS_EXPR\"];",node1,dotTree);
 	addLinkToStringList(for_stmt,node1,dotTree);
 	node2=*nodeCount+1;
-	printExpr(forstmt->expr,nodeCount,dotTree);
+	printExpr(forstmt->expr,nodeCount,dotTree, attr);
 	addLinkToStringList(node1,node2,dotTree);
 
 	// Вывод тела цикла
 	node1=for_stmt;
 	node2=*nodeCount+1;
-	printStatementList(forstmt->stmtlist, nodeCount, dotTree);
+	printStatementList(forstmt->stmtlist, nodeCount, dotTree, attr);
 	addLinkToStringList(node1,node2,dotTree);
 
 	// Вывод блока else
@@ -428,12 +439,12 @@ void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std:
 		addDeclStringToStringList("[label=\"ELSE BLOCK\"];",node1,dotTree);
 		addLinkToStringList(for_stmt,node1,dotTree);
 		node2=*nodeCount+1;
-		printStatementList(forstmt->elsestmt, nodeCount, dotTree);
+		printStatementList(forstmt->elsestmt, nodeCount, dotTree, attr);
 		addLinkToStringList(node1,node2,dotTree);
 	}
 }
 
-void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
+void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	char* curNode;
 	int parent = (*nodeCount)++;
@@ -455,12 +466,12 @@ void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::stri
 		addDeclStringToStringList("[label=\"ARGS\"];",args,dotTree);
 		// Запомнить номер текущего дочернего узла
 		node2=(*nodeCount)+1; 
-		printExprList(expr->arglist,nodeCount,dotTree);
+		printExprList(expr->arglist,nodeCount,dotTree, attr);
 	}
 		addLinkToStringList(parent,args,dotTree);
 }
 
-void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree)
+void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	char* curNode;
 	int name = ++(*nodeCount);
@@ -471,18 +482,18 @@ void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vec
 	addDeclStringToStringList(curNode,name,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
-	printFuncParams(funcdefstmt->params,nodeCount,dotTree);
+	printFuncParams(funcdefstmt->params,nodeCount,dotTree, attr);
 	// Добавить в список связь между дочерним и родительским узлами
 	addLinkToStringList(name,node2,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
-	printStatementList(funcdefstmt->body,nodeCount,dotTree);
+	printStatementList(funcdefstmt->body,nodeCount,dotTree, attr);
 	// Добавить в список связь между дочерним и родительским узлами
 	addLinkToStringList(name,node2,dotTree);
 
 }
 
-void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree)
+void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vector<std::string>& dotTree, bool attr)
 {
 	if(params->first==NULL&&params->last==NULL)
 	{
@@ -513,7 +524,7 @@ void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vec
 		{
 			node3=node2;
 			node2=*nodeCount+1; 
-			printVarVal(begining->paramVal,nodeCount,dotTree);
+			printVarVal(begining->paramVal,nodeCount,dotTree, attr);
 			// Добавить в список связь между дочерним и родительским узлами
 			addLinkToStringList(node3,node2,dotTree);
 		}
@@ -523,7 +534,7 @@ void printFuncParams(struct DefFuncParamListInfo* params,int* nodeCount,std::vec
 	}
 }
 
-void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree)
+void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1;
@@ -539,7 +550,7 @@ void printContinueBreakStmt(enum StmtType type, int* nodeCount, std::vector<std:
 	}
 }
 
-void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
+void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
@@ -550,12 +561,12 @@ void printReturnStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::st
 	addDeclStringToStringList("[label=\"RETURN\" shape=box];",node1,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
-	printExpr(expr,nodeCount,dotTree);
+	printExpr(expr,nodeCount,dotTree, attr);
 	// Добавить в список связь между дочерним и родительским узлами
 	addLinkToStringList(node1,node2,dotTree);
 }
 
-void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree)
+void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>& dotTree, bool attr)
 {
 	int node1, node2; // Номер главного узла и номер дочернего узла
 	*nodeCount+=1; // Получить номер узла
@@ -566,7 +577,7 @@ void printDelStmt(struct ExprInfo * expr, int* nodeCount, std::vector<std::strin
 	addDeclStringToStringList("[label=\"DEL\" shape=box];",node1,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 
-	printExpr(expr,nodeCount,dotTree);
+	printExpr(expr,nodeCount,dotTree, attr);
 	// Добавить в список связь между дочерним и родительским узлами
 	addLinkToStringList(node1,node2,dotTree);
 }

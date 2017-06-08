@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 		int nodeCount=0;
 		std::vector<std::string> dotTree;
 		dotTree.push_back("graph tree{");
-		printStatementList(root,&nodeCount,dotTree);
+		printStatementList(root,&nodeCount,dotTree,false);
 		dotTree.push_back("}");
 		FILE* dotFile = fopen("dotTree.txt","wt");
 		for each (std::string curStr in dotTree)
@@ -79,7 +79,7 @@ int main(int argc, char** argv) {
 		nodeCount=0;
 		dotTree.clear();
 		dotTree.push_back("graph tree{");
-		printStatementList(root,&nodeCount,dotTree);
+		printStatementList(root,&nodeCount,dotTree,true);
 		dotTree.push_back("}");
 		FILE* dotFileChange = fopen("dotTreeChanged.txt","wt");
 		for each (std::string curStr in dotTree)

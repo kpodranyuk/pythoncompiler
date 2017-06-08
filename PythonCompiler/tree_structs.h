@@ -76,6 +76,9 @@ struct ValInfo
 
 	// Позиция в коде
 	struct CodeLocation* loc;
+
+	// Номер в таблице констант
+	int numberInTable;
 };
 
 
@@ -104,6 +107,12 @@ struct ExprInfo
 
 	// Позиция в коде
 	struct CodeLocation* loc;
+
+	// Номер в таблице лок. перем-х или филдреф
+	int numberInTable;
+
+	// Номер методрефа, для которого локальна
+	int locFor;
 };
 /*
 * Хранит в себе указатель на начало и конец списка выражений
@@ -155,6 +164,9 @@ struct FuncDefInfo
 	struct DefFuncParamListInfo* params;
 	// Тело функции
 	struct StmtListInfo* body;
+
+	// Номер в таблице констант (методРеф)
+	int numberInTable;
 };
 
 

@@ -46,6 +46,15 @@ private:
 		struct DefFuncParamListInfo* params;		// Параметры функции
 	};
 
+	/*
+	* Хранит в себе имя поля класса и номер его fieldRef
+	*/
+	struct opInfo{
+		char* opName;		// Имя Поля
+		int FR;				// Номер FieldRef или номер локальной переменной
+		int local;			// Номер MethodRef, для которого локальна переменная
+	};
+
 	bool hasReturn;		// Флаг того, что текущая функция имеет возвращаемое значение
 
 	std::string currentFuncName;
@@ -59,6 +68,11 @@ private:
 	struct FieldTable_List* fields;			// Указатель на таблицу полей класса
 	struct MethodTable_List* methods;		// Указатель на таблицу полей класса
 	struct VariableTable_List* vars;		// Указатель на таблицу локальных переменных методов
+	/*
+	* Хранит в себе список полей класса
+	*/
+	std::vector<struct opInfo*> ops;
+
 
 	/*
 	* Хранит в себе список имен объявленных функций
@@ -266,7 +280,7 @@ private:
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	* \param[in] typeAboveExpression тип над выражения
 	*/
-	void parseExprForTable(const struct ExprInfo * expr, int local, enum ExprType typeAboveExpression);
+	void parseExprForTable(struct ExprInfo * expr, int local, enum ExprType typeAboveExpression);
 
 	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
 	* @author Kate
@@ -282,7 +296,7 @@ private:
 	* \param[in|out] constNum номер константы
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int local);
+	void parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int local);
 
 	/* Проверить узел-объявление функции дерева для составления таблицы
 	* @author Kate
@@ -290,7 +304,7 @@ private:
 	* \param[in|out] constNum номер константы
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseValTypeForTable(const struct ValInfo * val, int local);
+	void parseValTypeForTable(struct ValInfo * val, int local);
 
 	/* Создать элемент строки таблицы констант
 	* @author Nikita
@@ -334,6 +348,8 @@ private:
 	* \param[in] ce элемент для добавления
 	*/
 	void appendToVarsTable(struct Variable* v);
+
+	void findOpInCT(struct ExprInfo* expr,int local);
 
 
 	// !!!!!!!!!!!!!!!!!!!!!!!! ФУНКЦИЯ СОСТАВЛЕНИЯ СТРОКИ ИСКЛЮЧЕНИЯ !!!!!!!!!!!!!!!!!!!!
