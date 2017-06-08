@@ -15,20 +15,7 @@ public class Integer extends Value{
     public Integer(int val) {
         this.value = val;
     }
-    
 
-    @Override
-    public Value more(Value other) {
-        if ((other instanceof Integer)) {
-            return new Boolean(this.value > ((Integer) other).value);
-        }
-        /*if ((other instanceof Float)) {
-            return new Boolean(this.value > ((Float) other).value);
-        }*/
-        throw new Error("Operation not allowed with these types.");
-    }
-
-   
 
     @Override
     public Value add(Value other) {
@@ -64,6 +51,15 @@ public class Integer extends Value{
     }
 
     @Override
+    public Value pow(Value other) {
+        if ((other instanceof Integer)) {
+            return new Integer((int) Math.pow(this.value, ((Integer) other).value));
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+    
+
+    @Override
     public Value div(Value other) {
         /*if ((other instanceof Float)) {
             return new Float(this.value / ((Float) other).value);
@@ -83,11 +79,6 @@ public class Integer extends Value{
             return new Integer(this.value % ((Integer) other).value);
         }
         throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public int hashCode() {
-        return this.value;
     }
 
     @Override
@@ -131,5 +122,10 @@ public class Integer extends Value{
     @Override
     public Value clone() {
         return new Integer(this.value);
+    }
+    
+    @Override
+    public int hashCode() {
+        return this.value;
     }
 }
