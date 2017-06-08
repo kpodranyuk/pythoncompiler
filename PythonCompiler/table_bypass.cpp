@@ -117,7 +117,8 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	* - объявлении массива
 	* - объявлении функции
 	*/
-//	this->varNames.clear();
+	this->varDecls.clear();
+	this->varDecls["global"].clear();
 	this->funcHeaders.clear();
 	valClassDesc=0;
 	typeDesc=0;
@@ -127,7 +128,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	// TODO СОЗДАТЬ ФУНКЦИЮ ГЕНЕРАЦИИ ВСТАВКИ РТЛ ТАБЛИЦЫ
 	initializeConstTable();
 	//int constantNumber=1;
-	//parseStmtListForTable(treeRoot,constNumber,NULL);
+	parseStmtListForTable(treeRoot,NULL);
 	//std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
 	// TODO СОЗДАТЬ ФУНКЦИЮ ОБХОДА ТАБЛИЦ ДЛЯ ПЕЧАТИ
 	FILE* table = fopen("const_table.csv","wt");
@@ -140,7 +141,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	}
 }
 
-void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* constNum, int local)
+void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int local)
 {
 	
 	// Создаем локальный указатель на элемент входного дерева
@@ -156,10 +157,11 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* 
 		// - быть объявление переменной - в экспре
 		// - быть объявление массива - в экспре
 		// - быть объявление функции - отдельным узлом
+		// - таблица констант обновляется и при участии в экспрах
 		if(begining->type==_EXPR)
 		{
 			//checkExpr(begining->expr);
-			parseExprForTable(begining->expr,constNum, local, begining->expr->type);
+			parseExprForTable(begining->expr, local, begining->expr->type);
 		}
 		else if(begining->type==_IF)
 		{
@@ -176,24 +178,24 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int* 
 		else if(begining->type==_FUNC_DEF)
 		{
 			//checkFuncDefStmt(begining->funcdefstmt);
-			parseFuncDefForTable(begining->funcdefstmt,constNum,local);
+			parseFuncDefForTable(begining->funcdefstmt,local);
 		}
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
 	}
 }
 
-void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNum, int local, enum ExprType typeAboveExpression)
+void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, enum ExprType typeAboveExpression)
 {
 	// Если одна из операций где идет инициализация или взятие элемента по индексу
 	if(expr->type==_ASSIGN || expr->type==_ARRID || expr->type==_ARRID_AND_ASSIGN)
 	{
-		parseExprForTable(expr->left, constNum, local, expr->type);
+		parseExprForTable(expr->left, local, expr->type);
 		if(expr->type==_ARRID_AND_ASSIGN)
 		{
-			parseExprForTable(expr->middle, constNum, local, expr->type);
+			parseExprForTable(expr->middle, local, expr->type);
 		}
-		parseExprForTable(expr->right, constNum, local, expr->type);
+		parseExprForTable(expr->right, local, expr->type);
 	}
 
 	// Если операнд
@@ -202,43 +204,55 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int* constNu
 		// Проверяем, есть ли он уже в списке переменных
 		// И если нет, то добавляем
 		std::string opName = std::string(expr->idName);
-		/*if(!containsString(this->varNames,opName))
+		if(!containsString(this->varDecls["global"],opName))
 		{
-			this->varNames.push_back(opName);
+			
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL));
 			// Делаем привязку к типу
-			// Добавляем в таблицу данные о переменной
-			// Делаем NameAndType
-			// Делаем fieldRef				
-		}*/
+			if(this->varDecls["global"].empty())
+			{
+				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL));
+				ct_consts->descId=*(ct_consts->constnumber);
+				// Делаем NameAndType
+				appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
+			}
+			else
+				// Делаем NameAndType
+				appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
+			// Делаем fieldRef
+			appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
+			this->varDecls["global"].push_back(opName);
+		}
 	}
 
 	// Если константа
 	if(expr->type==_VARVAL)
-		parseValTypeForTable(expr->exprVal,constNum,local);
+		parseValTypeForTable(expr->exprVal,local);
 }
 
-void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int* constNum, int local)
+void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int local)
 {
 	if(val->type==_TRUE)
 	{
-		;
+		appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,1,NULL,NULL));
 	}
 	else if(val->type==_FALSE)
 	{
-		;
+		appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,0,NULL,NULL));
 	}
 	else if(val->type==_NUMBER)
 	{
-		;
+		appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,val->intVal,NULL,NULL));
 	}
-	else
+	else if(val->type==_STRING)
 	{
-		;
+		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,val->stringVal,NULL,NULL,NULL));
+		appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
 	}
 		
 }
 
-void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int* constNum, int local)
+void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int local)
 {
 	// Проверяем текущее состояние анализатора
 	enum GlobalState lastState = gl_state;
@@ -274,16 +288,20 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 			type+=")";
 		}
 		type+="LValue;";
-		// Добавляем в таблицу данные о переменной
+		char* Ctype=new char [strlen(type.c_str())+1];
+		strcpy(Ctype,type.c_str());
+		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,funcdefstmt->functionName,NULL,NULL,NULL));
+		// Делаем привязку к типу
+		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,Ctype,NULL,NULL,NULL));
 		// Делаем NameAndType
+		appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 		// Делаем methodRef
-		//currentFuncName=std::string(curHeader->functionName);
-
+		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 		std::vector<struct TableElement*> funcTable;
 		int* funcConsts = new int;
 		*funcConsts=1;
 		// Проверяем ее тело
-		parseStmtListForTable(funcdefstmt->body,constNum,local);
+		parseStmtListForTable(funcdefstmt->body,local);
 	}
 	// Иначе выбрасываем исключение
 

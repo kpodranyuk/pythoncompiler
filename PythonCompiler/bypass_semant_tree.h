@@ -238,7 +238,7 @@ private:
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	* \param[in] typeAboveExpression тип над выражения
 	*/
-	void parseExprForTable(const struct ExprInfo * expr, int* constNum, int local, enum ExprType typeAboveExpression);
+	void parseExprForTable(const struct ExprInfo * expr, int local, enum ExprType typeAboveExpression);
 
 	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
 	* @author Kate
@@ -246,7 +246,7 @@ private:
 	* \param[in|out] constNum номер константы
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseStmtListForTable(const struct StmtListInfo* root, int* constNum, int local);
+	void parseStmtListForTable(const struct StmtListInfo* root, int local);
 
 	/* Проверить узел-объявление функции дерева для составления таблицы
 	* @author Kate
@@ -254,7 +254,7 @@ private:
 	* \param[in|out] constNum номер константы
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int* constNum, int local);
+	void parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt, int local);
 
 	/* Проверить узел-объявление функции дерева для составления таблицы
 	* @author Kate
@@ -262,7 +262,7 @@ private:
 	* \param[in|out] constNum номер константы
 	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
 	*/
-	void parseValTypeForTable(const struct ValInfo * val, int* constNum, int local);
+	void parseValTypeForTable(const struct ValInfo * val, int local);
 
 	/* Создать элемент строки таблицы констант
 	* @author Nikita

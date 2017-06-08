@@ -16,6 +16,7 @@ struct ConstTable_Consts
 	int logic;			// Номер первой логической операции
 	int nameconstid;	// Номер метода main
 	int init;			// Номер строки с конструктором по умолчанию
+	int descId;			// Номер строки с основным типом LValue;
 };
 /*
 * Хранить описание класса
