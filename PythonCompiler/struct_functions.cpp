@@ -290,6 +290,8 @@ struct FuncDefInfo* createFuncDef(char* funcName, struct DefFuncParamListInfo* p
 	func->params=params;
 	func->body=funcBody;
 	func->nameLoc=nameL;
+	// Изначально считаем, что у функции нет возвращаемого значения
+	func->hasRet=false;
 	return func;
 }
 

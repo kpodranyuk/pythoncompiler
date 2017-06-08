@@ -212,6 +212,10 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	{
 		addDeclStringToStringList("[label=\"false\"];",node1,dotTree);
 	}
+	else if(val->type==_NONE)
+	{
+		addDeclStringToStringList("[label=\"NONE\"];",node1,dotTree);
+	}
 	else if(val->type==_STRING)
 	{
 		char* buf = makeStringForDot(val->stringVal);

@@ -54,7 +54,8 @@ enum ValType
 	_TRUE,		// Истина
 	_FALSE,		// Ложь
 	_STRING,	// Строка
-	_NUMBER		// Целое число
+	_NUMBER,	// Целое число
+	_NONE		// Значение None
 };
 
 /*
@@ -145,6 +146,9 @@ struct FuncDefInfo
 
 	// Позиция имени функции
 	struct CodeLocation* nameLoc;
+
+	// Флаг того, имеется ли у функции возвращаемое значение
+	bool hasRet;
 
 	// Параметры функции
 	struct DefFuncParamListInfo* params;

@@ -594,9 +594,19 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 			}*/
 			el=el->next;
 		}
+		hasReturn=false;
 		// Проверяем ее тело
 		checkStatementList(funcdefstmt->body);
-
+		if(!hasReturn)
+		{
+			// Создать узел return с экспром из варВала None и поставить его в конец стейтментов тела функции
+			struct ValInfo* ret = createValNode(_NONE,NULL,NULL,NULL,funcdefstmt->body->last->loc);
+			struct ExprInfo* retExpr = createSimpleExpr(_VARVAL, NULL, ret, ret->loc);
+			struct StmtInfo* retStmtm = createFromReturnStatement(_RETURN,retExpr,retExpr->loc);
+			struct StmtInfo* lastInFunc = funcdefstmt->body->last;
+			funcdefstmt->body->last=retStmtm;
+			lastInFunc->next=funcdefstmt->body->last;
+		}
 		/*std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
 		// Для каждого элемента списка..
 		for(iter=onlyInHeader.begin(); iter<onlyInHeader.end(); iter++) 
@@ -641,6 +651,7 @@ void TreeTraversal::checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * 
 		throw makeStringForException("Found return in global code.",retStmt->loc);
 	// Иначе проверяем возвращаемое выражение
 	checkExpr(expr,false);
+	hasReturn=true;
 }
 
 void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)

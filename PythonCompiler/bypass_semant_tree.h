@@ -3,6 +3,7 @@
 */
 #include "tree_structs.h"
 #include "tables_structs.h"
+#include "struct_functions.h"
 #include <vector>
 #include <map>
 #include <string>
@@ -44,6 +45,8 @@ private:
 		char* functionName;						// Имя функции
 		struct DefFuncParamListInfo* params;		// Параметры функции
 	};
+
+	bool hasReturn;		// Флаг того, что текущая функция имеет возвращаемое значение
 
 	std::string currentFuncName;
 	int valClassDesc;	// Ссылка на константу класса Value в таблице констант
