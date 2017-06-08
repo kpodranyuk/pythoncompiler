@@ -125,7 +125,8 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 				operandExists=containsString(this->varDecls.at("global"),opName);
 				// Если найдено использование глобальной переменной, то добавляем ее имя в usage
 				if(operandExists)
-					varUsage[currentFuncName].push_back(opName);
+					if(!containsString(varUsage[currentFuncName],opName))
+						varUsage[currentFuncName].push_back(opName);
 			}
 		}
 		// 3. Если переменная не найдена, выбрасываем исключение
@@ -190,10 +191,10 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 						if(containsString(this->varUsage.at(currentFuncName),opName))
 						{
 							// Если не объявлен, выдаем ошибку с именем операнда
-							char* errstr=new char[35+strlen(expr->idName)];
+							char* errstr=new char[35+strlen(opName.c_str())];
 							errstr[0]='\0';
 							strcpy(errstr,"Variable referenced before assignment - ");
-							strcat(errstr,expr->idName);
+							strcat(errstr,opName.c_str());
 							throw makeStringForException(errstr,expr->loc);
 						}
 						else
@@ -640,12 +641,6 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 			funcdefstmt->body->last=retStmtm;
 			lastInFunc->next=funcdefstmt->body->last;
 		}
-		/*std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
-		// Для каждого элемента списка..
-		for(iter=onlyInHeader.begin(); iter<onlyInHeader.end(); iter++) 
-		{
-			deleteString(this->varNames,*iter);
-		}*/
 	}
 	// Иначе выбрасываем исключение
 	else
@@ -692,8 +687,14 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 	// Из правил бизона известно, что выражением может быть только операнд
 	// Поэтому проверяем, не удален ли уже операнд
 	checkExpr(expr,false);
-/*	if(containsString(this->varNames,std::string(expr->idName)))
-		deleteString(this->varNames,std::string(expr->idName));
+	if(this->gl_state==_FUNC_STATE)
+		if(!containsString(varUsage[currentFuncName],std::string(expr->idName)))
+			varUsage[currentFuncName].push_back(std::string(expr->idName));
+	if(containsString(this->varDecls[currentFuncName],std::string(expr->idName)))
+	{
+		deleteString(this->varDecls[currentFuncName],std::string(expr->idName));
+		
+	}
 	if(containsString(this->funcNames,std::string(expr->idName)))
 	{
 		deleteString(this->funcNames,std::string(expr->idName));
@@ -710,7 +711,7 @@ void TreeTraversal::checkDelStmt(struct ExprInfo * expr) throw(char*)
 				break;
 			}
 		}
-	}*/
+	}
 }
 
 void TreeTraversal::checkFuncParams(struct DefFuncParamListInfo* params)
