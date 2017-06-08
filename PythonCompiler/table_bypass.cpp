@@ -481,6 +481,7 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 		mRef=*(ct_consts->constnumber);
 		appendToMethodTable(curElem);
 		currentFuncName=std::string(funcdefstmt->functionName);
+		this->vars->count=0;
 		struct DefFuncParamInfo* el = curHeader->params->first;
 		while(el!=NULL)
 		{

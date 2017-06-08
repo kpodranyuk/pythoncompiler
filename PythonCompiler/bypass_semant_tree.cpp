@@ -128,7 +128,7 @@ void TreeTraversal::appendToVarsTable(struct Variable* v)
 {
 	if(this->vars->first==NULL)
 	{
-		this->vars->count=1;
+		this->vars->count=0;
 		v->next=NULL;
 		v->num=(this->vars->count)++;
 		this->vars->first=v;
