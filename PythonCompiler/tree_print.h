@@ -148,13 +148,13 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 	else if(expr->type==_VARVAL)
 	{
 		// Запомнить номер текущего "родительского" узла
-		node1=*nodeCount;
-		addDeclStringToStringList("[label=\"VARVAL\"];",node1,dotTree);
+		node1=*nodeCount-1;
+		//addDeclStringToStringList("[label=\"VARVAL\"];",node1,dotTree);
 		// Запомнить номер текущего дочернего узла
-		node2=*nodeCount+1; 
+		node2=*nodeCount; 
 		printVarVal(expr->exprVal,nodeCount,dotTree);
 		// Добавить в список связь между дочерним и родительским узлами
-		addLinkToStringList(node1,node2,dotTree);
+		//addLinkToStringList(node1,node2,dotTree);
 	}
 	else if(expr->type==_FUNCCALL)
 	{
@@ -199,34 +199,34 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>& dotTree)
 {
 	int node1; // Номер главного узла и номер дочернего узла
-	*nodeCount+=1; // Получить номер узла
+	//*nodeCount+=1; // Получить номер узла
 	char* curNode;
 	// Запомнить номер текущего "родительского" узла
 	node1=*nodeCount;
 	// В зависимости от типа узла/элемента вызываем соответствующую функцию
 	if(val->type==_TRUE)
 	{
-		addDeclStringToStringList("[label=\"true\"];",node1,dotTree);
+		addDeclStringToStringList("[label=\"VARVAL\ntrue\"];",node1,dotTree);
 	}
 	else if(val->type==_FALSE)
 	{
-		addDeclStringToStringList("[label=\"false\"];",node1,dotTree);
+		addDeclStringToStringList("[label=\"VARVAL\nfalse\"];",node1,dotTree);
 	}
 	else if(val->type==_NONE)
 	{
-		addDeclStringToStringList("[label=\"NONE\"];",node1,dotTree);
+		addDeclStringToStringList("[label=\"VARVAL\nNONE\"];",node1,dotTree);
 	}
 	else if(val->type==_STRING)
 	{
 		char* buf = makeStringForDot(val->stringVal);
-		curNode = new char [30+strlen(buf)+1];
-		sprintf(curNode,"[label=\"%s\"];",buf);
+		curNode = new char [50+strlen(buf)+1];
+		sprintf(curNode,"[label=\"VARVAL\n%s\"];",buf);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_NUMBER)
 	{
-		curNode = new char [30];
-		sprintf(curNode,"[label=\"%d\"];",val->intVal);
+		curNode = new char [50];
+		sprintf(curNode,"[label=\"VARVAL\n%d\"];",val->intVal);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else
