@@ -56,6 +56,9 @@ private:
 	struct ConstTable_List* ct;				// ”казатель на таблицу констант
 	struct ConstTable_Consts* ct_consts;	// ”казатель на константы таблицы констант
 
+	struct FieldTable_List* fields;			// ”казатель на таблицу полей класса
+	struct MethodTable_List* methods;			// ”казатель на таблицу полей класса
+
 	/*
 	* ’ранит в себе список имен объ€вленных функций
 	*/
@@ -312,6 +315,18 @@ private:
 	* \param[in] ce элемент дл€ добавлени€
 	*/
 	void appendToConstTable(struct ConstTable_Elem* ce);
+
+	/*
+	* ƒобавить элемент таблицы в конец таблицы
+	* \param[in] ce элемент дл€ добавлени€
+	*/
+	void appendToFieldTable(struct FieldTable_Elem* fe);
+
+	/*
+	* ƒобавить элемент таблицы в конец таблицы
+	* \param[in] ce элемент дл€ добавлени€
+	*/
+	void appendToMethodTable(struct MethodTable_Elem* me);
 
 
 	// !!!!!!!!!!!!!!!!!!!!!!!! ‘”Ќ ÷»я —ќ—“ј¬Ћ≈Ќ»я —“–ќ » »— Ћё„≈Ќ»я !!!!!!!!!!!!!!!!!!!!

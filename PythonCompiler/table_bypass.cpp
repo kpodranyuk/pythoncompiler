@@ -94,6 +94,22 @@ char* convertTableElementToString(struct ConstTable_Elem* el)
 	return strToRet;
 }
 
+char* convertFieldElementToString(struct FieldTable_Elem* el)
+{
+	std::string final="\"";
+	final.append(std::to_string((long double)el->access));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->fieldName));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->fieldDesc));
+	final.append("\";\"");
+	final.append(std::to_string((long double)el->attrs));
+	final.append("\";");
+	char* strToRet = new char[final.length()+1];
+	strcpy(strToRet,final.c_str());
+	return strToRet;
+}
+
 // Составление таблиц (второй обход)
 void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
@@ -127,7 +143,9 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	this->prog=new ClassTable_Elem;
 	// TODO СОЗДАТЬ ФУНКЦИЮ ГЕНЕРАЦИИ ВСТАВКИ РТЛ ТАБЛИЦЫ
 	initializeConstTable();
-	//int constantNumber=1;
+	fields=new FieldTable_List;
+	fields->first=NULL;
+	fields->last=NULL;
 	parseStmtListForTable(treeRoot,NULL);
 	//std::vector<struct TableElement*>::iterator iter;  // Объявляем итератор для списка строк
 	// TODO СОЗДАТЬ ФУНКЦИЮ ОБХОДА ТАБЛИЦ ДЛЯ ПЕЧАТИ
@@ -139,6 +157,16 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 		fprintf(table,"%s\n",convertTableElementToString(el));
 		el=el->next;
 	}
+	fclose(table);
+	FILE* fieldT = fopen("field_table.csv","wt");
+	fprintf(fieldT,"\"Access\";\"Name Ref\";\"Desc\";\"Attr\";\n");
+	struct FieldTable_Elem* fe = this->fields->first;
+	while(fe!=NULL)
+	{
+		fprintf(fieldT,"%s\n",convertFieldElementToString(fe));
+		fe=fe->next;
+	}
+	fclose(fieldT);
 }
 
 void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int local)
@@ -202,8 +230,10 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 		// И если нет, то добавляем
 		std::string opName = std::string(expr->idName);
 		if(!containsString(this->varDecls["global"],opName))
-		{			
+		{
+			struct FieldTable_Elem* curElem=new FieldTable_Elem;
 			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL));
+			curElem->fieldName=*(ct_consts->constnumber);
 			// Делаем привязку к типу
 			if(this->varDecls["global"].empty())
 			{
@@ -215,9 +245,11 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 			else
 				// Делаем NameAndType
 				appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
+			curElem->fieldDesc=ct_consts->descId;
 			// Делаем fieldRef
 			appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 			this->varDecls["global"].push_back(opName);
+			appendToFieldTable(curElem);
 		}
 	}
 	// Выражение, состоящие из списка выражений

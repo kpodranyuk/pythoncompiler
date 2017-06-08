@@ -94,6 +94,36 @@ void TreeTraversal::appendToConstTable(struct ConstTable_Elem* ce)
 	last_el->next=this->ct->last;
 }
 
+void TreeTraversal::appendToFieldTable(struct FieldTable_Elem* fe)
+{
+	if(this->fields->first==NULL)
+	{
+		fe->next=NULL;
+		this->fields->first=fe;
+		this->fields->last=fe;
+		return;
+	}
+	struct FieldTable_Elem* last_el=this->fields->last;
+	this->fields->last=fe;
+	this->fields->last->next=NULL;
+	last_el->next=this->fields->last;
+}
+
+void TreeTraversal::appendToMethodTable(struct MethodTable_Elem* me)
+{
+	if(this->methods->first==NULL)
+	{
+		me->next=NULL;
+		this->methods->first=me;
+		this->methods->last=me;
+		return;
+	}
+	struct MethodTable_Elem* last_el=this->methods->last;
+	this->methods->last=me;
+	this->methods->last->next=NULL;
+	last_el->next=this->methods->last;
+}
+
 bool TreeTraversal::isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const
 {
 	return strcmp(first->functionName,second->functionName)==0&&isEqualDefFuncParams(first->params,second->params);
