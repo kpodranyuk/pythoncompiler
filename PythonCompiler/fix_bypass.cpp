@@ -151,6 +151,8 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		// Если слева операнд
 		if(expr->left->type==_OPERAND)
 		{
+			// Проверяем правую часть присвоения
+			checkExpr(expr->right,true);
 			std::string opName = std::string(expr->left->idName);
 			// Проверяем, что имя операнда не совпадает с именем библиотечной функции
 			if(containsString(this->libFuncs,opName))
@@ -211,8 +213,6 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 					}
 				}
 			}
-			// Проверяем правую часть присвоения
-			checkExpr(expr->right,true);
 		}
 		// Иначе если слева взятие по индексу, то меняем тип операции с _ASSIGN на _ARRID_AND_ASSIGN
 		else if(expr->left->type==_ARRID)

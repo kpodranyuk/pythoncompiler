@@ -43,7 +43,8 @@ enum ExprType
 	_VARVAL,				// Значение операнда
 	_OPERAND,				// Операнд (идентификатор)
 	_FUNCCALL,				// Вызов функции
-	_UMINUS					// Унарный минус
+	_UMINUS,				// Унарный минус
+	__COUNTER,
 };
 
 /*

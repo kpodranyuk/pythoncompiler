@@ -284,11 +284,11 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int l
 void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, enum ExprType typeAboveExpression)
 {
 	// Если операнд
-	if(expr->type==_OPERAND)
+	if(expr->type==_OPERAND&&typeAboveExpression==__COUNTER	)
 	{
 		if(local!=NULL)
 		{
-			if(!containsString(this->varDecls[currentFuncName],std::string(expr->idName))&&!containsString(this->varDecls["global"],std::string(expr->idName))&&typeAboveExpression==_ASSIGN)
+			if(!containsString(this->varDecls[currentFuncName],std::string(expr->idName)))
 			{
 				struct Variable* var = new struct Variable;
 				var->name=new char[strlen(expr->idName)+1];
@@ -325,7 +325,52 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
 			}
-		}		
+		}	
+	}
+	else if(expr->type==_ASSIGN)
+	{
+		struct ExprInfo* leftE=expr->left;
+		if(local!=NULL)
+		{
+			if(!containsString(this->varDecls[currentFuncName],std::string(leftE->idName)))
+			{
+				struct Variable* var = new struct Variable;
+				var->name=new char[strlen(leftE->idName)+1];
+				strcpy(var->name,leftE->idName);
+				var->localFor=local;
+				appendToVarsTable(var);
+				this->varDecls[currentFuncName].push_back(std::string(leftE->idName));
+			}
+		}
+		else
+		{
+			// Проверяем, есть ли он уже в списке переменных
+			// И если нет, то добавляем
+			std::string opName = std::string(leftE->idName);
+			if(!containsString(this->varDecls["global"],opName))
+			{
+				struct FieldTable_Elem* curElem=new FieldTable_Elem;
+				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,leftE->idName,NULL,NULL,NULL));
+				curElem->fieldName=*(ct_consts->constnumber);
+				// Делаем привязку к типу
+				if(this->varDecls["global"].empty())
+				{
+					appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL));
+					ct_consts->descId=*(ct_consts->constnumber);
+					// Делаем NameAndType
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
+				}
+				else
+					// Делаем NameAndType
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
+				curElem->fieldDesc=ct_consts->descId;
+				// Делаем fieldRef
+				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
+				this->varDecls["global"].push_back(opName);
+				appendToFieldTable(curElem);
+			}
+		}	
+		parseExprForTable(expr->right, local, expr->type);
 	}
 	// Выражение, состоящие из списка выражений
 	else if(expr->type==_ARRINIT||expr->type==_FUNCCALL)
@@ -350,7 +395,7 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 	else if(expr->type==_VARVAL)
 		parseValTypeForTable(expr->exprVal,local);
 	// Двух и трехместные выражения
-	else
+	else if(expr->type!=_OPERAND)
 	{
 		parseExprForTable(expr->left, local, expr->type);
 		if(expr->type==_ARRID_AND_ASSIGN)
@@ -474,7 +519,7 @@ void TreeTraversal::parseIfForTable(const struct IfStmtInfo * ifstmt, int local)
 void TreeTraversal::parseForForTable(const struct ForStmtInfo * forstmt, int local)
 {
 	// Проверяем выражение счетчика цикла
-	parseExprForTable(forstmt->expr,local,forstmt->expr->type);
+	parseExprForTable(forstmt->expr,local,__COUNTER);
 	// Проверяем тело цикла
 	parseStmtListForTable(forstmt->stmtlist,local);
 	// Проверяем else блок, если он есть
