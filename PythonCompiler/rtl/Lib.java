@@ -169,6 +169,8 @@ public class Lib {
             }
             
             return ((List)list).value.get(newIndex);
+        } else if (((list instanceof String)) && ((index instanceof Integer))) {
+            return ((String)list).charAt((Integer)index);
         }
         throw new Error("The index must be an integer and the operation must occur over the array.");
     }
