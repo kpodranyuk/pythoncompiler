@@ -6,7 +6,6 @@ struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* num
 {
 	struct ConstTable_Elem* te = new struct ConstTable_Elem();
 	te->type=type;
-	te->numberInTable=(*numberInTable)++;
 	te->next=NULL;
 	if(type==CONST_UTF8)
 	{
@@ -26,7 +25,7 @@ struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* num
 		te->value.args.arg1=arg1;
 		te->value.args.arg2=arg2;
 	}
-
+	te->numberInTable=++(*numberInTable);
 	return te;
 }
 

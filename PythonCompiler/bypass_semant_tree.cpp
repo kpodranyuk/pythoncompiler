@@ -221,7 +221,7 @@ void TreeTraversal::initializeConstTable()
 	ct->first->type=CONST_UTF8;
 	ct->first->value.utf8="Code";
 	ct->first->next=NULL;
-	ct->first->numberInTable=(*(ct_consts->constnumber))++;
+	ct->first->numberInTable=(*(ct_consts->constnumber));
 	// Связываем первый и последний элементы
 	ct->last=ct->first;
 	// CT_AddConst(CONST_UTF8, NULL); - добавляет элемент в зависимости от типа
@@ -249,7 +249,7 @@ void TreeTraversal::initializeConstTable()
 	ct_consts->init=*(ct_consts->constnumber);
 
 	//CT_AddConst2(CONST_METHODREF, objectClass, constnumber);
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->objectClass,*(ct_consts->constnumber)));
 
 
 	//CT_AddConst(CONST_UTF8, NULL);
