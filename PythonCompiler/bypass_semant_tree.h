@@ -57,10 +57,6 @@ private:
 	struct ConstTable_Consts* ct_consts;	// Указатель на константы таблицы констант
 
 	/*
-	* Хранит в себе список инициализированных переменных
-	*/
-	//std::vector<std::string> varNames;
-	/*
 	* Хранит в себе список имен объявленных функций
 	*/
 	std::vector<std::string> funcNames;
@@ -88,25 +84,70 @@ private:
 	*/
 
 	/*
-	*	---------- Методы класса ----------
+	*							---------- Методы класса ----------
 	*/
-
-	/* Тип элемента в строковом представлении
-	* @author Kate
-	* \param[in] type Тип элемента
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ПЕРВЫЙ ОБХОД !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	/* Проверить узел-выражение дерева
+	* @author Kate, Nikita
+	* \param[in|out] expr узел выражения
+	* \param[in] assign флаг, показывающий, что в выражении уже было присваивание
 	*/
-	//std::string convertTypeToString(enum TableElemType type);
+	void checkExpr(struct ExprInfo * expr, bool assign) throw(char*);
 
-	/* Создать элемент строки таблицы констант
+	/* Проверить узел-развилку дерева
 	* @author Nikita
-	* \param[in] type тип константы
-	* \param[in] numberInTable номер константы в таблице констант
-	* \param[in] utf8 значение константы(строка или название переменной или дескриптор)
-	* \param[in] val_int интовое значение константы
-	* \param[in] arg1 первый аргумент ссылки(на имя)
-	* \param[in] arg2 второй аргумент ссылки(на тип)
+	* \param[in|out] ifstmt узел-развилка
 	*/
-	struct ConstTable_Elem* makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, int arg1, int arg2);
+	void checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*);
+
+	/* Проверить узел-цикл while дерева
+	* @author Nikita
+	* \param[in|out] whilestmt узел цикла while
+	*/
+	void checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*);
+
+	/* Проверить узел-цикл for дерева
+	* @author Nikita
+	* \param[in|out] forstmt узел цикла for
+	*/
+	void checkForStmt(struct ForStmtInfo * forstmt) throw(char*);
+
+	/* Проверить узел определения функции дерева
+	* @author Kate
+	* \param[in|out] funcdefstmt узел определения функции дерева
+	*/
+	void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(char*);
+
+	/* Проверить узел операторов прерывания/продолжения цикла
+	* @author Nikita
+	* \param[in|out] type тип узла
+	*/
+	void checkContinueBreakStmt(struct StmtInfo* contBreakStmt) throw(char*);
+
+	/* Проверить узел оператора возвращения из функции
+	* @author Kate
+	* \param[in|out] retStmt узел стейтмент
+	* \param[in|out] expr узел выражения
+	*/
+	void checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * expr) throw(char*);
+
+	/* Проверить узел оператора удаления значения
+	* @author Kate
+	* \param[in|out] expr узел выражения
+	*/
+	void checkDelStmt(struct ExprInfo * expr) throw(char*);
+
+	/* Проверить узел параметров функции при объявлении
+	* @author Kate
+	* \param[in|out] params список параметров функции при объявлении
+	*/
+	void checkFuncParams(struct DefFuncParamListInfo* params);
+
+	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
+	* @author Kate
+	* \param[in|out] root список корней дерева
+	*/
+	void checkStatementList(struct StmtListInfo* root) throw(char*);
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate
@@ -114,6 +155,8 @@ private:
 	* \param[in] second заголовок второй функции
 	*/
 	void checkFuncCall(struct FunctionHeader* first, struct FunctionHeader* second) const;
+
+	//!!!!!!!!!!!!!!!!!!!!!!!! ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ПЕРВОГО ОБХОДА !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	/* Проверить, равны ли два заголовка функции
 	* @author Kate
@@ -178,67 +221,7 @@ private:
 	*/
 	bool exprContainsAssign(struct ExprInfo * expr);
 
-	/* Проверить узел-выражение дерева
-	* @author Kate, Nikita
-	* \param[in|out] expr узел выражения
-	* \param[in] assign флаг, показывающий, что в выражении уже было присваивание
-	*/
-	void checkExpr(struct ExprInfo * expr, bool assign) throw(char*);
-
-	/* Проверить узел-развилку дерева
-	* @author Nikita
-	* \param[in|out] ifstmt узел-развилка
-	*/
-	void checkIfStmt(struct IfStmtInfo * ifstmt) throw(char*);
-
-	/* Проверить узел-цикл while дерева
-	* @author Nikita
-	* \param[in|out] whilestmt узел цикла while
-	*/
-	void checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*);
-
-	/* Проверить узел-цикл for дерева
-	* @author Nikita
-	* \param[in|out] forstmt узел цикла for
-	*/
-	void checkForStmt(struct ForStmtInfo * forstmt) throw(char*);
-
-	/* Проверить узел определения функции дерева
-	* @author Kate
-	* \param[in|out] funcdefstmt узел определения функции дерева
-	*/
-	void checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(char*);
-
-	/* Проверить узел операторов прерывания/продолжения цикла
-	* @author Nikita
-	* \param[in|out] type тип узла
-	*/
-	void checkContinueBreakStmt(struct StmtInfo* contBreakStmt) throw(char*);
-
-	/* Проверить узел оператора возвращения из функции
-	* @author Kate
-	* \param[in|out] retStmt узел стейтмент
-	* \param[in|out] expr узел выражения
-	*/
-	void checkReturnStmt(struct StmtInfo* retStmt, struct ExprInfo * expr) throw(char*);
-
-	/* Проверить узел оператора удаления значения
-	* @author Kate
-	* \param[in|out] expr узел выражения
-	*/
-	void checkDelStmt(struct ExprInfo * expr) throw(char*);
-
-	/* Проверить узел параметров функции при объявлении
-	* @author Kate
-	* \param[in|out] params список параметров функции при объявлении
-	*/
-	void checkFuncParams(struct DefFuncParamListInfo* params);
-
-	/* Обойти дерево (список стейтментов) и дополнить его аттрибутами
-	* @author Kate
-	* \param[in|out] root список корней дерева
-	*/
-	void checkStatementList(struct StmtListInfo* root) throw(char*);
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВТОРОЙ ОБХОД ДЕРЕВА !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	/* Проверить узел-выражение дерева для составления таблицы
 	* @author Kate, Nikita
@@ -273,13 +256,18 @@ private:
 	*/
 	void parseValTypeForTable(const struct ValInfo * val, int* constNum, int local);
 
-	/*
-	* Создать строку для выброса исключения
-	* \param[in] message сообщение об ошибке
-	* \param[in] location расположение ошибки
+	/* Создать элемент строки таблицы констант
+	* @author Nikita
+	* \param[in] type тип константы
+	* \param[in] numberInTable номер константы в таблице констант
+	* \param[in] utf8 значение константы(строка или название переменной или дескриптор)
+	* \param[in] val_int интовое значение константы
+	* \param[in] arg1 первый аргумент ссылки(на имя)
+	* \param[in] arg2 второй аргумент ссылки(на тип)
 	*/
-	char* makeStringForException(char* message, struct CodeLocation* location);
+	struct ConstTable_Elem* makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, int arg1, int arg2);
 
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ВТОРОГО ОБХОДА !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	/*
 	* Инициализировать таблицу констант
@@ -292,6 +280,16 @@ private:
 	* \param[in] ce элемент для добавления
 	*/
 	void appendToConstTable(struct ConstTable_Elem* ce);
+
+
+	// !!!!!!!!!!!!!!!!!!!!!!!! ФУНКЦИЯ СОСТАВЛЕНИЯ СТРОКИ ИСКЛЮЧЕНИЯ !!!!!!!!!!!!!!!!!!!!
+
+	/*
+	* Создать строку для выброса исключения
+	* \param[in] message сообщение об ошибке
+	* \param[in] location расположение ошибки
+	*/
+	char* makeStringForException(char* message, struct CodeLocation* location);
 
 	/*!
 	*	!!!!! Публичная часть класса !!!!!
