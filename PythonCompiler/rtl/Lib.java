@@ -6,7 +6,6 @@
 package rtl;
 
 import java.io.PrintStream;
-//import java.util.ArrayList;
 import java.util.Scanner;
 /**
  * Класс основной библиотеки RTL для использования
@@ -108,6 +107,10 @@ public class Lib {
 
     public static Value mul(Value m1, Value m2) {
         return m1.mul(m2);
+    }
+    
+    public static Value pow(Value m1, Value m2) {
+        return m1.pow(m2);
     }
 
     public static Value div(Value m1, Value m2) {

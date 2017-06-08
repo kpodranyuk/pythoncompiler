@@ -62,6 +62,15 @@ public abstract class Value {
     public Value mul(Value other) {
         throw new Error("Operation not allowed with these types.");
     }
+    
+    /**
+     * Возводит первое значение в степень второго значения
+     * @param other второе значение
+     * @return новое значение
+     */
+    public Value pow(Value other) {
+        throw new Error("Operation not allowed with these types.");
+    }
 
     /**
      * Делит первое значение на второе
