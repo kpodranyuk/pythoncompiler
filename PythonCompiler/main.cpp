@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 		// Ждем печать дерева
 		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTree.txt",NULL);
 		// Выводим сообщение о том, что дерево напечатано
-		printf("tree was printed");
+		puts("tree was printed");
 		TreeTraversal* treeWalker = new TreeTraversal();
 		try{
 			treeWalker->fixTree(root);

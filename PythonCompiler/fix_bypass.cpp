@@ -399,6 +399,7 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 			struct ValInfo* val = expr->left->exprVal;
 			if(val->type!=_NUMBER)
 				throw makeStringForException("Can't make negative value of anything except integer.",val->loc);
+			val->intVal*=-1;
 		}
 		else
 			checkExpr(expr->left,assign);

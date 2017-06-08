@@ -231,6 +231,30 @@ private:
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВТОРОЙ ОБХОД ДЕРЕВА !!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+	/* \
+	* @author Kate
+	* \param[in] funcdefstmt узел выражения
+	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
+	*/
+	void parseIfForTable(const struct IfStmtInfo * ifstmt, int local);
+
+	/* \
+	* @author Kate
+	* \param[in] funcdefstmt узел выражения
+	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
+	*/
+	void parseForForTable(const struct ForStmtInfo * forstmt, int local);
+
+	/* \
+	* @author Kate
+	* \param[in] funcdefstmt узел выражения
+	* \param[in|out] constNum номер константы
+	* \param[in] local номер константы, для которой все добавляемые элементы таблицы будут локальными
+	*/
+	void parseWhileForTable(const struct WhileStmtInfo * whilestmt, int local);
+
 	/* Проверить узел-выражение дерева для составления таблицы
 	* @author Kate, Nikita
 	* \param[in] expr узел выражения

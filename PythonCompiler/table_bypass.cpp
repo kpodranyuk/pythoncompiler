@@ -166,19 +166,27 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int l
 		else if(begining->type==_IF)
 		{
 			//checkIfStmt(begining->ifstmt);
+			parseIfForTable(begining->ifstmt,local);
 		}
 		else if(begining->type==_FOR)
 		{
 			//checkForStmt(begining->forstmt);
+			parseForForTable(begining->forstmt,local);
 		}
 		else if(begining->type==_WHILE)
 		{
 			//checkWhileStmt(begining->whilestmt);
+			parseWhileForTable(begining->whilestmt,local);
 		}
 		else if(begining->type==_FUNC_DEF)
 		{
 			//checkFuncDefStmt(begining->funcdefstmt);
 			parseFuncDefForTable(begining->funcdefstmt,local);
+		}
+		else if(begining->type==_RETURN)
+		{
+			//checkReturnStmt(begining,begining->expr);
+			parseExprForTable(begining->expr, local, begining->expr->type);
 		}
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
@@ -187,17 +195,6 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int l
 
 void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, enum ExprType typeAboveExpression)
 {
-	// Если одна из операций где идет инициализация или взятие элемента по индексу
-	if(expr->type==_ASSIGN || expr->type==_ARRID || expr->type==_ARRID_AND_ASSIGN)
-	{
-		parseExprForTable(expr->left, local, expr->type);
-		if(expr->type==_ARRID_AND_ASSIGN)
-		{
-			parseExprForTable(expr->middle, local, expr->type);
-		}
-		parseExprForTable(expr->right, local, expr->type);
-	}
-
 	// Если операнд
 	if(expr->type==_OPERAND)
 	{
@@ -205,8 +202,7 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 		// И если нет, то добавляем
 		std::string opName = std::string(expr->idName);
 		if(!containsString(this->varDecls["global"],opName))
-		{
-			
+		{			
 			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL));
 			// Делаем привязку к типу
 			if(this->varDecls["global"].empty())
@@ -224,10 +220,38 @@ void TreeTraversal::parseExprForTable(const struct ExprInfo * expr, int local, e
 			this->varDecls["global"].push_back(opName);
 		}
 	}
-
+	// Выражение, состоящие из списка выражений
+	else if(expr->type==_ARRINIT||expr->type==_FUNCCALL)
+	{
+		// Создаем локальный указатель на элемент списка
+		struct ExprInfo* curExpr;
+		// Считаем первый элемент списка начальным
+		curExpr = expr->arglist->first;
+		// Пока текущий элемент списка не последний..
+		while(curExpr!=NULL)
+		{
+			parseExprForTable(curExpr, local, expr->type);
+			curExpr = curExpr->next;
+		}
+	}	
+	// Унарное выражение
+	else if(expr->type==_NOT || expr->type==_UMINUS)
+	{
+		parseExprForTable(expr->left, local, expr->type);
+	}
 	// Если константа
-	if(expr->type==_VARVAL)
+	else if(expr->type==_VARVAL)
 		parseValTypeForTable(expr->exprVal,local);
+	// Двух и трехместные выражения
+	else
+	{
+		parseExprForTable(expr->left, local, expr->type);
+		if(expr->type==_ARRID_AND_ASSIGN)
+		{
+			parseExprForTable(expr->middle, local, expr->type);
+		}
+		parseExprForTable(expr->right, local, expr->type);
+	}
 }
 
 void TreeTraversal::parseValTypeForTable(const struct ValInfo * val, int local)
@@ -303,8 +327,6 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 		// Проверяем ее тело
 		parseStmtListForTable(funcdefstmt->body,local);
 	}
-	// Иначе выбрасываем исключение
-
 	// Если был вызов функции из глобального кода, меняем состояние
 	if(lastState == _MAIN_STATE)
 	{
@@ -312,4 +334,37 @@ void TreeTraversal::parseFuncDefForTable(const struct FuncDefInfo * funcdefstmt,
 		//currentFuncName="global.csv";
 		local=NULL;
 	}
+}
+
+void TreeTraversal::parseIfForTable(const struct IfStmtInfo * ifstmt, int local)
+{
+	// Проверяем условное выражение
+	parseExprForTable(ifstmt->expr,local,ifstmt->expr->type);
+	// Проверяем тело условия
+	parseStmtListForTable(ifstmt->stmtlist,local);
+	// Проверяем else блок, если он есть
+	if(ifstmt->elsestmtlist!=NULL)
+		parseStmtListForTable(ifstmt->elsestmtlist,local);
+}
+
+void TreeTraversal::parseForForTable(const struct ForStmtInfo * forstmt, int local)
+{
+	// Проверяем выражение счетчика цикла
+	parseExprForTable(forstmt->expr,local,forstmt->expr->type);
+	// Проверяем тело цикла
+	parseStmtListForTable(forstmt->stmtlist,local);
+	// Проверяем else блок, если он есть
+	if(forstmt->elsestmt!=NULL)
+		parseStmtListForTable(forstmt->elsestmt,local);
+}
+
+void TreeTraversal::parseWhileForTable(const struct WhileStmtInfo * whilestmt, int local)
+{
+	// Проверяем выражение счетчика цикла
+	parseExprForTable(whilestmt->expr,local,whilestmt->expr->type);
+	// Проверяем тело цикла
+	parseStmtListForTable(whilestmt->stmtlist,local);
+	// Проверяем else блок, если он есть
+	if(whilestmt->elsestmt!=NULL)
+		parseStmtListForTable(whilestmt->elsestmt,local);
 }
