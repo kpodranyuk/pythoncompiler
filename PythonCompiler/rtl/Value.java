@@ -27,6 +27,14 @@ public abstract class Value {
 
     @Override
     public abstract int hashCode();
+    
+    /**
+     * Конвертация логического значения в целое число
+     * @return логическое значение в виде целого числа
+     */
+    public int toIntBool() {
+        return 0;
+    }
 
     /**
      * Прибавляет к первому значению второе
@@ -54,6 +62,15 @@ public abstract class Value {
     public Value mul(Value other) {
         throw new Error("Operation not allowed with these types.");
     }
+    
+    /**
+     * Возводит первое значение в степень второго значения
+     * @param other второе значение
+     * @return новое значение
+     */
+    public Value pow(Value other) {
+        throw new Error("Operation not allowed with these types.");
+    }
 
     /**
      * Делит первое значение на второе
@@ -78,7 +95,10 @@ public abstract class Value {
      * @return инвертированное значение
      */
     public Value not() {
-        throw new Error("Operation not allowed with these types.");
+        if(this.toIntBool()==0) {
+            return new Boolean(true);
+        }
+        return new Boolean(false);
     }
 
     /**
@@ -87,7 +107,10 @@ public abstract class Value {
      * @return новое значение
      */
     public Value and(Value other) {
-        throw new Error("Operation not allowed with these types.");
+        if(this.toIntBool()==1) {
+            return other;
+        }
+        return this;
     }
 
     /**
@@ -96,25 +119,12 @@ public abstract class Value {
      * @return новое значение
      */
     public Value or(Value other) {
-        throw new Error("Operation not allowed with these types.");
+        if(this.toIntBool()==1) {
+            return this;
+        }
+        return other;
     }
-
-    /**
-     * Операция !=
-     * @param other второе значение
-     * @return новое значение
-     */
-    /*public Value neq(Value other) {
-        return eq(other).not();
-    }*/
-
-    /**
-     * Конвертация логического значения в целое число
-     * @return логическое значение в виде целого числа
-     */
-    public int toIntBool() {
-        return 0;
-    }
+    
 
     /**
      * Операция ==
@@ -122,6 +132,9 @@ public abstract class Value {
      * @return новое значение
      */
     public Value eq(Value other) {
+        if(this.equals(other)) {
+            return new Boolean(true);
+        }
         return new Boolean(false);
     }
 
@@ -131,7 +144,7 @@ public abstract class Value {
      * @return новое значение
      */
     public Value less(Value other) {
-        return new Boolean(false);
+        throw new Error("Operation not allowed with these types.");
     }
 
     /**

@@ -29,38 +29,44 @@ public class String extends Value {
 
     @Override
     public Value add(Value other) {
-        if ((other instanceof Integer)) {
-            return new String(this.value + ((Integer) other).value);
-        }
-        /*if ((other instanceof Float)) {
-            return new String(this.value + ((Float) other).value);
-        }*/
-        if ((other instanceof String)) {
+        if (other instanceof String) {
             return new String(this.value + ((String) other).value);
         }
         throw new Error("Operation not allowed with these types.");
     }
 
     @Override
-    public Value or(Value other) {
-        return super.or(other); //To change body of generated methods, choose Tools | Templates.
+    public Value mul(Value other) {
+        if (other instanceof Integer) {
+            java.lang.String res = new java.lang.String("");
+            int count = ((Integer) other).value;
+            for(int i=0; i<count; i++) {
+                res = res + this.value;
+            }
+            return new String(res);
+        }
+        throw new Error("Operation not allowed with these types.");
     }
-
-    @Override
-    public Value and(Value other) {
-        return super.and(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value not() {
-        return super.not(); //To change body of generated methods, choose Tools | Templates.
-    }
-
+    
     @Override
     public int toIntBool() {
         if(this.value.isEmpty())
             return 0;
         return 1;
+    }
+    
+    @Override
+    public Value less(Value other) {
+        if(other instanceof String) {
+            String str = (String)other;
+            if(this.value.compareTo(str.value) < 0) {
+                return new Boolean(true);
+            } else {
+                return new Boolean(false);
+            }
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
     }
     
 

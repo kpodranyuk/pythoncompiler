@@ -16,6 +16,122 @@ public class Integer extends Value{
         this.value = val;
     }
 
+
+    @Override
+    public Value add(Value other) {
+        /*if ((other instanceof Float)) {
+            return new Float(this.value + ((Float) other).value);
+        }*/
+        if (other instanceof Integer) {
+            return new Integer(this.value + ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            return new Integer(this.value + ((Boolean) other).toIntBool());
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+
+    @Override
+    public Value sub(Value other) {
+        /*if ((other instanceof Float)) {
+            return new Float(this.value - ((Float) other).value);
+        }*/
+        if (other instanceof Integer) {
+            return new Integer(this.value - ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            return new Integer(this.value - ((Boolean) other).toIntBool());
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+
+    @Override
+    public Value mul(Value other) {
+        /*if ((other instanceof Float)) {
+            return new Float(this.value * ((Float) other).value);
+        }*/
+        if (other instanceof Integer) {
+            return new Integer(this.value * ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            return new Integer(this.value * ((Boolean) other).toIntBool());
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+
+    @Override
+    public Value pow(Value other) {
+        if (other instanceof Integer) {
+            return new Integer((int) Math.pow(this.value, ((Integer) other).value));
+        } else if(other instanceof Boolean) {
+            return new Integer((int) Math.pow(this.value, ((Boolean) other).toIntBool()));
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+    
+
+    @Override
+    public Value div(Value other) {
+        /*if ((other instanceof Float)) {
+            return new Float(this.value / ((Float) other).value);
+        }*/
+        if (other instanceof Integer) {
+            return new Integer(this.value / ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            int number = ((Boolean) other).toIntBool();
+            if(number==1) {
+                return new Integer(this.value / number);
+            } else {
+                throw new Error("Division by zero.");
+            }
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+
+    @Override
+    public Value mod(Value other) {
+        /*if ((other instanceof Float)) {
+            return new Float(this.value % ((Float) other).value);
+        }*/
+        if (other instanceof Integer) {
+            return new Integer(this.value % ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            int number = ((Boolean) other).toIntBool();
+            if(number==1) {
+                return new Integer(this.value % number);
+            } else {
+                throw new Error("Division by zero.");
+            }
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+
+    @Override
+    public int toIntBool() {
+        if(this.value != 0)
+            return 1;
+        return 0;
+    }
+    
+    @Override
+    public Value less(Value other) {
+        if(other instanceof Integer) {
+            Integer in = (Integer)other;
+            if(this.value < in.value) {
+                return new Boolean(true);
+            } else {
+                return new Boolean(false);
+            }
+        } else if(other instanceof Boolean) { 
+            Boolean in = (Boolean)other;
+            if(this.value < in.toIntBool()) {
+                return new Boolean(true);
+            } else {
+                return new Boolean(false);
+            }
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
+    }
+    
+    
     @Override
     public boolean equals(Object other) {
         if ((other instanceof Integer)) {
@@ -26,18 +142,7 @@ public class Integer extends Value{
         }*/
         return false;
     }
-
-    @Override
-    public Value more(Value other) {
-        if ((other instanceof Integer)) {
-            return new Boolean(this.value > ((Integer) other).value);
-        }
-        /*if ((other instanceof Float)) {
-            return new Boolean(this.value > ((Float) other).value);
-        }*/
-        throw new Error("Operation not allowed with these types.");
-    }
-
+    
     @Override
     public java.lang.String toString() {
         return "" + this.value;
@@ -47,102 +152,9 @@ public class Integer extends Value{
     public Value clone() {
         return new Integer(this.value);
     }
-
-    @Override
-    public Value add(Value other) {
-        /*if ((other instanceof Float)) {
-            return new Float(this.value + ((Float) other).value);
-        }*/
-        if ((other instanceof Integer)) {
-            return new Integer(this.value + ((Integer) other).value);
-        }
-        throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public Value sub(Value other) {
-        /*if ((other instanceof Float)) {
-            return new Float(this.value - ((Float) other).value);
-        }*/
-        if ((other instanceof Integer)) {
-            return new Integer(this.value - ((Integer) other).value);
-        }
-        throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public Value mul(Value other) {
-        /*if ((other instanceof Float)) {
-            return new Float(this.value * ((Float) other).value);
-        }*/
-        if ((other instanceof Integer)) {
-            return new Integer(this.value * ((Integer) other).value);
-        }
-        throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public Value div(Value other) {
-        /*if ((other instanceof Float)) {
-            return new Float(this.value / ((Float) other).value);
-        }*/
-        if ((other instanceof Integer)) {
-            return new Integer(this.value / ((Integer) other).value);
-        }
-        throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public Value mod(Value other) {
-        /*if ((other instanceof Float)) {
-            return new Float(this.value % ((Float) other).value);
-        }*/
-        if ((other instanceof Integer)) {
-            return new Integer(this.value % ((Integer) other).value);
-        }
-        throw new Error("Operation not allowed with these types.");
-    }
-
+    
     @Override
     public int hashCode() {
         return this.value;
-    }
-
-    @Override
-    public int toIntBool() {
-        if(this.value != 0)
-            return 1;
-        return 0;
-    }
-
-    @Override
-    public Value less(Value other) {
-        if ((other instanceof Integer)) {
-            return new Boolean(this.value < ((Integer) other).value);
-        }
-        return new Boolean(false);
-    }
-
-    @Override
-    public Value eq(Value other) {
-        if ((other instanceof Integer)) {
-            return new Boolean(this.value == ((Integer) other).value);
-        }
-        return new Boolean(false);
-    }
-
-    @Override
-    public Value not() {
-        return new Boolean(this.value != 0).not();
-    }
-
-    @Override
-    public Value and(Value m) {
-        return new Boolean(this.value != 0).and(m);
-    }
-
-    @Override
-    public Value or(Value m) {
-        return new Boolean(this.value != 0).or(m);
     }
 }

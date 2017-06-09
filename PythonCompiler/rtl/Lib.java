@@ -6,7 +6,6 @@
 package rtl;
 
 import java.io.PrintStream;
-//import java.util.ArrayList;
 import java.util.Scanner;
 /**
  * Класс основной библиотеки RTL для использования
@@ -109,6 +108,10 @@ public class Lib {
     public static Value mul(Value m1, Value m2) {
         return m1.mul(m2);
     }
+    
+    public static Value pow(Value m1, Value m2) {
+        return m1.pow(m2);
+    }
 
     public static Value div(Value m1, Value m2) {
         return m1.div(m2);
@@ -160,20 +163,39 @@ public class Lib {
 
     public static Value ListGet(Value list, Value index) {
         if (((list instanceof List)) && ((index instanceof Integer))) {
-            return (Value) ((List)list).value.get(((Integer)index).value);
+            int newIndex = ((Integer) index).value;
+            if(newIndex<0) {
+                newIndex=flipIndex(newIndex, ((List) list).value.size());
+            }
+            
+            return ((List)list).value.get(newIndex);
+        } else if (((list instanceof String)) && ((index instanceof Integer))) {
+            int newIndex = ((Integer) index).value;
+            if(newIndex<0) {
+                newIndex=flipIndex(newIndex, ((String) list).value.length());
+            }
+            
+            return ((String)list).charAt(new Integer(newIndex));
         }
-        return mixedFromNone();
+        throw new Error("The index must be an integer and the operation must occur over the array.");
     }
 
     public static void ListSet(Value list, Value index, Value val) {
         if (((list instanceof List)) && ((index instanceof Integer))) {
-            ((List) list).value.set(((Integer) index).value, val);
+            int newIndex = ((Integer) index).value;
+            if(newIndex<0) {
+                newIndex=flipIndex(newIndex, ((List) list).value.size());
+            }
+            ((List) list).value.set(newIndex, val);
         }
+        throw new Error("The index must be an integer and the operation must occur over the array.");
     }
 
     public static Value ListAppend(Value list, Value val) {
         if ((list instanceof List)) {
             ((List) list).value.add(val);
+        } else {
+            throw new Error("The operation is not applicable to an array.");
         }
         return mixedFromNone();
     }
@@ -182,8 +204,18 @@ public class Lib {
         if ((list instanceof List)) {
             if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String) {
                ((List) list).value.remove(val); 
+            } else {
+                throw new Error("Value must be a standard type.");
             }
+        } else {
+            throw new Error("The operation is not applicable to an array.");
         }
         return mixedFromNone();
+    }
+    
+    public static int flipIndex(int index, int size) {
+        int newIndex = index;
+        newIndex+=size;
+        return newIndex;
     }
 }

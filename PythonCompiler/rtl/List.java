@@ -6,7 +6,6 @@
 package rtl;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  *
@@ -19,14 +18,13 @@ public class List extends Value {
     public List() {
         this.value = new ArrayList<Value>();
     }
-
-    
+  
     @Override
     public Value add(Value other) {
         if(other instanceof List) {
             List newList = new List();
             newList.value.addAll(this.value);
-            newList.value.add((Value)other);
+            newList.value.addAll(((List) other).value);
         
             return newList;
         }
@@ -34,29 +32,27 @@ public class List extends Value {
     }
 
     @Override
-    public Value moreOrEq(Value other) {
-        return super.moreOrEq(other); //To change body of generated methods, choose Tools | Templates.
+    public Value mul(Value other) {
+        if(other instanceof Integer) {
+            int val=((Integer) other).value;
+            if(val<=0) {
+                return new List();
+            } else if(val==1) {
+                List list = new List();
+                list.value.addAll(this.value);
+                return list;
+            } else {
+                List list = new List();
+                for(int i=0; i<val;i++) {
+                    list.value.addAll(this.value);
+                }
+                return list;
+            }
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
     }
-
-    @Override
-    public Value lessOrEq(Value other) {
-        return super.lessOrEq(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value more(Value other) {
-        return super.more(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value less(Value other) {
-        return super.less(other); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public Value eq(Value other) {
-        return super.eq(other); //To change body of generated methods, choose Tools | Templates.
-    }
+    
 
     @Override
     public int toIntBool() {
@@ -64,26 +60,37 @@ public class List extends Value {
             return 0;
         return 1;
     }
-
+  
     @Override
-    public Value and(Value other) {
-        if(this.toIntBool() == 0 || other.toIntBool() == 0)
+    public Value less(Value other) {
+        if(other instanceof List) {
+            List list = (List)other;
+            int sizeList;
+            // Находим наименьший из листов(размер)
+            if(this.value.size() > list.value.size()) {
+                sizeList=list.value.size();
+            } else {
+                sizeList=this.value.size();
+            }
+            
+            // Если листы равны, то результатом операции будет false
+            if(this.equals(list)) {
+                return new Boolean(false);
+            }
+            
+            // Проходим по всем элементам наименьшего листа
+            // Результатом лог выражения будет первое значение true или false
+            for(int i=0; i<sizeList; i++) {
+                if((this.value.get(i).less(list.value.get(i))).toIntBool()==1 && !this.value.get(i).equals(list.value.get(i))) {
+                    return new Boolean(true);
+                }
+            }
+            
             return new Boolean(false);
-        return new Boolean(true);
-    }
-
-    @Override
-    public Value or(Value other) {
-        if(this.toIntBool() == 0 && other.toIntBool() == 0)
-            return new Boolean(false);
-        return new Boolean(true);
-    }
-
-    @Override
-    public Value not() {
-        if(this.toIntBool() == 0)
-            return new Boolean(true);
-        return new Boolean(false);
+            
+        } else {
+            throw new Error("Operation not allowed with these types.");
+        }
     }
     
     
@@ -117,7 +124,9 @@ public class List extends Value {
 
     @Override
     public Value clone() {
-        return new None();
+        List list = new List();
+        list.value.addAll(this.value);
+        return list;
     }
 
     @Override
