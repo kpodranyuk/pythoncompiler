@@ -126,7 +126,8 @@ struct FieldTable_Elem
 {
 	static const unsigned short int access = FIELD_ACC_PUBLIC | FIELD_STATIC;	// Флаги доступа
 	int fieldName;	// Ссылка на имя поля в таблице констант
-	int fieldDesc;	// Ссылка на дескриптор поля в таблице константс
+	int fieldDesc;	// Ссылка на дескриптор поля в таблице констант
+	int fieldRef;	// Ссылка на филдреф в таблице констант
 	static const int attrs = 0;	// Количество аттрибутов
 	struct FieldTable_Elem* next;	// Указатель на следующий элемент таблицы
 };
@@ -147,7 +148,8 @@ struct MethodTable_Elem
 {
 	static const unsigned short int access = METHOD_ACC_PUBLIC | METHOD_STATIC;	// Флаги доступа
 	int methodName;	// Ссылка на имя поля в таблице констант
-	int methodDesc;	// Ссылка на дескриптор поля в таблице константс
+	int methodDesc;	// Ссылка на дескриптор поля в таблице констант
+	int methodRef;	// Ссылка на методреф в таблице констант
 	static const int attrs = 1;	// Количество аттрибутов метода
 	//TODO сделать ссылку на таблицу аттрибутов метода
 	struct CodeAttr* methodAttr;
@@ -164,6 +166,7 @@ struct CodeAttr
 	static const int stackSize = 1200;	// Размер стека операндов
 	int localVarsCount;	// Количество локальных переменных метода
 	int byteCodeLength;	// Длина байт-кода (размер кода метода в байтах)
+	// Сам байт-код ???
 	static const int exceptionsCount = 0;	// Количество записей в таблице исключений
 	static const int attrsCount = 0;		// Количество аттрибутов
 };
