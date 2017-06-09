@@ -58,23 +58,15 @@ public class Lib {
         System.out.println(val.toString());
     }
 
-    public static Value ioread(Value format) {
-        Scanner scanner = new Scanner(System.in);
-        java.lang.String vf = null;
-        if ((format instanceof String)) {
-            vf = ((String) format).value;
-            /*if (vf == "*n") {
-                return new Float(scanner.nextDouble());
-            }*/
-            if (vf == "*l") {
-                return new String(scanner.nextLine());
-            }
-            throw new Error("[ERROR] io.read: Quantifier not supported.");
-        }
-        if ((format instanceof Integer)) {
-            return new String(scanner.next(".{" + ((Integer) format).value + "}"));
-        }
-        throw new Error("[ERROR] Type mismatch.");
+    public static Value input(Value toPrint) {
+        // Печатаем передаваемое содержимое
+        Lib.print(toPrint);
+        // Создаем сканнер
+        Scanner scan = new Scanner(System.in);
+        // Считываем строку
+        java.lang.String s = scan.next();
+        // Кладем строку на стек
+        return valueFromString(s);
     }
 
     public static Value valueFromNone() {
