@@ -134,7 +134,7 @@ void printExpr(struct ExprInfo * expr, int* nodeCount, std::vector<std::string>&
 		{
 			curNode = new char [150+strlen(expr->idName)+1];
 			if(expr->locFor!=NULL)
-				sprintf(curNode,"[label=\"CT_#:%d, %d\n<ID>\n%s\"];",expr->locFor,expr->numberInTable,expr->idName);
+				sprintf(curNode,"[label=\"LT_#:%d, %d\n<ID>\n%s\"];",expr->locFor,expr->numberInTable,expr->idName);
 			else
 				sprintf(curNode,"[label=\"CT_#:%d\n<ID>\n%s\"];",expr->numberInTable,expr->idName);
 		}
