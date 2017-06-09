@@ -156,6 +156,19 @@ void TreeTraversal::findOpInCT(struct ExprInfo* expr,int local)
 	}
 }
 
+int TreeTraversal::findMDesc(char* desc)
+{
+	std::vector<struct mDescInfo*>::iterator it;
+	for(it=mDescs.begin();it<mDescs.end();it++)
+	{
+		if(strcmp((*it)->desc,desc)==0)
+		{
+			return (*it)->num;
+		}
+	}
+	return -1;
+}
+
 // Составление таблиц (второй обход)
 void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 {
@@ -506,24 +519,34 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 			type+="(";
 			while(el!=NULL)
 			{
-				type+="LValue;";
+				type+="Lrtl/Value;";
 				el=el->next;
 			}
 			type+=")";
 		}
-		type+="LValue;";
+		type+="Lrtl/Value;";
 		char* Ctype=new char [strlen(type.c_str())+1];
 		strcpy(Ctype,type.c_str());
+		int existingDesc=findMDesc(Ctype);
 		struct MethodTable_Elem* curElem=new MethodTable_Elem;
 		int mRef=0;
 		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,funcdefstmt->functionName,NULL,NULL,NULL));
 		curElem->methodAttr=NULL;
 		curElem->methodName=*(ct_consts->constnumber);
 		// Делаем привязку к типу
-		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,Ctype,NULL,NULL,NULL));
-		curElem->methodDesc=*(ct_consts->constnumber);
-		// Делаем NameAndType
-		appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+		if(existingDesc==-1)
+		{
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,Ctype,NULL,NULL,NULL));
+			curElem->methodDesc=*(ct_consts->constnumber);
+			// Делаем NameAndType
+			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+		}
+		else
+		{
+			curElem->methodDesc=existingDesc;
+			// Делаем NameAndType
+			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),existingDesc));
+		}
 		// Делаем methodRef
 		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 		mRef=*(ct_consts->constnumber);

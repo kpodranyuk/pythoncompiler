@@ -55,6 +55,14 @@ private:
 		int local;			// Номер MethodRef, для которого локальна переменная
 	};
 
+	/*
+	* Хранит в себе дескриптор метода и строку с его объявлением
+	*/
+	struct mDescInfo{
+		char* desc;		// Дескриптор метода
+		int num;		// Номер строки с объявлением
+	};
+
 	bool hasReturn;		// Флаг того, что текущая функция имеет возвращаемое значение
 
 	std::string currentFuncName;
@@ -72,6 +80,10 @@ private:
 	* Хранит в себе список полей класса
 	*/
 	std::vector<struct opInfo*> ops;
+	/*
+	* Хранит в себе список дескрипторов методов
+	*/
+	std::vector<struct mDescInfo*> mDescs;
 
 
 	/*
@@ -349,7 +361,15 @@ private:
 	*/
 	void appendToVarsTable(struct Variable* v);
 
+	/*
+	* \
+	* \param[in] ce элемент для добавления
+	*/
+	void appendToMDescs(char* desc, int num);
+
 	void findOpInCT(struct ExprInfo* expr,int local);
+
+	int findMDesc(char* desc);
 
 
 	// !!!!!!!!!!!!!!!!!!!!!!!! ФУНКЦИЯ СОСТАВЛЕНИЯ СТРОКИ ИСКЛЮЧЕНИЯ !!!!!!!!!!!!!!!!!!!!
