@@ -77,11 +77,11 @@ public class Lib {
         throw new Error("[ERROR] Type mismatch.");
     }
 
-    public static Value mixedFromNone() {
+    public static Value valueFromNone() {
         return new None();
     }
     
-    public static Value mixedFromInt(int i) {
+    public static Value valueFromInt(int i) {
         return new Integer(i);
     }
 
@@ -89,11 +89,11 @@ public class Lib {
         return new Float(f);
     }*/
 
-    public static Value mixedFromString(java.lang.String s) {
+    public static Value valueFromString(java.lang.String s) {
         return new String(s);
     }
 
-    public static Value mixedFromList() {
+    public static Value valueFromList() {
         return new List();
     }
 
@@ -197,7 +197,7 @@ public class Lib {
         } else {
             throw new Error("The operation is not applicable to an array.");
         }
-        return mixedFromNone();
+        return valueFromNone();
     }
     
     public static Value ListRemove(Value list, Value val) {
@@ -210,7 +210,7 @@ public class Lib {
         } else {
             throw new Error("The operation is not applicable to an array.");
         }
-        return mixedFromNone();
+        return valueFromNone();
     }
     
     public static int flipIndex(int index, int size) {
