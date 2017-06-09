@@ -88,6 +88,10 @@ public class Lib {
     public static Value valueFromList() {
         return new List();
     }
+    
+    public static Value valueFromBoolean(int val) {
+        return new Boolean(val!=0);
+    }
 
     public static Value sub(Value m1, Value m2) {
         return m1.sub(m2);
