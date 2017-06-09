@@ -71,6 +71,16 @@ private:
 		int MR	;		// methodRef
 	};
 
+	/*
+	* Хранит в себе константу и ссылку на нее в таблице
+	*/
+	struct constInfo{
+		enum ValType t;	// Тип константы
+		int val;		// Значение константы инт/бул
+		char* strVal;	// Строкое значение константы
+		int num;		// Номер в таблице констант
+	};
+
 	bool hasReturn;		// Флаг того, что текущая функция имеет возвращаемое значение
 
 	std::string currentFuncName;
@@ -96,6 +106,12 @@ private:
 	* Хранит в себе список дескрипторов методов
 	*/
 	std::vector<struct methodInfo*> MRs;
+	/*
+	* Хранит в себе список констант в таблице констант
+	*/
+	std::vector<struct constInfo*> consts;
+
+	
 
 
 	/*
@@ -385,9 +401,17 @@ private:
 	*/
 	void appendMToMT(char* name, int methodRef);
 
+	/*
+	* \
+	* \param[in] ce элемент для добавления
+	*/
+	void appendCToC(enum ValType type, int val, char* charVal, int number);
+
 	void findOpInCT(struct ExprInfo* expr,int local);
 
 	void findMInMT(struct ExprInfo* expr);
+	
+	bool findCInCT(struct ValInfo* val);
 
 	int findMDesc(char* desc);
 

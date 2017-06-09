@@ -156,6 +156,22 @@ void TreeTraversal::findOpInCT(struct ExprInfo* expr,int local)
 	}
 }
 
+bool TreeTraversal::findCInCT(struct ValInfo* val)
+{
+	std::vector<struct constInfo*>::iterator it;
+	for(it=consts.begin();it<consts.end();it++)
+	{
+		if((*it)->t==val->type&&val->type==_NONE||(*it)->t==val->type&&val->type==_TRUE||(*it)->t==val->type&&val->type==_FALSE||
+			(*it)->t==val->type&&val->type==_NUMBER&&(*it)->val==val->intVal||
+			(*it)->t==val->type&&val->type==_STRING&&strcmp((*it)->strVal,val->stringVal)==0)
+		{
+			val->numberInTable=(*it)->num;
+			return true;
+		}
+	}
+	return false;
+}
+
 void TreeTraversal::findMInMT(struct ExprInfo* expr)
 {
 	std::vector<struct methodInfo*>::iterator it;
@@ -485,24 +501,41 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 
 void TreeTraversal::parseValTypeForTable(struct ValInfo * val, int local)
 {
-	if(val->type==_TRUE)
+	if(!findCInCT(val))
 	{
-		appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,1,NULL,NULL));
+		if(val->type==_TRUE)
+		{
+			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,1,NULL,NULL));
+			val->numberInTable=*(ct_consts->constnumber);
+			appendCToC(val->type, 1, NULL, *(ct_consts->constnumber));
+		}
+		else if(val->type==_FALSE)
+		{
+			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,0,NULL,NULL));
+			val->numberInTable=*(ct_consts->constnumber);
+			appendCToC(val->type, 0, NULL, *(ct_consts->constnumber));
+		}
+		else if(val->type==_NUMBER)
+		{
+			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,val->intVal,NULL,NULL));
+			val->numberInTable=*(ct_consts->constnumber);
+			appendCToC(val->type, val->intVal, NULL, *(ct_consts->constnumber));
+		}
+		else if(val->type==_STRING)
+		{
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,val->stringVal,NULL,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+			val->numberInTable=*(ct_consts->constnumber);
+			appendCToC(val->type, NULL, val->stringVal, *(ct_consts->constnumber));
+		}
+		else if(val->type==_NONE)
+		{
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"NONE",NULL,NULL,NULL));
+			//appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+			val->numberInTable=*(ct_consts->constnumber);
+			appendCToC(val->type, NULL, val->stringVal, *(ct_consts->constnumber));
+		}
 	}
-	else if(val->type==_FALSE)
-	{
-		appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,0,NULL,NULL));
-	}
-	else if(val->type==_NUMBER)
-	{
-		appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,val->intVal,NULL,NULL));
-	}
-	else if(val->type==_STRING)
-	{
-		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,val->stringVal,NULL,NULL,NULL));
-		appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
-	}
-		
 }
 
 void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int local)

@@ -217,27 +217,33 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	// В зависимости от типа узла/элемента вызываем соответствующую функцию
 	if(val->type==_TRUE)
 	{
-		addDeclStringToStringList("[label=\"VARVAL\ntrue\"];",node1,dotTree);
+		curNode = new char [100];
+		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\ntrue\"];",val->numberInTable);
+		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_FALSE)
 	{
-		addDeclStringToStringList("[label=\"VARVAL\nfalse\"];",node1,dotTree);
+		curNode = new char [100];
+		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\nfalse\"];",val->numberInTable);
+		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_NONE)
 	{
-		addDeclStringToStringList("[label=\"VARVAL\nNONE\"];",node1,dotTree);
+		curNode = new char [100];
+		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\nNONE\"];",val->numberInTable);
+		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_STRING)
 	{
 		char* buf = makeStringForDot(val->stringVal);
-		curNode = new char [50+strlen(buf)+1];
-		sprintf(curNode,"[label=\"VARVAL\n%s\"];",buf);
+		curNode = new char [100+strlen(buf)+1];
+		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\n%s\"];",val->numberInTable,buf);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else if(val->type==_NUMBER)
 	{
-		curNode = new char [50];
-		sprintf(curNode,"[label=\"VARVAL\n%d\"];",val->intVal);
+		curNode = new char [150];
+		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\n%d\"];",val->numberInTable,val->intVal);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
 	else

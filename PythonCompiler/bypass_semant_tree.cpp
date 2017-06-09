@@ -158,6 +158,16 @@ void TreeTraversal::appendMToMT(char* name, int methodRef)
 	this->MRs.push_back(curMI);
 }
 
+void TreeTraversal::appendCToC(enum ValType type, int val, char* charVal, int number)
+{
+	struct constInfo* curC=new struct constInfo;
+	curC->t=type;
+	curC->val=val;
+	curC->strVal=charVal;
+	curC->num=number;
+	this->consts.push_back(curC);
+}
+
 bool TreeTraversal::isEqualFuncHeaders(struct FunctionHeader* first, struct FunctionHeader* second) const
 {
 	return strcmp(first->functionName,second->functionName)==0&&isEqualDefFuncParams(first->params,second->params);
