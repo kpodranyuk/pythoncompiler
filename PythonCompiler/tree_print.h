@@ -450,8 +450,8 @@ void printFuncCall(struct ExprInfo * expr, int* nodeCount, std::vector<std::stri
 	int parent = (*nodeCount)++;
 	int name = (*nodeCount)++;
 	int args, node2;
-	curNode = new char[30+strlen(expr->idName)];
-	sprintf(curNode,"[label=\"FUNC\n%s\"];",expr->idName);	
+	curNode = new char[50+strlen(expr->idName)];
+	sprintf(curNode,"[label=\"CT_#:%d\nFUNC\n%s\"];",expr->numberInTable,expr->idName);	
 	addDeclStringToStringList(curNode,name,dotTree);
 	// Добавить в список связь между дочерним и родительским узлами
 	addLinkToStringList(parent,name,dotTree);
@@ -478,7 +478,7 @@ void printFuncDefStmt(struct FuncDefInfo * funcdefstmt, int* nodeCount, std::vec
 	int node2;
 	// Объявляем узел с именем функции
 	curNode = new char[50+strlen(funcdefstmt->functionName)];
-	sprintf(curNode,"[label=\"FUNC_DEF\n%s\"];",funcdefstmt->functionName);	
+	sprintf(curNode,"[label=\"CT_#:%d\nFUNC_DEF\n%s\"];",funcdefstmt->numberInTable,funcdefstmt->functionName);	
 	addDeclStringToStringList(curNode,name,dotTree);
 	// Запомнить номер текущего дочернего узла
 	node2=*nodeCount+1; 

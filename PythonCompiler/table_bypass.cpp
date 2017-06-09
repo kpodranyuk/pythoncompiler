@@ -156,6 +156,20 @@ void TreeTraversal::findOpInCT(struct ExprInfo* expr,int local)
 	}
 }
 
+void TreeTraversal::findMInMT(struct ExprInfo* expr)
+{
+	std::vector<struct methodInfo*>::iterator it;
+	for(it=MRs.begin();it<MRs.end();it++)
+	{
+		if(strcmp((*it)->name,expr->idName)==0)
+		{
+			expr->locFor=NULL;
+			expr->numberInTable=(*it)->MR;
+			break;
+		}
+	}
+}
+
 int TreeTraversal::findMDesc(char* desc)
 {
 	std::vector<struct mDescInfo*>::iterator it;
@@ -436,6 +450,8 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 	// Выражение, состоящие из списка выражений
 	else if(expr->type==_ARRINIT||expr->type==_FUNCCALL)
 	{
+		if(expr->type==_FUNCCALL)
+			findMInMT(expr);
 		// Создаем локальный указатель на элемент списка
 		struct ExprInfo* curExpr;
 		// Считаем первый элемент списка начальным
@@ -569,7 +585,8 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 			this->ops.push_back(curOp);
 			el=el->next;
 		}
-
+		appendMToMT(funcdefstmt->functionName, mRef);
+		funcdefstmt->numberInTable=mRef;
 		// Проверяем ее тело
 		parseStmtListForTable(funcdefstmt->body,mRef);
 	}

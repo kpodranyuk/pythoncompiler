@@ -63,6 +63,14 @@ private:
 		int num;		// Номер строки с объявлением
 	};
 
+	/*
+	* Хранит в себе имя функции и ее methodRef
+	*/
+	struct methodInfo{
+		char* name;		// Имя метода
+		int MR	;		// methodRef
+	};
+
 	bool hasReturn;		// Флаг того, что текущая функция имеет возвращаемое значение
 
 	std::string currentFuncName;
@@ -83,7 +91,11 @@ private:
 	/*
 	* Хранит в себе список дескрипторов методов
 	*/
-	std::vector<struct mDescInfo*> mDescs;
+	std::vector<struct mDescInfo*> mDescs; 
+	/*
+	* Хранит в себе список дескрипторов методов
+	*/
+	std::vector<struct methodInfo*> MRs;
 
 
 	/*
@@ -367,7 +379,15 @@ private:
 	*/
 	void appendToMDescs(char* desc, int num);
 
+	/*
+	* \
+	* \param[in] ce элемент для добавления
+	*/
+	void appendMToMT(char* name, int methodRef);
+
 	void findOpInCT(struct ExprInfo* expr,int local);
+
+	void findMInMT(struct ExprInfo* expr);
 
 	int findMDesc(char* desc);
 
