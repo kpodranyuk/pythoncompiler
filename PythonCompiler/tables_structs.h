@@ -12,7 +12,7 @@ struct ConstTable_Consts
 	int valueType;		// Номер класса value
 	int valueClass;		// Номер первой операции-обертки конструктора
 	int arifmetic;		// Номер первой арифметической операции
-	//int list;
+	int list;
 	int logic;			// Номер первой логической операции
 	int nameconstid;	// Номер метода main
 	int init;			// Номер строки с конструктором по умолчанию
