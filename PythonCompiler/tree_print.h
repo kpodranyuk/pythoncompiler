@@ -212,6 +212,10 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 	{
 		addDeclStringToStringList("[label=\"false\"];",node1,dotTree);
 	}
+	else if(val->type==_NONE)
+	{
+		addDeclStringToStringList("[label=\"NONE\"];",node1,dotTree);
+	}
 	else if(val->type==_STRING)
 	{
 		char* buf = makeStringForDot(val->stringVal);
@@ -396,8 +400,8 @@ void printForStmt(struct ForStmtInfo * forstmt, int* nodeCount, std::vector<std:
 	// Вывод счетчика цикла
 	*nodeCount+=1;
 	node1=*nodeCount;
-	char* curNode = new char [50+strlen(forstmt->counter)+1];
-	sprintf(curNode,"[label=\"<COUNTER>\n%s\"];",forstmt->counter);
+	char* curNode = new char [50+strlen(forstmt->counter->idName)+1];
+	sprintf(curNode,"[label=\"<COUNTER_ID>\n%s\"];",forstmt->counter->idName);
 	addDeclStringToStringList(curNode,node1,dotTree);
 	addLinkToStringList(for_stmt, node1, dotTree);
 

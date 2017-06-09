@@ -16,6 +16,7 @@ struct ConstTable_Consts
 	int logic;			// Номер первой логической операции
 	int nameconstid;	// Номер метода main
 	int init;			// Номер строки с конструктором по умолчанию
+	int descId;			// Номер строки с основным типом LValue;
 };
 /*
 * Хранить описание класса
@@ -86,14 +87,57 @@ struct ConstTable_Elem
 };
 
 /*
+* Хранит в себе влаги доступа для поля
+*/
+enum Field_ACC {
+	FIELD_ACC_PUBLIC = 0x0001,
+	FIELD_ACC_PRIVATE = 0x0002,
+	FIELD_ACC_PROTECTED = 0x0004,
+
+	FIELD_STATIC = 0x0008
+};
+
+/*
+* Хранит в себе флаги доступа для метода класса
+*/
+enum Method_ACC {
+	METHOD_ACC_PUBLIC = 0x0001,
+	METHOD_ACC_PRIVATE = 0x0002,
+	METHOD_ACC_PROTECTED = 0x0004,
+
+	METHOD_STATIC = 0x0008,
+	METHOD_FINAL = 0x0010,
+	METHOD_ABSTRACT = 0x0400
+};
+
+/*
+* Хранит в себе информацию о таблице полей класса
+*/
+struct FieldTable_List
+{
+	struct FieldTable_Elem* first;
+	struct FieldTable_Elem* last;
+};
+
+/*
 * Хранит в себе информацию об элементе таблицы полей
 */
 struct FieldTable_Elem
 {
+	static const unsigned short int access = FIELD_ACC_PUBLIC | FIELD_STATIC;	// Флаги доступа
 	int fieldName;	// Ссылка на имя поля в таблице констант
 	int fieldDesc;	// Ссылка на дескриптор поля в таблице константс
-
+	static const int attrs = 0;	// Количество аттрибутов
 	struct FieldTable_Elem* next;	// Указатель на следующий элемент таблицы
+};
+
+/*
+* Хранит в себе информацию о таблице полей класса
+*/
+struct MethodTable_List
+{
+	struct MethodTable_Elem* first;
+	struct MethodTable_Elem* last;
 };
 
 /*
@@ -101,6 +145,7 @@ struct FieldTable_Elem
 */
 struct MethodTable_Elem
 {
+	static const unsigned short int access = METHOD_ACC_PUBLIC | METHOD_STATIC;	// Флаги доступа
 	int methodName;	// Ссылка на имя поля в таблице констант
 	int methodDesc;	// Ссылка на дескриптор поля в таблице константс
 	static const int attrs = 1;	// Количество аттрибутов метода
@@ -154,6 +199,16 @@ struct Operation
 };
 
 /*
+* Хранит в себе информацию о таблице локальных переменных методов
+*/
+struct VariableTable_List
+{
+	struct Variable* first;
+	struct Variable* last;
+	int count;
+};
+
+/*
 * Хранит описание переменной
 */
 struct Variable
@@ -161,6 +216,6 @@ struct Variable
 	char * name; // Имя
 	int num; // Номер в таблице локальных переменных метода
 	static const int type = 1; // Наш Value
-
-	struct Variable * next; // Следубщая переменная
+	int localFor;	// Номер методРефа, которому принадлежит функция
+	struct Variable * next; // Следующая переменная
 };

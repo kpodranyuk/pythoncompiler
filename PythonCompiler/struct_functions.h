@@ -178,7 +178,7 @@ struct ElifListInfo * createElifList(struct ExprInfo * expr, struct StmtListInfo
 * \param[in] elsestmt тело else после цикла
 * \return указатель for
 */
-struct ForStmtInfo * createForStatement(char * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt);
+struct ForStmtInfo * createForStatement(struct ExprInfo * counter, struct ExprInfo * expr, struct StmtListInfo * stmtlist, struct StmtListInfo * elsestmt);
 
 /* Создание while
 * \param[in] expr условие выполнения

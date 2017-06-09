@@ -43,7 +43,8 @@ enum ExprType
 	_VARVAL,				// Значение операнда
 	_OPERAND,				// Операнд (идентификатор)
 	_FUNCCALL,				// Вызов функции
-	_UMINUS					// Унарный минус
+	_UMINUS,				// Унарный минус
+	__COUNTER,
 };
 
 /*
@@ -54,7 +55,8 @@ enum ValType
 	_TRUE,		// Истина
 	_FALSE,		// Ложь
 	_STRING,	// Строка
-	_NUMBER		// Целое число
+	_NUMBER,	// Целое число
+	_NONE		// Значение None
 };
 
 /*
@@ -145,6 +147,9 @@ struct FuncDefInfo
 
 	// Позиция имени функции
 	struct CodeLocation* nameLoc;
+
+	// Флаг того, имеется ли у функции возвращаемое значение
+	bool hasRet;
 
 	// Параметры функции
 	struct DefFuncParamListInfo* params;
@@ -249,7 +254,7 @@ struct WhileStmtInfo
 struct ForStmtInfo
 {
 	// Счетчик цикла(переменная)
-	char* counter;
+	struct ExprInfo * counter;
 	// Указатель на выражение, по чем проходит цикл
 	struct ExprInfo * expr;
 	// Тело цикла

@@ -65,10 +65,12 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bypass_semant_tree.cpp" />
+    <ClCompile Include="fix_bypass.cpp" />
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="parser.tab.cpp" />
     <ClCompile Include="struct_functions.cpp" />
+    <ClCompile Include="Table_Bypass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Bison Include="parser.y" />
