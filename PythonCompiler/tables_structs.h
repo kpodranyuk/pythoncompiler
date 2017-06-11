@@ -205,6 +205,44 @@ enum OperType
 };
 
 /*
+* Хранит в себе возможный тип операции
+*/
+enum LibOperations
+{
+	TO_STRING=20,
+	PRINT=24,
+	INPUT=27,
+	TO_NUMBER=30,
+	TO_NUMBER_base=34,
+	SUB=37,
+	ADD=40,
+	MUL=43,
+	POW=46,
+	DIV=49,
+	MOD=52,
+	TO_INT_BOOL=56,
+	LIST_GET=59,
+	LIST_SET=63,
+	LIST_APPEND=66,
+	LIST_ADD_INITIALIZE=69,
+	LIST_REMOVE=72,
+	EQ=75,
+	LESS=78,
+	MORE=81,
+	LESS_OR_EQ=84,
+	MORE_OR_EQ=87,
+	NOT=90,
+	OR=93,
+	AND=96,
+	NOT_EQ=99,
+	VALUE_FROM_INT=103,
+	VALUE_FROM_NONE=107,
+	VALUE_FROM_LIST=110,
+	VALUE_FROM_BOOLEAN=113
+};
+
+
+/*
 * Хранит описание операции
 */
 struct Operation
