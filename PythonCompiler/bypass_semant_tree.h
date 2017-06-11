@@ -91,8 +91,8 @@ private:
 	struct ConstTable_List* ct;				// ”казатель на таблицу констант
 	struct ConstTable_Consts* ct_consts;	// ”казатель на константы таблицы констант
 
-	struct FieldTable_List* fields;			// ”казатель на таблицу полей класса
-	struct MethodTable_List* methods;		// ”казатель на таблицу полей класса
+	//struct FieldTable_List* fields;			// ”казатель на таблицу полей класса
+	//struct MethodTable_List* methods;		// ”казатель на таблицу полей класса
 	struct VariableTable_List* vars;		// ”казатель на таблицу локальных переменных методов
 	/*
 	* ’ранит в себе список полей класса

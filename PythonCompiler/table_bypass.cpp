@@ -233,13 +233,11 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	// TODO ÑÎÇÄÀÒÜ ÔÓÍÊÖÈÞ ÃÅÍÅÐÀÖÈÈ ÂÑÒÀÂÊÈ ÐÒË ÒÀÁËÈÖÛ
 	initializeConstTable();
 
-	fields=new FieldTable_List;
-	fields->first=NULL;
-	fields->last=NULL;
+	this->prog->firstField=NULL;
+	this->prog->lastField=NULL;
 
-	methods=new MethodTable_List;
-	methods->first=NULL;
-	methods->last=NULL;
+	this->prog->methodsFirst=NULL;
+	this->prog->methodsLast=NULL;
 
 	vars=new VariableTable_List;
 	vars->first=NULL;
@@ -259,7 +257,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	fclose(table);
 	FILE* fieldT = fopen("field_table.csv","wt");
 	fprintf(fieldT,"\"Access\";\"Name Ref\";\"Desc\";\"Attr\";\n");
-	struct FieldTable_Elem* fe = this->fields->first;
+	struct FieldTable_Elem* fe = this->prog->firstField;
 	while(fe!=NULL)
 	{
 		fprintf(fieldT,"%s\n",convertFieldElementToString(fe));
@@ -268,7 +266,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	fclose(fieldT);
 	FILE* methodT = fopen("method_table.csv","wt");
 	fprintf(methodT,"\"Access\";\"Name Ref\";\"Desc\";\"Attr\";\n");
-	struct MethodTable_Elem* me = this->methods->first;
+	struct MethodTable_Elem* me = this->prog->methodsFirst;
 	while(me!=NULL)
 	{
 		fprintf(methodT,"%s\n",convertMethodElementToString(me));

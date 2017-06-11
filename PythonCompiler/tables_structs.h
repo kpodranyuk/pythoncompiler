@@ -26,10 +26,10 @@ struct ClassTable_Elem
 	int classConst; // Номер класса в таблице констант
 	int fieldCount; // Количество полей класса
 	int methodCount; // Количество методов в классе
-	struct FieldTable_List * Fields; // Указатель на первое поле класса
-	//struct FieldTable_Elem * lastField; // Указатель на последнее поле класса
-	struct MethodTable_List * Methods; // Указатель на первый метод класса(main)
-	//struct MethodTable_Elem * methodslast; // Указатель на последний метод класса
+	struct FieldTable_Elem * firstField; // Указатель на первое поле класса
+	struct FieldTable_Elem * lastField; // Указатель на последнее поле класса
+	struct MethodTable_Elem * methodsFirst; // Указатель на первый метод класса(main)
+	struct MethodTable_Elem * methodsLast; // Указатель на последний метод класса
 };
 
 
@@ -113,12 +113,12 @@ enum Method_ACC {
 /*
 * Хранит в себе информацию о таблице полей класса
 */
-struct FieldTable_List
+/*struct FieldTable_List
 {
 	struct FieldTable_Elem* first;
 	struct FieldTable_Elem* last;
 	int count;
-};
+};*/
 
 /*
 * Хранит в себе информацию об элементе таблицы полей
@@ -136,12 +136,12 @@ struct FieldTable_Elem
 /*
 * Хранит в себе информацию о таблице полей класса
 */
-struct MethodTable_List
+/*struct MethodTable_List
 {
 	struct MethodTable_Elem* first;
 	struct MethodTable_Elem* last;
 	int count;
-};
+};*/
 
 /*
 * Хранит в себе информацию об элементе таблицы методов
