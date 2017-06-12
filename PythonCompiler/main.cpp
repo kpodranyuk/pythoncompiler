@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
 	else
 	{*/
 		// set flex to read from it instead of defaulting to STDIN:
-		yyin = fopen("test1.py","rt");//(argv[1], "rt");
+		yyin = fopen(argv[1], "rt");//("test1.py","rt");//
 		if(yyin==NULL)
 		{
 			//printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);
@@ -73,6 +73,8 @@ int main(int argc, char** argv) {
 		catch (char* message)
 		{
 			printf("\nMessage while traversing the tree: %s\nPlease, check syntax of python file.",message);
+			_getch();
+			return 0;
 		}
 
 		/*Вывод исправленного дерева*/
