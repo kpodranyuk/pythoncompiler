@@ -96,32 +96,32 @@ void TreeTraversal::appendToConstTable(struct ConstTable_Elem* ce)
 
 void TreeTraversal::appendToFieldTable(struct FieldTable_Elem* fe)
 {
-	if(this->fields->first==NULL)
+	if(this->prog->firstField==NULL)
 	{
 		fe->next=NULL;
-		this->fields->first=fe;
-		this->fields->last=fe;
+		this->prog->firstField=fe;
+		this->prog->lastField=fe;
 		return;
 	}
-	struct FieldTable_Elem* last_el=this->fields->last;
-	this->fields->last=fe;
-	this->fields->last->next=NULL;
-	last_el->next=this->fields->last;
+	struct FieldTable_Elem* last_el=this->prog->lastField;
+	this->prog->lastField=fe;
+	this->prog->lastField->next=NULL;
+	last_el->next=this->prog->lastField;
 }
 
 void TreeTraversal::appendToMethodTable(struct MethodTable_Elem* me)
 {
-	if(this->methods->first==NULL)
+	if(this->prog->methodsFirst==NULL)
 	{
 		me->next=NULL;
-		this->methods->first=me;
-		this->methods->last=me;
+		this->prog->methodsFirst=me;
+		this->prog->methodsLast=me;
 		return;
 	}
-	struct MethodTable_Elem* last_el=this->methods->last;
-	this->methods->last=me;
-	this->methods->last->next=NULL;
-	last_el->next=this->methods->last;
+	struct MethodTable_Elem* last_el=this->prog->methodsLast;
+	this->prog->methodsLast=me;
+	this->prog->methodsLast->next=NULL;
+	last_el->next=this->prog->methodsLast;
 }
 
 void TreeTraversal::appendToVarsTable(struct Variable* v)
@@ -339,7 +339,7 @@ void TreeTraversal::initializeConstTable()
 	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
 
 	prog->classConst=*(ct_consts->constnumber);
-	prog->firstField=NULL;
+	//prog->firstField=NULL;
 
 	// Запись имён функций
 	// Главная функция
@@ -406,31 +406,32 @@ void TreeTraversal::initializeConstTable()
 	//arifmentic = constnumber;
 	ct_consts->arifmetic=*(ct_consts->constnumber);
 
+	//+3
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"add",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+6
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mul",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+9
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"pow",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+12
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"div",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+15
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mod",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+17
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toIntBool",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)I",NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;)I",*(ct_consts->constnumber));
@@ -443,23 +444,28 @@ void TreeTraversal::initializeConstTable()
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	ct_consts->list=*(ct_consts->constnumber);
-
+	//+4
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListSet",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;Lrtl/Value;)V",NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;Lrtl/Value;Lrtl/Value;)V",*(ct_consts->constnumber));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+7
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListAppend",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	//+10
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListAddInitialize",NULL,NULL,NULL));
+	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	//+13
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListRemove",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
+	
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"eq",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
@@ -468,49 +474,49 @@ void TreeTraversal::initializeConstTable()
 	//logic = constnumber;
 	ct_consts->logic=*(ct_consts->constnumber);
 
-	// + 4
+	// + 3
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"less",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 8
+	// + 6
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"more",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 12
+	// + 9
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"lessOrEq",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 16
+	// + 12
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"moreOrEq",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 20
+	// + 15
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"not",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 24
+	// + 18
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"or",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 28
+	// + 21
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"and",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	// + 32
+	// + 24
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"notEq",NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));

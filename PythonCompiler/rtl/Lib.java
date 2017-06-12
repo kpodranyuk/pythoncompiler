@@ -196,6 +196,15 @@ public class Lib {
         return valueFromNone();
     }
     
+    public static Value ListAddInitialize(Value list, Value val) {
+        if ((list instanceof List)) {
+            ((List) list).value.add(val);
+        } else {
+            throw new Error("The operation is not applicable to an array.");
+        }
+        return list;
+    }
+    
     public static Value ListRemove(Value list, Value val) {
         if ((list instanceof List)) {
             if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String) {
