@@ -20,8 +20,6 @@ private:
 	struct ClassTable_Elem* prog;			// ”казатель на таблицу класса
 	struct ConstTable_List* ct;				// ”казатель на таблицу констант
 	struct ConstTable_Consts* ct_consts;	// ”казатель на константы таблицы констант
-	struct FieldTable_List* fields;			// ”казатель на таблицу полей класса
-	struct MethodTable_List* methods;		// ”казатель на таблицу методов класса
 	struct VariableTable_List* vars;		// ”казатель на таблицу локальных переменных методов
 	struct StmtListInfo* treeRoot;			// ”казатель на дерево
 
@@ -95,7 +93,7 @@ private:
 public:
 
 	//  онструктор, принимающий все таблицы
-	CodeGeneration(struct ClassTable_Elem* prog, struct ConstTable_List* ct, struct ConstTable_Consts* ct_consts, struct FieldTable_List* fields, struct MethodTable_List* methods, struct VariableTable_List* vars);
+	CodeGeneration(struct ClassTable_Elem* prog, struct ConstTable_List* ct, struct ConstTable_Consts* ct_consts, struct VariableTable_List* vars);
 	~CodeGeneration(void);
 
 	// ћетод генерации байт-кода class файла

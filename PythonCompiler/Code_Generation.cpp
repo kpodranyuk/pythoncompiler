@@ -1,13 +1,11 @@
 #include "Code_Generation.h"
 
 
-CodeGeneration::CodeGeneration(struct ClassTable_Elem* prog, struct ConstTable_List* ct, struct ConstTable_Consts* ct_consts, struct FieldTable_List* fields, struct MethodTable_List* methods, struct VariableTable_List* vars)
+CodeGeneration::CodeGeneration(struct ClassTable_Elem* prog, struct ConstTable_List* ct, struct ConstTable_Consts* ct_consts, struct VariableTable_List* vars)
 {
 	this->prog=prog;
 	this->ct=ct;
 	this->ct_consts=ct_consts;
-	this->fields=fields;
-	this->methods=methods;
 	this->vars=vars;
 }
 
