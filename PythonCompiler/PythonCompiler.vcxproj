@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="bypass_semant_tree.cpp" />
+    <ClCompile Include="Code_Generation.cpp" />
     <ClCompile Include="fix_bypass.cpp" />
     <ClCompile Include="lexer.flex.cpp" />
     <ClCompile Include="main.cpp" />
@@ -77,6 +78,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="bypass_semant_tree.h" />
+    <ClInclude Include="Code_Generation.h" />
     <ClInclude Include="parser.tab.h" />
     <ClInclude Include="struct_functions.h" />
     <ClInclude Include="tables_structs.h" />
