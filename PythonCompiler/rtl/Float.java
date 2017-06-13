@@ -6,26 +6,45 @@
 package rtl;
 
 /**
- * Целочисленное значение
+ * Значение числа с плавающей точкой
+ *
  * @author Katie
  */
-public class Integer extends Value{
-    public int value;
+public class Float extends Value{
 
-    public Integer(int val) {
+    public float value;
+
+    public Float(float val) {
         this.value = val;
     }
 
+    public boolean equals(Object other) {
+        if ((other instanceof Integer)) {
+            return this.value == ((Integer) other).value;
+        }
+        if ((other instanceof Float)) {
+            return this.value == ((Float) other).value;
+        }
+        return false;
+    }
 
-    @Override
+    public java.lang.String toString() {
+        return "" + this.value;
+    }
+
+    public Value clone() {
+        return new Float(this.value);
+    }
+
+     @Override
     public Value add(Value other) {
         if ((other instanceof Float)) {
             return new Float(this.value + ((Float) other).value);
         }
         if (other instanceof Integer) {
-            return new Integer(this.value + ((Integer) other).value);
+            return new Float(this.value + ((Integer) other).value);
         } else if(other instanceof Boolean) {
-            return new Integer(this.value + ((Boolean) other).toIntBool());
+            return new Float(this.value + ((Boolean) other).toIntBool());
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -36,9 +55,9 @@ public class Integer extends Value{
             return new Float(this.value - ((Float) other).value);
         }
         if (other instanceof Integer) {
-            return new Integer(this.value - ((Integer) other).value);
+            return new Float(this.value - ((Integer) other).value);
         } else if(other instanceof Boolean) {
-            return new Integer(this.value - ((Boolean) other).toIntBool());
+            return new Float(this.value - ((Boolean) other).toIntBool());
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -49,25 +68,24 @@ public class Integer extends Value{
             return new Float(this.value * ((Float) other).value);
         }
         if (other instanceof Integer) {
-            return new Integer(this.value * ((Integer) other).value);
+            return new Float(this.value * ((Integer) other).value);
         } else if(other instanceof Boolean) {
-            return new Integer(this.value * ((Boolean) other).toIntBool());
-        }
-        throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public Value pow(Value other) {
-        if (other instanceof Integer) {
-            return new Integer((int) Math.pow(this.value, ((Integer) other).value));
-        } else if(other instanceof Boolean) {
-            return new Integer((int) Math.pow(this.value, ((Boolean) other).toIntBool()));
-        } else if(other instanceof Float) {
-            return new Integer((int) Math.pow(this.value, ((Float) other).value));
+            return new Float(this.value * ((Boolean) other).toIntBool());
         }
         throw new Error("Operation not allowed with these types.");
     }
     
+    @Override
+    public Value pow(Value other) {
+        if (other instanceof Integer) {
+            return new Float((float)Math.pow(this.value, ((Integer) other).value));
+        } else if(other instanceof Boolean) {
+            return new Float((float) Math.pow(this.value, ((Boolean) other).toIntBool()));
+        } else if(other instanceof Float) {
+            return new Float((float) Math.pow(this.value, ((Float) other).value));
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
 
     @Override
     public Value div(Value other) {
@@ -75,11 +93,11 @@ public class Integer extends Value{
             return new Float(this.value / ((Float) other).value);
         }
         if (other instanceof Integer) {
-            return new Integer(this.value / ((Integer) other).value);
+            return new Float(this.value / ((Integer) other).value);
         } else if(other instanceof Boolean) {
             int number = ((Boolean) other).toIntBool();
             if(number==1) {
-                return new Integer(this.value / number);
+                return new Float(this.value / number);
             } else {
                 throw new Error("Division by zero.");
             }
@@ -93,23 +111,16 @@ public class Integer extends Value{
             return new Float(this.value % ((Float) other).value);
         }
         if (other instanceof Integer) {
-            return new Integer(this.value % ((Integer) other).value);
+            return new Float(this.value % ((Integer) other).value);
         } else if(other instanceof Boolean) {
             int number = ((Boolean) other).toIntBool();
             if(number==1) {
-                return new Integer(this.value % number);
+                return new Float(this.value % number);
             } else {
                 throw new Error("Division by zero.");
             }
         }
         throw new Error("Operation not allowed with these types.");
-    }
-
-    @Override
-    public int toIntBool() {
-        if(this.value != 0)
-            return 1;
-        return 0;
     }
     
     @Override
@@ -139,31 +150,8 @@ public class Integer extends Value{
             throw new Error("Operation not allowed with these types.");
         }
     }
-    
-    
-    @Override
-    public boolean equals(Object other) {
-        if ((other instanceof Integer)) {
-            return this.value == ((Integer) other).value;
-        }
-        if ((other instanceof Float)) {
-            return this.value == ((Float) other).value;
-        }
-        return false;
-    }
-    
-    @Override
-    public java.lang.String toString() {
-        return "" + this.value;
-    }
 
-    @Override
-    public Value clone() {
-        return new Integer(this.value);
-    }
-    
-    @Override
     public int hashCode() {
-        return this.value;
+        return (int) this.value;
     }
 }
