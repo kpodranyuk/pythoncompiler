@@ -397,15 +397,22 @@ void TreeTraversal::checkExpr(struct ExprInfo * expr, bool assign) throw(char*)
 		if(expr->left->type==_VARVAL)
 		{
 			struct ValInfo* val = expr->left->exprVal;
-			if(val->type!=_NUMBER)
-				throw makeStringForException("Can't make negative value of anything except integer.",val->loc);
-			val->intVal*=-1;
+			if(val->type!=_NUMBER&&val->type!=_FLOAT)
+				throw makeStringForException("Can't make negative value of anything except integer or float.",val->loc);
+			if(val->type==_NUMBER)
+				val->intVal*=-1;
+			else if(val->type==_FLOAT)
+				val->fVal*=-1;
 		}
 		else
 			checkExpr(expr->left,assign);
 	}
 	else
 	{
+		if(expr->type==_MUL&&expr->left->type==_VARVAL&&expr->left->exprVal->type==_FLOAT&&expr->right->type==_VARVAL&&expr->right->exprVal->type==_STRING)
+		{
+			throw makeStringForException("Can't mul string and float.",expr->loc);
+		}
 		if(expr->type!=_VARVAL)
 		{
 			checkExpr(expr->left,assign);
@@ -635,7 +642,7 @@ void TreeTraversal::checkFuncDefStmt(struct FuncDefInfo * funcdefstmt) throw(cha
 		if(!hasReturn)
 		{
 			// Создать узел return с экспром из варВала None и поставить его в конец стейтментов тела функции
-			struct ValInfo* ret = createValNode(_NONE,NULL,NULL,NULL,funcdefstmt->body->last->loc);
+			struct ValInfo* ret = createValNode(_NONE,NULL,NULL,NULL,NULL,funcdefstmt->body->last->loc);
 			struct ExprInfo* retExpr = createSimpleExpr(_VARVAL, NULL, ret, ret->loc);
 			struct StmtInfo* retStmtm = createFromReturnStatement(_RETURN,retExpr,retExpr->loc);
 			struct StmtInfo* lastInFunc = funcdefstmt->body->last;

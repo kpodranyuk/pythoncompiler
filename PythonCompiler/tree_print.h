@@ -246,6 +246,12 @@ void printVarVal(struct ValInfo * val, int* nodeCount, std::vector<std::string>&
 		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\n%d\"];",val->numberInTable,val->intVal);
 		addDeclStringToStringList(curNode,node1,dotTree);
 	}
+	else if(val->type==_FLOAT)
+	{
+		curNode = new char [150];
+		sprintf(curNode,"[label=\"CT_#:%d\nVARVAL\n%f\"];",val->numberInTable,val->fVal);
+		addDeclStringToStringList(curNode,node1,dotTree);
+	}
 	else
 		return ;
 }

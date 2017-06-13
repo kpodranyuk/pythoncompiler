@@ -71,8 +71,9 @@ struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, 
 * \param[in] logVal логическое значение 
 * \param[in] stringVal строковое значение 
 * \param[in] numVal целочисленное значение 
+* \param[in] fVal значение числа с плавающей точкой
 */
-struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal, struct CodeLocation* loc);
+struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal, float fVal, struct CodeLocation* loc);
 
 /* —оздание списка параметров функции
 * @author Kate

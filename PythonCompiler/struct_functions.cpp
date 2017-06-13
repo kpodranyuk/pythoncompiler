@@ -201,7 +201,7 @@ struct ExprInfo* createExprInfoFromFuncCall(enum ExprType type, char* funcName, 
 * \param[in] stringVal строковое значение 
 * \param[in] numVal целочисленное значение 
 */
-struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal, struct CodeLocation* loc)
+struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, int numVal, float fVal, struct CodeLocation* loc)
 {
 	// Выделяем память под узел
 	struct ValInfo* val = (struct ValInfo*)malloc(sizeof(struct ValInfo));
@@ -220,6 +220,7 @@ struct ValInfo* createValNode(enum ValType type, bool logVal, char* stringVal, i
 		val->stringVal = stringVal;
 	// Переприсваиваем целочисленное значение
 	val->intVal = numVal;
+	val->fVal=fVal;
 	val->loc=loc;
 	// Возвращаем созданный узел
 	return val;

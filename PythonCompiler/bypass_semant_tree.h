@@ -77,6 +77,7 @@ private:
 	struct constInfo{
 		enum ValType t;	// Тип константы
 		int val;		// Значение константы инт/бул
+		float f_val;	// Значение константы флоат
 		char* strVal;	// Строкое значение константы
 		int num;		// Номер в таблице констант
 	};
@@ -347,7 +348,7 @@ private:
 	void parseValTypeForTable(struct ValInfo * val, int local);
 
 	/* Создать элемент строки таблицы констант
-	* @author Nikita
+	* @author Nikita, Kate
 	* \param[in] type тип константы
 	* \param[in] numberInTable номер константы в таблице констант
 	* \param[in] utf8 значение константы(строка или название переменной или дескриптор)
@@ -355,7 +356,7 @@ private:
 	* \param[in] arg1 первый аргумент ссылки(на имя)
 	* \param[in] arg2 второй аргумент ссылки(на тип)
 	*/
-	struct ConstTable_Elem* makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, int arg1, int arg2);
+	struct ConstTable_Elem* makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, float val_float, int arg1, int arg2);
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ВТОРОГО ОБХОДА !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -405,7 +406,7 @@ private:
 	* \
 	* \param[in] ce элемент для добавления
 	*/
-	void appendCToC(enum ValType type, int val, char* charVal, int number);
+	void appendCToC(enum ValType type, int val, float f_val, char* charVal, int number);
 
 	void findOpInCT(struct ExprInfo* expr,int local);
 

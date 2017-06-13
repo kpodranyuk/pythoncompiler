@@ -56,6 +56,7 @@ enum ValType
 	_FALSE,		// Ложь
 	_STRING,	// Строка
 	_NUMBER,	// Целое число
+	_FLOAT,		// Число с плавающей точкой
 	_NONE		// Значение None
 };
 
@@ -71,6 +72,8 @@ struct ValInfo
 	char* stringVal;
 	// Значение выражения-целого числа
 	int intVal;
+	// Значение выражения-числа с плавающей запятой
+	float fVal;
 	// Значение выражения-логической переменной
 	bool logVal;
 

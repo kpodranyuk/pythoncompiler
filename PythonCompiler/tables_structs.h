@@ -79,6 +79,7 @@ struct ConstTable_Elem
         } args;
 
         int val_int;	// Значение целого числа
+		float val_float;	// Значение числа с плавающей точкой
     } value;
 
 	int numberInTable; // Номер константы в таблице
