@@ -135,7 +135,7 @@ WHITE_SPACE[ \t]
 			charIndex=findLexemLocation(charIndex,stringIndex);
 			printf("FLEX:\t%s - операция\n", yytext);		
 			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
-			return INT;
+			return IINT;
 		} 
 \+ 		{
 			charIndex=findLexemLocation(charIndex,stringIndex);
@@ -241,13 +241,13 @@ True		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
-				return TRUE;
+				return TTRUE;
 			}
 False		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"%FLEX:\ts - ключевое слово\n", yytext);	
-				return FALSE;
+				return FFALSE;
 			}
 not			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
@@ -284,7 +284,7 @@ in			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
-				return IN;
+				return IIN;
 			}
 continue	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
@@ -389,7 +389,7 @@ del	{
 				printf("FLEX:\tНашел число: %s\n", yytext);			
 				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
 				yylval.Float=atof(yytext); 
-				return FLOAT;	
+				return FFLOAT;	
 			}
 {DIGIT}+	{
 				charIndex=findLexemLocation(charIndex,stringIndex);

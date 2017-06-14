@@ -1,22 +1,19 @@
-/*
-* \file Code_Generation.h хранит в себе код генерации кода
-*/
-
-#pragma once
+#ifndef CODE_GENERATION_H
+#define CODE_GENERATION_H
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
-#include <winsock2.h>
-#pragma comment(lib, "Ws2_32.lib")
-#include "tree_structs.h"
 #include "tables_structs.h"
 
+#include <winsock2.h>
+#pragma comment(lib, "Ws2_32.lib")
 
 class CodeGeneration
 {
 private:
+
 	struct ClassTable_Elem* prog;			// ”казатель на таблицу класса
 	struct ConstTable_List* ct;				// ”казатель на таблицу констант
 	struct ConstTable_Consts* ct_consts;	// ”казатель на константы таблицы констант
@@ -100,3 +97,4 @@ public:
 	void generateCode(struct StmtListInfo* treeRoot);
 };
 
+#endif

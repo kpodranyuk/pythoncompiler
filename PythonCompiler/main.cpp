@@ -1,3 +1,5 @@
+#include "code_generation_.h"
+
 #include <stdio.h>
 #include <conio.h>
 #include <locale.h>
@@ -6,7 +8,6 @@
 #include "tree_print.h"
 #include "bypass_semant_tree.h"
 #include "parser.tab.h"
-#include "Code_Generation.h"
 
 extern FILE* yyin;
 extern int yyparse();

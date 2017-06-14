@@ -48,7 +48,7 @@ struct StmtListInfo* root;
 %left DEDENT// Начало и конец блока кода
 %token ':'		// Двоеточие
 %token EOF_TOKEN		// Конец файла
-%token TRUE	FALSE	// Оператор логической истины
+%token TTRUE	FFALSE	// Оператор логической истины
 %token WHILE	// Оператор цикла пока
 %token FOR		// Оператор цикла для
 %token CONTINUE	// Оператор продолжения цикла
@@ -61,13 +61,13 @@ struct StmtListInfo* root;
 %token DEL		// Оператор удаления переменной
 %token ','		// Запятая
 %nonassoc '.'		// Точка
-%token IN 										// Оператор in
+%token IIN 										// Оператор in
 %right '='										// Оператор присвоения
 %left AND OR NOT								// Оператор и или не
 %left EQUAL NOT_EQUAL							// Оператор равенства и неравенства
 %left LESS_OR_EQUAL '<' GREATER_OR_EQUAL '>'	// Оператор меньше либо равно, больше либо равно, меньше, больше
 %left '+'	'-'									// Оператор сложения и вычитания
-%left MUL DIV MOD INT							// Оператор умножения, деления, остатка от деления, целой части от деления (возможна замена одним символом)
+%left MUL DIV MOD IINT							// Оператор умножения, деления, остатка от деления, целой части от деления (возможна замена одним символом)
 %left POW										// Оператор возведения в степень
 %left UMINUS									// Унарный минус
 %nonassoc '['		// Открывающая квадратная скобка
@@ -77,7 +77,7 @@ struct StmtListInfo* root;
 %token <StringVal>OPERAND	// Операнд
 %left <StringVal>STRING	// Строка
 %left <Int>NUMBER			// Число
-%left <Float>FLOAT	// Число с плавающей точкой
+%left <Float>FFLOAT	// Число с плавающей точкой
 %start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFileB,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
 fullroot:line_sep stmt_list {root=$2;	printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
@@ -94,8 +94,8 @@ elif_list: ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createElifList($2,$
 | elif_list ELIF expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createElifList($3,$7,$1);  printf("BISON:\tfound ELIF_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound ELIF_STMT:\t\n");}
 ;
 
-for_stmt: FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createForStatement(createSimpleExpr(_OPERAND,$2,NULL,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)),$4,$8,NULL); printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
-| FOR OPERAND IN expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {$$=createForStatement(createSimpleExpr(_OPERAND,$2,NULL,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)),$4,$8,$14); printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+for_stmt: FOR OPERAND IIN expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createForStatement(createSimpleExpr(_OPERAND,$2,NULL,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)),$4,$8,NULL); printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
+| FOR OPERAND IIN expr ':' NEWLINE INDENT stmt_list DEDENT ELSE ':' NEWLINE INDENT stmt_list DEDENT {$$=createForStatement(createSimpleExpr(_OPERAND,$2,NULL,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)),$4,$8,$14); printf("BISON:\tfound FOR_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound FOR_STMT:\t\n");}
 ;
 
 while_stmt: WHILE expr ':' NEWLINE INDENT stmt_list DEDENT {$$=createWhileStatement($2,$6,NULL); printf("BISON:\tfound WHILE_STMT:\t\n"); fprintf(logFileB,"BISON:\tfound WHILE_STMT:\t\n");}
@@ -118,11 +118,11 @@ stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); printf("BISON:\tfou
 | while_stmt {$$ = createFromWhileStatement(_WHILE, $1) ; printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
 
-var_val: TRUE	{$$=createValNode(_TRUE,true,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));				printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
-| FALSE		{$$=createValNode(_FALSE,false,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
+var_val: TTRUE	{$$=createValNode(_TRUE,true,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));				printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
+| FFALSE		{$$=createValNode(_FALSE,false,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
 | STRING	{$$=createValNode(_STRING,false,$1,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
 | NUMBER	{$$=createValNode(_NUMBER,false,NULL,$1,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
-| FLOAT		{$$=createValNode(_FLOAT,false,NULL,NULL,$1,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
+| FFLOAT		{$$=createValNode(_FLOAT,false,NULL,NULL,$1,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
 ;
 expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
 | expr AND expr					{$$=createExprInfo(_AND,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: AND\n"); fprintf(logFileB,"BISON:\tfound expr: AND\n");}
@@ -135,7 +135,7 @@ expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3, createCodeLocation(@2.first_
 | expr LESS_OR_EQUAL expr		{$$=createExprInfo(_LESS_OR_EQUAL,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: LESS_OR_EQUAL\n"); fprintf(logFileB,"BISON:\tfound expr: LESS_OR_EQUAL\n");}
 | expr '-' expr					{$$=createExprInfo(_SUB,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: -\n"); fprintf(logFileB,"BISON:\tfound expr: -\n");}
 | expr '+' expr					{$$=createExprInfo(_ADD,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: +\n"); fprintf(logFileB,"BISON:\tfound expr: +\n");}
-| expr INT expr					{$$=createExprInfo(_INT,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: INT\n"); fprintf(logFileB,"BISON:\tfound expr: INT\n");}
+| expr IINT expr					{$$=createExprInfo(_INT,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: INT\n"); fprintf(logFileB,"BISON:\tfound expr: INT\n");}
 | expr MOD expr					{$$=createExprInfo(_MOD,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: MOD\n"); fprintf(logFileB,"BISON:\tfound expr: MOD\n");}
 | expr DIV expr					{$$=createExprInfo(_DIV,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: DIV\n"); fprintf(logFileB,"BISON:\tfound expr: DIV\n");}
 | expr MUL expr					{$$=createExprInfo(_MUL,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: MUL\n"); fprintf(logFileB,"BISON:\tfound expr: MUL\n");}
