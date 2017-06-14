@@ -59,6 +59,9 @@ void CodeGeneration::generateCode(struct StmtListInfo* treeRoot)
 	/*Кол-во атрибутов класса*/
 	u2=htons(0);
 	_write(this->fileDesc,(void*)&u2, 2);
+
+	/*Закрытие файла*/
+	_close(this->fileDesc);
 }
 
 
