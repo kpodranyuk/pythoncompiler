@@ -6,6 +6,7 @@
 #include "tree_print.h"
 #include "bypass_semant_tree.h"
 #include "parser.tab.h"
+#include "Code_Generation.h"
 
 extern FILE* yyin;
 extern int yyparse();
@@ -94,6 +95,12 @@ int main(int argc, char** argv) {
 		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTreeChanged.txt",NULL);
 		// Выводим сообщение о том, что дерево напечатано
 		puts("tree changed was printed");
+
+
+		/*Генерация кода*/
+		CodeGeneration* generate = new CodeGeneration(treeWalker->getClassTable(), treeWalker->getConstTableList(), treeWalker->getConstTableConsts(), treeWalker->getVariableTableList());
+		generate->generateCode(root);
+
 	/*}*/
 	_getch();
 	return 0;
