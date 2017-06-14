@@ -12,6 +12,7 @@ struct StmtListInfo* root;
 %union
 {
 	int Int;
+	float Float;
 	char* StringVal;
 	struct ValInfo* var_valinfo;
 
@@ -76,6 +77,7 @@ struct StmtListInfo* root;
 %token <StringVal>OPERAND	// Операнд
 %left <StringVal>STRING	// Строка
 %left <Int>NUMBER			// Число
+%left <Float>FLOAT	// Число с плавающей точкой
 %start fullroot		// Стартовый символ		//fullroot NEWLINE INDENT {printf("BISON:\tfound NEWLINE INDENT fullroot\n"); fprintf(logFileB,"BISON:\tfound NEWLINE INDENT fullroot\n");}//{$$=$2;}
 %%
 fullroot:line_sep stmt_list {root=$2;	printf("BISON:\tconcatenated 2 strings\n"); fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}//| fullroot NEWLINE {printf("BISON:\tconcatenated NEWLINE\n"); fprintf(logFileB,"BISON:\tconcatenated NEWLINE\n");}
@@ -116,10 +118,11 @@ stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); printf("BISON:\tfou
 | while_stmt {$$ = createFromWhileStatement(_WHILE, $1) ; printf("BISON:\tfound while_stmt:\t\n"); fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
 ;
 
-var_val: TRUE	{$$=createValNode(_TRUE,true,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));				printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
-| FALSE		{$$=createValNode(_FALSE,false,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
-| STRING	{$$=createValNode(_STRING,false,$1,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
-| NUMBER		{$$=createValNode(_NUMBER,false,NULL,$1,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
+var_val: TRUE	{$$=createValNode(_TRUE,true,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));				printf("BISON:\tfound var_val: TRUE\n"); fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
+| FALSE		{$$=createValNode(_FALSE,false,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: FALSE\n"); fprintf(logFileB,"BISON:\tfound var_val: FALSE\n");}
+| STRING	{$$=createValNode(_STRING,false,$1,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));					printf("BISON:\tfound var_val: STRING \t %s\n", $1); fprintf(logFileB,"BISON:\tfound var_val: STRING \t %s\n", $1);}
+| NUMBER	{$$=createValNode(_NUMBER,false,NULL,$1,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
+| FLOAT		{$$=createValNode(_FLOAT,false,NULL,NULL,$1,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			printf("BISON:\tfound var_val: NUMBER\n"); fprintf(logFileB,"BISON:\tfound var_val: NUMBER\n");}
 ;
 expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: OR\n"); fprintf(logFileB,"BISON:\tfound expr: OR\n");}
 | expr AND expr					{$$=createExprInfo(_AND,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); printf("BISON:\tfound expr: AND\n"); fprintf(logFileB,"BISON:\tfound expr: AND\n");}

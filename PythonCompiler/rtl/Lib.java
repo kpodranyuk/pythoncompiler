@@ -77,9 +77,9 @@ public class Lib {
         return new Integer(i);
     }
 
-    /*public static Value mixedFromFloat(float f) {
+    public static Value valueFromFloat(float f) {
         return new Float(f);
-    }*/
+    }
 
     public static Value valueFromString(java.lang.String s) {
         return new String(s);
@@ -207,7 +207,7 @@ public class Lib {
     
     public static Value ListRemove(Value list, Value val) {
         if ((list instanceof List)) {
-            if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String) {
+            if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String || val instanceof Float) {
                ((List) list).value.remove(val); 
             } else {
                 throw new Error("Value must be a standard type.");

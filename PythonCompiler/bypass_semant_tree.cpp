@@ -158,11 +158,12 @@ void TreeTraversal::appendMToMT(char* name, int methodRef)
 	this->MRs.push_back(curMI);
 }
 
-void TreeTraversal::appendCToC(enum ValType type, int val, char* charVal, int number)
+void TreeTraversal::appendCToC(enum ValType type, int val, float f_val, char* charVal, int number)
 {
 	struct constInfo* curC=new struct constInfo;
 	curC->t=type;
 	curC->val=val;
+	curC->f_val=f_val;
 	curC->strVal=charVal;
 	curC->num=number;
 	this->consts.push_back(curC);
@@ -324,237 +325,236 @@ void TreeTraversal::initializeConstTable()
 	ct->first->numberInTable=(*(ct_consts->constnumber));
 	// Ñâÿçûâàåì ïåğâûé è ïîñëåäíèé ıëåìåíòû
 	ct->last=ct->first;
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"java/lang/Object",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"java/lang/Object",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),NULL));
 	ct_consts->objectClass=*(ct_consts->constnumber);
 
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"<init>",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"()V",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"<init>",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"()V",NULL,NULL,NULL,NULL));
 	appendToMDescs("()V",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 	ct_consts->init=*(ct_consts->constnumber);
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->objectClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->objectClass,*(ct_consts->constnumber)));
 
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Program",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Program",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),NULL));
 
 	prog->classConst=*(ct_consts->constnumber);
 	//prog->firstField=NULL;
 
 	// Çàïèñü èì¸í ôóíêöèé
 	// Ãëàâíàÿ ôóíêöèÿ
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"main",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"([Ljava/lang/String;)V",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"main",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"([Ljava/lang/String;)V",NULL,NULL,NULL,NULL));
 	appendToMDescs("([Ljava/lang/String;)V",*(ct_consts->constnumber));
 	ct_consts->nameconstid = *(ct_consts->constnumber) - 1;
 	// ÍÓÆÍÎ ËÈ ÏÈÑÀÒÜ ÌÅÒÎÄĞÅÔ ÄËß ÌÅÉÍÀ?
 
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"rtl/Value",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"rtl/Value",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),NULL));
 	ct_consts->valueType = *(ct_consts->constnumber);
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->valueType,ct_consts->init));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->valueType,ct_consts->init));
 
 	// rtl
 	//----------------------------------
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"rtl/Lib",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"rtl/Lib",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_CLASS,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),NULL));
 	ct_consts->rtlClass = *(ct_consts->constnumber);
 	
 	// toString
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toString",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toString",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;)Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	appendMToMT("repr", *(ct_consts->constnumber));
 	// print
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"print",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)V",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"print",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)V",NULL,NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;)V",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	appendMToMT("print", *(ct_consts->constnumber));
 	// input
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"input",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"input",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	//appendToMDescs("(Lrtl/Value;)Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	appendMToMT("input", *(ct_consts->constnumber));
 	// toNumber
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toNumber",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toNumber",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	//appendToMDescs("(Lrtl/Value;)Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	appendMToMT("int", *(ct_consts->constnumber));
 	// toNumber&base
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toNumber",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toNumber",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	//----------------------------------
 
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"sub",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"sub",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
 	//appendToMDescs("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	//arifmentic = constnumber;
 	ct_consts->arifmetic=*(ct_consts->constnumber);
 
 	//+3
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"add",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"add",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+6
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mul",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mul",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+9
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"pow",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"pow",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+12
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"div",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"div",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+15
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mod",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mod",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+17
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toIntBool",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)I",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"toIntBool",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)I",NULL,NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;)I",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListGet",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListGet",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	ct_consts->list=*(ct_consts->constnumber);
 	//+4
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListSet",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;Lrtl/Value;)V",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListSet",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;Lrtl/Value;)V",NULL,NULL,NULL,NULL));
 	appendToMDescs("(Lrtl/Value;Lrtl/Value;Lrtl/Value;)V",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+7
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListAppend",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListAppend",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+10
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListAddInitialize",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListAddInitialize",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	//+13
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListRemove",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"ListRemove",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"eq",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"eq",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	//logic = constnumber;
 	ct_consts->logic=*(ct_consts->constnumber);
 
 	// + 3
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"less",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"less",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 6
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"more",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"more",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 9
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"lessOrEq",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"lessOrEq",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 12
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"moreOrEq",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"moreOrEq",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 15
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"not",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"not",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 18
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"or",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"or",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 21
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"and",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"and",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// + 24
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"notEq",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"notEq",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(Lrtl/Value;Lrtl/Value;)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	//mixedclass = constnumber;//??
 	ct_consts->valueClass=*(ct_consts->constnumber);
 
 	// mixedFromInt 4
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromInt",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(I)Lrtl/Value;",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromInt",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(I)Lrtl/Value;",NULL,NULL,NULL,NULL));
 	appendToMDescs("(I)Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// mixedFromUndefined 8
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromNone",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"()Lrtl/Value;",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromNone",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"()Lrtl/Value;",NULL,NULL,NULL,NULL));
 	appendToMDescs("()Lrtl/Value;",*(ct_consts->constnumber));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
-
-	// mixedFromFloat 12
-	/*appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mixedFromFloat",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(F)Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));*/
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
 	// mixedFromList 16
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromList",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromList",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"()Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("()Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("()Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromBoolean",NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromBoolean",NULL,NULL,NULL,NULL));
 	//appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"()Lrtl/Value;",NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(I)Lrtl/Value;")));
-	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),findMDesc("(I)Lrtl/Value;")));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"mixedFromFloat",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(F)Lrtl/Value;",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 }
 
 

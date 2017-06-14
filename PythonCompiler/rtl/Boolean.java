@@ -23,6 +23,8 @@ public class Boolean extends Value {
             return new Integer((this.toIntBool()) + (((Boolean) other).toIntBool()));
         } else if (other instanceof Integer) {
             return new Integer((this.toIntBool()) + (((Integer) other).value));
+        } else if (other instanceof Float) {
+            return new Float((this.toIntBool()) + (((Float) other).value));
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -33,6 +35,8 @@ public class Boolean extends Value {
             return new Integer(this.toIntBool() - ((Integer) other).value);
         } else if(other instanceof Boolean) {
             return new Integer(this.toIntBool() - ((Boolean) other).toIntBool());
+        } else if (other instanceof Float) {
+            return new Float((this.toIntBool()) - (((Float) other).value));
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -43,6 +47,8 @@ public class Boolean extends Value {
             return new Integer((this.toIntBool()) * (((Boolean) other).toIntBool()));
         } else if (other instanceof Integer) {
             return new Integer((this.toIntBool()) * (((Integer) other).value));
+        } else if (other instanceof Float) {
+            return new Float((this.toIntBool()) * (((Float) other).value));
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -53,6 +59,8 @@ public class Boolean extends Value {
             return new Integer((int) Math.pow(this.toIntBool(), ((Integer) other).value));
         } else if(other instanceof Boolean) {
             return new Integer((int) Math.pow(this.toIntBool(), ((Boolean) other).toIntBool()));
+        } else if (other instanceof Float) {
+            return new Float((float) Math.pow(this.toIntBool(), ((Float) other).value));
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -68,6 +76,8 @@ public class Boolean extends Value {
             } else {
                 throw new Error("Division by zero.");
             }
+        } else if(other instanceof Float) {
+            return new Float(this.toIntBool() / ((Float) other).value);
         }
         throw new Error("Operation not allowed with these types.");
     }
@@ -83,6 +93,8 @@ public class Boolean extends Value {
             } else {
                 throw new Error("Division by zero.");
             }
+        } else if(other instanceof Float) {
+            return new Float(this.toIntBool() % ((Float) other).value);
         }
         throw new Error("Operation not allowed with these types.");
     }

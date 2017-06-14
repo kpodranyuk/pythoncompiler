@@ -2,7 +2,7 @@
 
 #pragma warning(disable : 4996)
 
-struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, int arg1, int arg2)
+struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* numberInTable, char * utf8, int val_int, float val_float, int arg1, int arg2)
 {
 	struct ConstTable_Elem* te = new struct ConstTable_Elem();
 	te->type=type;
@@ -19,6 +19,10 @@ struct ConstTable_Elem* TreeTraversal::makeTableEl(enum ConstType type, int* num
 	else if(type==CONST_INT)
 	{
 		te->value.val_int=val_int;
+	}
+	else if(type==CONST_FLOAT)
+	{
+		te->value.val_float=val_float;
 	}
 	else if(type==CONST_NAMETYPE || type==CONST_METHODREF || type==CONST_FIELDREF)
 	{
@@ -66,6 +70,12 @@ char* convertValToString(struct ConstTable_Elem* el)
 	else if(el->type==CONST_INT)
 	{
 		itoa(el->value.val_int,buf,10);
+		return buf;
+	}
+	else if(el->type==CONST_FLOAT)
+	{
+		//ftoa(el->value.val_float,buf,10);
+		sprintf(buf,"%f",el->value.val_float);
 		return buf;
 	}
 	else if(el->type==CONST_NAMETYPE || el->type==CONST_METHODREF || el->type==CONST_FIELDREF)
@@ -368,22 +378,22 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 			if(!containsString(this->varDecls["global"],opName))
 			{
 				struct FieldTable_Elem* curElem=new FieldTable_Elem;
-				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL));
+				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,expr->idName,NULL,NULL,NULL,NULL));
 				curElem->fieldName=*(ct_consts->constnumber);
 				// Делаем привязку к типу
 				if(this->varDecls["global"].empty())
 				{
-					appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL));
+					appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL,NULL));
 					ct_consts->descId=*(ct_consts->constnumber);
 					// Делаем NameAndType
-					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
 				}
 				else
 					// Делаем NameAndType
-					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
 				curElem->fieldDesc=ct_consts->descId;
 				// Делаем fieldRef
-				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
+				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
 				expr->locFor=NULL;
@@ -430,22 +440,22 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 			if(!containsString(this->varDecls["global"],opName))
 			{
 				struct FieldTable_Elem* curElem=new FieldTable_Elem;
-				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,leftE->idName,NULL,NULL,NULL));
+				appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,leftE->idName,NULL,NULL,NULL,NULL));
 				curElem->fieldName=*(ct_consts->constnumber);
 				// Делаем привязку к типу
 				if(this->varDecls["global"].empty())
 				{
-					appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL));
+					appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"Lrtl/Value;",NULL,NULL,NULL,NULL));
 					ct_consts->descId=*(ct_consts->constnumber);
 					// Делаем NameAndType
-					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,ct_consts->descId));
 				}
 				else
 					// Делаем NameAndType
-					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
+					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
 				curElem->fieldDesc=ct_consts->descId;
 				// Делаем fieldRef
-				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
+				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
 				leftE->locFor=NULL;
@@ -503,35 +513,41 @@ void TreeTraversal::parseValTypeForTable(struct ValInfo * val, int local)
 	{
 		if(val->type==_TRUE)
 		{
-			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,1,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,1,NULL,NULL,NULL));
 			val->numberInTable=*(ct_consts->constnumber);
-			appendCToC(val->type, 1, NULL, *(ct_consts->constnumber));
+			appendCToC(val->type, 1, NULL, NULL, *(ct_consts->constnumber));
 		}
 		else if(val->type==_FALSE)
 		{
-			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,0,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,0,NULL,NULL,NULL));
 			val->numberInTable=*(ct_consts->constnumber);
-			appendCToC(val->type, 0, NULL, *(ct_consts->constnumber));
+			appendCToC(val->type, 0, NULL, NULL,*(ct_consts->constnumber));
 		}
 		else if(val->type==_NUMBER)
 		{
-			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,val->intVal,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_INT,ct_consts->constnumber,NULL,val->intVal,NULL,NULL,NULL));
 			val->numberInTable=*(ct_consts->constnumber);
-			appendCToC(val->type, val->intVal, NULL, *(ct_consts->constnumber));
+			appendCToC(val->type, val->intVal,NULL, NULL, *(ct_consts->constnumber));
+		}
+		else if(val->type==_FLOAT)
+		{
+			appendToConstTable(makeTableEl(CONST_FLOAT,ct_consts->constnumber,NULL,NULL,val->fVal,NULL,NULL));
+			val->numberInTable=*(ct_consts->constnumber);
+			appendCToC(val->type, NULL, val->fVal, NULL, *(ct_consts->constnumber));
 		}
 		else if(val->type==_STRING)
 		{
-			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,val->stringVal,NULL,NULL,NULL));
-			appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,val->stringVal,NULL,NULL,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),NULL));
 			val->numberInTable=*(ct_consts->constnumber);
-			appendCToC(val->type, NULL, val->stringVal, *(ct_consts->constnumber));
+			appendCToC(val->type, NULL, NULL,val->stringVal, *(ct_consts->constnumber));
 		}
 		else if(val->type==_NONE)
 		{
-			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"NONE",NULL,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"NONE",NULL,NULL,NULL,NULL));
 			//appendToConstTable(makeTableEl(CONST_STRING,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),NULL));
 			val->numberInTable=*(ct_consts->constnumber);
-			appendCToC(val->type, NULL, val->stringVal, *(ct_consts->constnumber));
+			appendCToC(val->type, NULL, NULL, "NONE", *(ct_consts->constnumber));
 		}
 	}
 }
@@ -577,25 +593,25 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 		int existingDesc=findMDesc(Ctype);
 		struct MethodTable_Elem* curElem=new MethodTable_Elem;
 		int mRef=0;
-		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,funcdefstmt->functionName,NULL,NULL,NULL));
+		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,funcdefstmt->functionName,NULL,NULL,NULL,NULL));
 		curElem->methodAttr=NULL;
 		curElem->methodName=*(ct_consts->constnumber);
 		// Делаем привязку к типу
 		if(existingDesc==-1)
 		{
-			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,Ctype,NULL,NULL,NULL));
+			appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,Ctype,NULL,NULL,NULL,NULL));
 			curElem->methodDesc=*(ct_consts->constnumber);
 			// Делаем NameAndType
-			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 		}
 		else
 		{
 			curElem->methodDesc=existingDesc;
 			// Делаем NameAndType
-			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),existingDesc));
+			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),existingDesc));
 		}
 		// Делаем methodRef
-		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
+		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 		mRef=*(ct_consts->constnumber);
 		appendToMethodTable(curElem);
 		currentFuncName=std::string(funcdefstmt->functionName);

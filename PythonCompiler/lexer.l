@@ -384,6 +384,13 @@ del	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				return OPERAND;
 			}
+{DIGIT}+((\.{DIGIT}+)|(e\-?{DIGIT}+)|(\.{DIGIT}+e\-?{DIGIT}+)) {
+				charIndex=findLexemLocation(charIndex,stringIndex);
+				printf("FLEX:\tНашел число: %s\n", yytext);			
+				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
+				yylval.Float=atof(yytext); 
+				return FLOAT;	
+			}
 {DIGIT}+	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("FLEX:\tНашел число: %s\n", yytext);			
