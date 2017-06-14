@@ -2,17 +2,14 @@
 * \file Code_Generation.h хранит в себе код генерации кода
 */
 
-#pragma once
-
-#include <stdio.h>
-#include <stdlib.h>
 #include <io.h>
 #include <fcntl.h>
-#include <winsock2.h>
-#pragma comment(lib, "Ws2_32.lib")
-#include "tree_structs.h"
 #include "tables_structs.h"
+#include "tree_structs.h"
 #include <vector>
+
+#include "Winsock.h"
+#pragma comment(lib, "Ws2_32.lib")
 
 
 class CodeGeneration
