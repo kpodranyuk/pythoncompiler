@@ -257,7 +257,9 @@ enum LibOperations
 struct Operation
 {
 	enum OperType type; // Тип операции
-	/*Аргументы операции(каждая имеет свое значение)*/
+	unsigned char u1Oper; // Номер операции
+
+	/*Аргументы операции(каждая имеет свое значение или вовсе не имеет)*/
 	unsigned char u1;
 	unsigned short int u2;
 	short int s2;
