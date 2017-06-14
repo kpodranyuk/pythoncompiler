@@ -556,3 +556,24 @@ void TreeTraversal::initializeConstTable()
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,*(ct_consts->constnumber),findMDesc("(I)Lrtl/Value;")));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 }
+
+
+struct ClassTable_Elem* TreeTraversal::getClassTable()
+{
+	return this->prog;
+}
+
+struct ConstTable_List*  TreeTraversal::getConstTableList()
+{
+	return this->ct;
+}
+
+struct ConstTable_Consts*  TreeTraversal::getConstTableConsts()
+{
+	return this->ct_consts;
+}
+
+struct VariableTable_List*  TreeTraversal::getVariableTableList()
+{
+	return this->vars;
+}

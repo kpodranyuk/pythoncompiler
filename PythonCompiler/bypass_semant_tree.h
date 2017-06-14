@@ -440,4 +440,10 @@ public:
 
 	// Печать аттрибутированного дерева (третий обход - ?)
 	void printTree(const struct StmtListInfo* treeRoot);
+
+	// Гетеры на таблицы
+	struct ClassTable_Elem* getClassTable();
+	struct ConstTable_List* getConstTableList();
+	struct ConstTable_Consts* getConstTableConsts();
+	struct VariableTable_List* getVariableTableList();
 };
