@@ -322,6 +322,13 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool inStmt)
 
 void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 {
+	//Вызываем generateCodeForExpr для выражения
+	//Генерим ifeq для перехода в случае лжи, и запоминаем адрес для уточнения смещения
+	//Генерим тело
+	//Если есть ветка иначе, то генерим безусловный переход и запоминаем адрес для уточнения смещения
+	//Вычисляем смещение для ifeq
+	//Генерим ветку else если она есть
+	//Вычислем смещение
 }
 
 
