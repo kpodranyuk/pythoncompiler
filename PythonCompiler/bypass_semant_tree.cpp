@@ -582,6 +582,24 @@ struct ClassTable_Elem* TreeTraversal::getClassTable()
 		mElem=mElem->next;
 	}
 	prog->methodCount=methodsC;
+
+	mElem = prog->methodsFirst;
+	while(mElem!=NULL)
+	{
+		int countVar=0;
+		Variable* var = this->vars->first;
+		while(var!=NULL)
+		{
+			if(var->localFor==mElem->methodRef)
+				countVar++;
+
+			var=var->next;
+		}
+		mElem->localVarsCount=countVar;
+
+		mElem=mElem->next;
+	}
+
 	return this->prog;
 }
 
