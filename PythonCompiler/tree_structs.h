@@ -209,6 +209,8 @@ struct StmtInfo
 	// Указатель на следующий стейтмент
 	struct StmtInfo * next;
 
+	int localFor;	// Номер дескриптора метода, которому принадлежит данный стейтмент; main==NULL
+
 	struct CodeLocation* loc;
 };
 
