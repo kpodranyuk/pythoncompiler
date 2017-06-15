@@ -88,7 +88,7 @@ void CodeGeneration::generateConstsTable()
 		// Пишем тип константы
 		u1=elem->type;
 		_write(this->fileDesc,(void*)&u1, 1);
-		//printf("%d\t",elem->type);
+
 		// Для каждого типа свой формат записи
 		if(elem->type==CONST_UTF8)
 		{
@@ -124,10 +124,6 @@ void CodeGeneration::generateConstsTable()
 
 		elem=elem->next;
 	}
-	//while(elem!=this->ct->last)
-	//{
-	//	
-	//}
 }
 
 
@@ -155,19 +151,64 @@ void CodeGeneration::generateFieldsTable()
 
 		field=field->next;
 	}
-	/*while(field!=prog->lastField)
-	{
-		
-	}*/
 }
 
 
 void CodeGeneration::generateMethodsTable()
 {
-	/*ЗАГЛУШКА*/
-	// Записываем кол-во полей класса
-	u2=htons(0);//(prog->fieldCount);
+	// Записываем кол-во методов класса
+	u2=htons(prog->methodCount);
 	_write(this->fileDesc,(void*)&u2, 2);
+
+	// Для кадого метода генерим байт-код
+	MethodTable_Elem* method = prog->methodsFirst;
+	while(method!=NULL)
+	{
+		currentLocal=method->methodRef;
+
+		u2=htons(method->access);
+		_write(this->fileDesc,(void*)&u2, 2);// флаги доступа
+
+		u2=htons(method->methodName);
+		_write(this->fileDesc,(void*)&u2, 2);// номер константы utf-8, содержащей имя метода
+
+		u2=htons(method->methodDesc);
+		_write(this->fileDesc,(void*)&u2, 2);// номер константы utf-8, содержащей дескриптор метода
+
+		u2=htons(method->attrs);
+		_write(this->fileDesc,(void*)&u2, 2);// кол-во атрибутов(1)
+
+		/* Далее вычисляем и записываем атрибут Code метода*/
+		u2=htons(1); //1я константа Code(имя атрибута)
+		_write(this->fileDesc,(void*)&u2, 2);
+
+		// Генерим в массив весь байт-код метода(операции)
+		generateCodeForStatementList(this->treeRoot);
+		// Получаем размер сгенериного байт-кода
+		int length=getCodeLengthMethod();
+
+		u4=htonl(length+12);
+		_write(this->fileDesc,(void*)&u4, 4);// Длина атрибута
+
+		u2=htons(1200);
+		_write(this->fileDesc,(void*)&u2, 2);// Размер стека операндов
+
+		u2=htons(0);// пока что 0, поскольку сруктуры еще не исправлены
+		_write(this->fileDesc,(void*)&u2, 2);// Количество локальных переменных
+
+		u4=htonl(length);
+		_write(this->fileDesc,(void*)&u4, 4);// Длина байт-кода
+		writeByteCode();// Сам байт-код  
+
+		u2=htons(0);
+		_write(this->fileDesc,(void*)&u2, 2);// Количество исключений
+
+		u2=htons(0);
+		_write(this->fileDesc,(void*)&u2, 2);// Количество атрибутов
+
+
+		method=method->next;
+	}
 }
 
 
@@ -207,6 +248,18 @@ void CodeGeneration::generateCodeForDelStmt(struct ExprInfo * expr)
 
 
 void CodeGeneration::generateCodeForFuncDef(struct FuncDefInfo * funcDef)
+{
+}
+
+
+int CodeGeneration::getCodeLengthMethod()
+{
+	int length=0;
+
+	return length;
+}
+
+void CodeGeneration::writeByteCode()
 {
 }
 
