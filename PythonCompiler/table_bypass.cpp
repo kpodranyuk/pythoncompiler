@@ -613,6 +613,7 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 		// Делаем methodRef
 		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 		mRef=*(ct_consts->constnumber);
+		curElem->methodRef=mRef;
 		appendToMethodTable(curElem);
 		currentFuncName=std::string(funcdefstmt->functionName);
 		this->vars->count=0;
