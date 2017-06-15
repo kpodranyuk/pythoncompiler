@@ -461,7 +461,8 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		{
 			curOp->type=__PUT_STATIC;
 			curOp->u2=expr->left->numberInTable;
-			curOp->countByte=3;
+			curOp->u22=expr->left->numberInTable-2;// для тестирования пока что!!!
+			curOp->countByte=5;
 		}
 		else 
 		{
@@ -664,6 +665,11 @@ void CodeGeneration::writeByteCode()
 				break;
 			case __GET_STATIC:
 			case __PUT_STATIC:
+				u2=htons(oper[i]->u2);
+				_write(this->fileDesc,(void*)&u2, 2);
+				u2=htons(oper[i]->u22);
+				_write(this->fileDesc,(void*)&u2, 2);
+				break;
 			case __INVOKESTATIC:
 				u2=htons(oper[i]->u2);
 				_write(this->fileDesc,(void*)&u2, 2);
