@@ -269,7 +269,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 		{
 			if(begining->type==_EXPR)
 			{
-				generateCodeForExpr(begining->expr);
+				generateCodeForExpr(begining->expr,false);
 				if(stackSize>0)
 				{
 					for(int i=0;i<stackSize;i++)
@@ -315,15 +315,189 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 }
 
 
-void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr)
+void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 {
+	struct Operation* curOp;
+	// если экспр - константа или лок. переменная (НЕ левая часть)
+	if(expr->type==_VARVAL)
+	{
+		// генерируем команды, загружающие значение на стек
+		curOp = new struct Operation;
+		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
+		{
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
+		}
+		else if (expr->exprVal->type==_FLOAT)
+		{
+			curOp->type=__LDC_W;
+			curOp->u2=expr->exprVal->numberInTable;
+			curOp->countByte=3;
+		}
+		oper.push_back(curOp);
+	}
+	else if(expr->type==_OPERAND&&!left)
+	{
+		// генерируем команды, загружающие значение на стек
+		// если операнд - глобальный, то гетстатик
+		// если локальный - алоад
+		curOp = new struct Operation;
+		if(expr->locFor=NULL)
+		{
+			curOp->type=__GET_STATIC;
+			curOp->u2=expr->numberInTable;
+			curOp->countByte=3;
+		}
+		else
+		{
+			curOp->type=__ALOAD;
+			curOp->u1=expr->numberInTable;
+			curOp->countByte=2;
+		}
+		oper.push_back(curOp);
+	}
+	// экспр - унарная операция
+	else if(expr->type==_NOT||expr->type==_UMINUS)
+	{
+		// вызваем функцию генерации экспра
+		generateCodeForExpr(expr->left,false);
+		if(expr->type==_NOT)
+		{
+			// генерируем команду выполнения операции
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___NOT;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+		}
+
+	}
+	// экспр - обращение к полю класса ???
+	// экспр - вызов метода
+	else if(expr->type==_FUNCCALL)
+	{
+		// рекурсивные вызовы для загрузки аргументов на стек
+		struct ExprInfo* elem = expr->arglist->first;
+		while(elem!=NULL)
+		{
+			generateCodeForExpr(elem,false);
+			elem=elem->next;
+		}
+		// генерируем команду для вызова метода (инвок статик)
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=expr->numberInTable;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+	}
+	// эспр - присваивание
+	else if(expr->type==_ASSIGN)
+	{
+		// генерируем код для правого операнда
+		generateCodeForExpr(expr->right,false);
+		// загружаем в переменную
+		curOp = new struct Operation;
+		if(expr->right->locFor==NULL)
+		{
+			curOp->type=__PUT_STATIC;
+			curOp->u2=expr->right->numberInTable;
+			curOp->countByte=3;
+		}
+		else 
+		{
+			curOp->type=__ASTORE;
+			curOp->u1=expr->right->numberInTable;
+			curOp->countByte=2;
+		}
+		oper.push_back(curOp);
+	}
+	// экспр - присваивание элементу массива
+	else if(expr->type==_ARRID_AND_ASSIGN)
+	{
+		// вызовы генерации для левого, среднего и правого операнда
+		generateCodeForExpr(expr->left,false);
+		generateCodeForExpr(expr->middle,false);
+		generateCodeForExpr(expr->right,false);
+		// вызываем команду загрузки в индекс
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=___LIST_SET;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+	}
+	// экспр - взятие по индексу массива
+	else if(expr->type==_ARRID)
+	{
+		// вызовы генерации для левого и правого операнда
+		generateCodeForExpr(expr->left,false);
+		generateCodeForExpr(expr->right,false);
+		// вызываем команду получения по индексу
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=___LIST_GET;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+	}
+	// экспр - аппенд или ремув
+	else if(expr->type==_ARRACT)
+	{
+		// вызовы генерации для левого и правого операнда
+		generateCodeForExpr(expr->left,false);
+		generateCodeForExpr(expr->right,false);
+		// вызываем команду 
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		if(strcmp(expr->idName,"append")==0)
+			curOp->u2=___LIST_APPEND;
+		else
+			curOp->u2=___LIST_REMOVE;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+	}
+	else if(expr->type==_ARRINIT)
+	{
+		// Создаем пустой лист
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=___VALUE_FROM_LIST;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+		// Для каждого элемента списка..
+		struct ExprInfo* elem = expr->arglist->first;
+		while(elem!=NULL)
+		{
+			// Генерируем экспр
+			generateCodeForExpr(elem,false);
+			// Вызываем аддинишлайз
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___LIST_ADD_INITIALIZE;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+			elem=elem->next;
+		}
+	}
+	// Иначе идут уже обычные двуместные операции
+	else
+	{
+		// вызовы генерации для левого и правого операнда
+		generateCodeForExpr(expr->left,false);
+		generateCodeForExpr(expr->right,false);
+		// вызываем команду получения по индексу
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=getLibOperationNumber(expr);
+		curOp->countByte=3;
+		oper.push_back(curOp);
+	}
 }
 
 
 void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 {
 	//1.Вызываем generateCodeForExpr для выражения
-	generateCodeForExpr(ifstmt->expr);// На стеке будет какое то значение Value
+	generateCodeForExpr(ifstmt->expr,false);// На стеке будет какое то значение Value
 	// Вызываем toIntBool. На стеке будет 0 или 1
 	Operation* toIntBool=new Operation;
 	toIntBool->type=__INVOKESTATIC;
@@ -476,4 +650,41 @@ float CodeGeneration::reverseFloatBytes(float f)
 	returnFloat[3] = floatToConvert[0];
 
 	return retVal;
+}
+
+enum LibOperations CodeGeneration::getLibOperationNumber(struct ExprInfo * expr)
+{
+	switch(expr->type)
+	{
+	case _OR:
+		return ___OR;
+	case _AND:
+		return ___AND;
+	case _NOT_EQUAL:
+		return ___NOT_EQ;
+	case _EQUAL:
+		return ___EQ;
+	case _GREATER:
+		return ___MORE;
+	case _GREATER_OR_EQUAL:
+		return ___MORE_OR_EQ;
+	case _LESS:
+		return ___LESS;
+	case _LESS_OR_EQUAL:
+		return ___LESS_OR_EQ;
+	case _SUB:
+		return ___SUB;
+	case _ADD:
+		return ___ADD;
+	case _INT:
+		return ___DIV;	// СДЕЛАТЬ В РТЛ МЕТОД ЦЕЛОЙ ЧАСТИ ОТ ДЕЛЕНИЯ
+	case _MOD:
+		return ___MOD;
+	case _DIV:
+		return ___DIV;
+	case _MUL:
+		return ___MUL;
+	case _POW:
+		return ___POW;
+	}
 }

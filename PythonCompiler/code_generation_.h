@@ -60,7 +60,7 @@ private:
 	/* —генерировать код дл€ выражени€
 	* \param[in] expr выражение
 	*/
-	void generateCodeForExpr(struct ExprInfo * expr);
+	void generateCodeForExpr(struct ExprInfo * expr, bool left);
 
 	/* —генерировать код дл€ узла развилки
 	* \param[in] ifstmt узел развилки
@@ -111,6 +111,7 @@ private:
 	*/
 	void writeByteCode();
 
+	enum LibOperations getLibOperationNumber(struct ExprInfo * expr);
 	/* ѕолучить смещение
 	* \param[in] start индекс начала операции, откуда считаем(включительно)
 	* \param[in] finish индекс последней операции, где заканчиваем(включительно)
