@@ -247,3 +247,16 @@ void CodeGeneration::generateCodeForDelStmt(struct ExprInfo * expr)
 void CodeGeneration::generateCodeForFuncDef(struct FuncDefInfo * funcDef)
 {
 }
+
+
+int CodeGeneration::getCodeLengthMethod()
+{
+	int length=0;
+
+	return length;
+}
+
+void CodeGeneration::writeByteCode()
+{
+
+}
