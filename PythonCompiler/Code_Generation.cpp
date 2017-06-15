@@ -372,12 +372,13 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp = new struct Operation;
 		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE)//||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
 		{
-			curOp->type=__SIPUSH;
-			if(expr->exprVal->type==_TRUE)
+			curOp->type=__LDC;
+			/*if(expr->exprVal->type==_TRUE)
 				curOp->s2=1;
 			else
-				curOp->s2=0;
-			curOp->countByte=3;
+				curOp->s2=0;*/
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
@@ -387,9 +388,9 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_FLOAT)
 		{
-			curOp->type=__SIPUSH;
-			//curOp->u2=expr->exprVal->numberInTable;
-			curOp->countByte=3;
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
@@ -399,13 +400,25 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_NUMBER)
 		{
-			curOp->type=__SIPUSH;
-			curOp->s2=expr->exprVal->intVal;
-			curOp->countByte=3;
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
 			curOp->u2=___VALUE_FROM_INT;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+		}
+		else if (expr->exprVal->type==_STRING)
+		{
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
+			oper.push_back(curOp);
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_STRING;
 			curOp->countByte=3;
 			oper.push_back(curOp);
 		}
@@ -417,7 +430,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		// если операнд - глобальный, то гетстатик
 		// если локальный - алоад
 		curOp = new struct Operation;
-		if(expr->locFor=NULL)
+		if(expr->locFor==NULL)
 		{
 			curOp->type=__GET_STATIC;
 			curOp->u2=expr->numberInTable;
@@ -705,7 +718,7 @@ void CodeGeneration::writeByteCode()
 			case __ISTORE:
 			case __FSTORE:
 			case __ASTORE:
-				u1=htons(oper[i]->u1);
+				u1=(oper[i]->u1);
 				_write(this->fileDesc,(void*)&u1, 1);
 				break;
 			case __GET_STATIC:
