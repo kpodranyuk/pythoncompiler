@@ -28,6 +28,7 @@ private:
 	unsigned int u4;
 	short int s2;
 	int s4;
+	float sf4;
 
 
 	/*---нямнбмше лерндш дкъ цемепюжхх---*/
@@ -85,7 +86,7 @@ private:
 	*/
 	void generateCodeForFuncDef(struct FuncDefInfo * funcDef);
 
-
+	float reverseFloatBytes(float f);
 
 public:
 

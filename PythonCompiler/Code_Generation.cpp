@@ -26,9 +26,9 @@ void CodeGeneration::generateCode(struct StmtListInfo* treeRoot)
 	_write(this->fileDesc, (void*)&u4, 4);
 
 	/*Запись подверсии и версии*/
-	u2=htons(0);
+	u2=htons(3);
 	_write(this->fileDesc, (void*)&u2, 2);
-	u2=htons(52);
+	u2=htons(45);
 	_write(this->fileDesc, (void*)&u2, 2);
 
 	/*Генерация таблицы констант*/
@@ -104,7 +104,8 @@ void CodeGeneration::generateConstsTable()
 		// На будущее
 		else if(elem->type==CONST_FLOAT)
 		{
-
+			sf4 = reverseFloatBytes(elem->value.val_float);
+            _write(this->fileDesc,(void *)&sf4, 4);
 		}
 		else if(elem->type==CONST_CLASS || elem->type==CONST_STRING)
 		{
@@ -193,4 +194,19 @@ void CodeGeneration::generateCodeForDelStmt(struct ExprInfo * expr)
 
 void CodeGeneration::generateCodeForFuncDef(struct FuncDefInfo * funcDef)
 {
+}
+
+float CodeGeneration::reverseFloatBytes(float f)
+{
+	float retVal;
+	char *floatToConvert = ( char* ) & f;
+	char *returnFloat = ( char* ) & retVal;
+
+	// swap the bytes into a temporary buffer
+	returnFloat[0] = floatToConvert[3];
+	returnFloat[1] = floatToConvert[2];
+	returnFloat[2] = floatToConvert[1];
+	returnFloat[3] = floatToConvert[0];
+
+	return retVal;
 }
