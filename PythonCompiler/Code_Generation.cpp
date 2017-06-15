@@ -678,11 +678,6 @@ void CodeGeneration::writeByteCode()
 				break;
 			case __GET_STATIC:
 			case __PUT_STATIC:
-				/*u2=htons(oper[i]->u2);
-				_write(this->fileDesc,(void*)&u2, 2);
-				u2=htons(oper[i]->u22);
-				_write(this->fileDesc,(void*)&u2, 2);
-				break;*/
 			case __INVOKESTATIC:
 			case __LDC_W:
 				u2=htons(oper[i]->u2);
