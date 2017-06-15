@@ -631,9 +631,18 @@ void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 
 void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 {
-	// Запоминаем начало
-	int startLoop=oper.size();
-	//1.Вызываем generateCodeForExpr для выражения
+	//1.Генерим безусловный переход
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	int addrGoto=oper.size()-1;
+
+	//2.Генерим тело
+	generateCodeForStatementList(whilestmt->stmtlist);
+	oper[addrGoto]->s2=calcOffset(addrGoto,oper.size()-1);
+
+	//3.Генерим выражение
 	generateCodeForExpr(whilestmt->expr,false);// На стеке будет какое то значение Value
 	// Вызываем toIntBool. На стеке будет 0 или 1
 	Operation* toIntBool=new Operation;
@@ -642,27 +651,20 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 	toIntBool->countByte=3;
 	oper.push_back(toIntBool);
 
-	//2.Генерим ifeq для перехода в случае лжи, и запоминаем адрес для уточнения смещения
-	Operation* ifeq=new Operation;
-	ifeq->type=__IF_EQ;
-	ifeq->countByte=3;
-	oper.push_back(ifeq);
-	int addrIfeq=oper.size()-1;
 
-	//3.Генерим тело и переход на начало цикла
-	generateCodeForStatementList(whilestmt->stmtlist);
-	Operation* go_to=new Operation;
-	go_to->type=__GOTO;
-	go_to->countByte=3;
-	oper.push_back(go_to);
-	int toStart=oper.size()-1;
-	oper[toStart]->s2=calcOffset(toStart, startLoop);
+	//4.Генерим операцию ifne для перехода к началу тела цикла
+	Operation* ifne=new Operation;
+	ifne->type=__IF_NE;
+	ifne->countByte=3;
+	oper.push_back(ifne);
+	int if_ne=oper.size()-1;
+	int offset=calcOffset(if_ne,addrGoto+1);
+	oper[if_ne]->s2=offset;
 
-	//4.Генерим ветку else если она есть
+	//5.Сгенерировать else блок если он есть
 	if(whilestmt->elsestmt!=NULL)
-	{
 		generateCodeForStatementList(whilestmt->elsestmt);
-	}
+
 }
 
 
@@ -729,6 +731,7 @@ void CodeGeneration::writeByteCode()
 				_write(this->fileDesc,(void*)&u2, 2);
 				break;
 			case __IF_EQ:
+			case __IF_NE:
 			case __SIPUSH:
 			case __GOTO:
 				s2=htons(oper[i]->s2);
