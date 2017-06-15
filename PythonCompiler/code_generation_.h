@@ -23,7 +23,7 @@ private:
 	struct StmtListInfo* treeRoot;			// Указатель на дерево
 
 	int fileDesc;	// Дескриптор class файла
-	std::vector<struct Operation*> oper;		// Вектор операций, генерируемых для метода
+	std::vector<struct Operation> oper;		// Вектор операций, генерируемых для метода
 	int currentLocal;	// Текущий метод(номер методрефа, main==NULL)
 
 	int stackSize;	// Количество элементов на стеке операндов
@@ -54,15 +54,13 @@ private:
 
 	/* Сгенерировать код для списка стейтментов
 	* \param[in] stmtList узел стейтмент листа
-	* \param[in] opsToSave количество операндов, которое необходимо оставить на стеке
 	*/
-	void generateCodeForStatementList(struct StmtListInfo* stmtList, int opsToSave);
+	void generateCodeForStatementList(struct StmtListInfo* stmtList);
 
 	/* Сгенерировать код для выражения
 	* \param[in] expr выражение
-	* \param[in] left является ли экспр левой частью присваивания
 	*/
-	void generateCodeForExpr(struct ExprInfo * expr, bool left);
+	void generateCodeForExpr(struct ExprInfo * expr);
 
 	/* Сгенерировать код для узла развилки
 	* \param[in] ifstmt узел развилки
@@ -112,8 +110,6 @@ private:
 	/* Записать байт код в файл
 	*/
 	void writeByteCode();
-
-	enum LibOperations getLibOperationNumber(struct ExprInfo * expr);
 
 public:
 
