@@ -230,6 +230,14 @@ void CodeGeneration::generateMethodsTable()
 
 		// Генерим в массив весь байт-код метода
 		generateCodeForStatementList(this->treeRoot);
+		// Для мейна надо вызвать ретерн для завершения выполнения текущего метода
+		if(method->methodRef==NULL)
+		{
+			Operation* ret=new Operation;
+			ret->type=__RETURN;
+			ret->countByte=1;
+			oper.push_back(ret);
+		}
 		// Получаем размер сгенериного байт-кода
 		int length=getCodeLengthMethod();
 
