@@ -269,7 +269,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 		{
 			if(begining->type==_EXPR)
 			{
-				generateCodeForExpr(begining->expr);
+				generateCodeForExpr(begining->expr, true);
 				if(stackSize>0)
 				{
 					for(int i=0;i<stackSize;i++)
@@ -315,7 +315,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 }
 
 
-void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr)
+void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool inStmt)
 {
 }
 

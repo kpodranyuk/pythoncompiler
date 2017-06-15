@@ -59,8 +59,9 @@ private:
 
 	/* —генерировать код дл€ выражени€
 	* \param[in] expr выражение
+	* \param[in] inStmt €вл€етс€ ли данное выражение отдельным стейтментом или входит в него 
 	*/
-	void generateCodeForExpr(struct ExprInfo * expr);
+	void generateCodeForExpr(struct ExprInfo * expr, bool inStmt);
 
 	/* —генерировать код дл€ узла развилки
 	* \param[in] ifstmt узел развилки
