@@ -83,12 +83,12 @@ void CodeGeneration::generateConstsTable()
 
 	// Для каждой константы сгенерировать байт-код
 	elem=this->ct->first;
-	while(elem!=this->ct->last)
+	for(int i = 0; i < count; ++i)
 	{
 		// Пишем тип константы
 		u1=elem->type;
 		_write(this->fileDesc,(void*)&u1, 1);
-
+		//printf("%d\t",elem->type);
 		// Для каждого типа свой формат записи
 		if(elem->type==CONST_UTF8)
 		{
@@ -119,9 +119,15 @@ void CodeGeneration::generateConstsTable()
 			u2=htons(elem->value.args.arg2);
 			_write(this->fileDesc,(void*)&u2, 2);// номер константы utf-8, содержащей дескриптор
 		}
+		else
+			throw "UNKNOWN CONSTANT TYPE";
 
 		elem=elem->next;
 	}
+	//while(elem!=this->ct->last)
+	//{
+	//	
+	//}
 }
 
 
@@ -133,7 +139,7 @@ void CodeGeneration::generateFieldsTable()
 
 	FieldTable_Elem* field=prog->firstField;
 	// Для каждого поля
-	while(field!=prog->lastField)
+	for (int i = 0; i < prog->fieldCount; ++i)
 	{
 		u2=htons(field->access);
 		_write(this->fileDesc,(void*)&u2, 2);// флаги доступа
@@ -149,11 +155,19 @@ void CodeGeneration::generateFieldsTable()
 
 		field=field->next;
 	}
+	/*while(field!=prog->lastField)
+	{
+		
+	}*/
 }
 
 
 void CodeGeneration::generateMethodsTable()
 {
+	/*ЗАГЛУШКА*/
+	// Записываем кол-во полей класса
+	u2=htons(0);//(prog->fieldCount);
+	_write(this->fileDesc,(void*)&u2, 2);
 }
 
 
