@@ -227,7 +227,7 @@ void CodeGeneration::generateMethodsTable()
 		u2=htons(1); //1€ константа Code(им€ атрибута)
 		_write(this->fileDesc,(void*)&u2, 2);
 
-		// √енерим в массив весь байт-код метода(операции)
+		// √енерим в массив весь байт-код метода
 		generateCodeForStatementList(this->treeRoot);
 		// ѕолучаем размер сгенериного байт-кода
 		int length=getCodeLengthMethod();
@@ -238,7 +238,7 @@ void CodeGeneration::generateMethodsTable()
 		u2=htons(1200);
 		_write(this->fileDesc,(void*)&u2, 2);// –азмер стека операндов
 
-		u2=htons(0);// пока что 0, поскольку сруктуры еще не исправлены
+		u2=htons(method->localVarsCount);
 		_write(this->fileDesc,(void*)&u2, 2);//  оличество локальных переменных
 
 		u4=htonl(length);
@@ -260,6 +260,7 @@ void CodeGeneration::generateMethodsTable()
 
 void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 {
+
 }
 
 

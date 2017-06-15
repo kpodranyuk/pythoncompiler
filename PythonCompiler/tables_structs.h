@@ -157,24 +157,9 @@ struct MethodTable_Elem
 	int methodDesc;	// Ссылка на дескриптор поля в таблице констант
 	int methodRef;	// Ссылка на методреф в таблице констант
 	static const int attrs = 1;	// Количество аттрибутов метода
-	//TODO сделать ссылку на таблицу аттрибутов метода
-	struct CodeAttr* methodAttr;
-	struct MethodTable_Elem* next;	// Указатель на следующий элемент таблицы
-};
-
-/*
-* Хранит в себе информацию об аттрибуте кода метода
-*/
-struct CodeAttr
-{
-	int attrName;	// Ссылка на аттрибут Code в таблице констант
-	int attrLength;	// Длина атрибута (кроме первых 6 байт, описывающих имя и длину)
-	static const int stackSize = 1200;	// Размер стека операндов
 	int localVarsCount;	// Количество локальных переменных метода
-	int byteCodeLength;	// Длина байт-кода (размер кода метода в байтах)
-	// Сам байт-код ???
-	static const int exceptionsCount = 0;	// Количество записей в таблице исключений
-	static const int attrsCount = 0;		// Количество аттрибутов
+
+	struct MethodTable_Elem* next;	// Указатель на следующий элемент таблицы
 };
 
 /*
