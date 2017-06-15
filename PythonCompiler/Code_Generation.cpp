@@ -406,16 +406,16 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		generateCodeForExpr(expr->right,false);
 		// загружаем в переменную
 		curOp = new struct Operation;
-		if(expr->right->locFor==NULL)
+		if(expr->left->locFor==NULL)
 		{
 			curOp->type=__PUT_STATIC;
-			curOp->u2=expr->right->numberInTable;
+			curOp->u2=expr->left->numberInTable;
 			curOp->countByte=3;
 		}
 		else 
 		{
 			curOp->type=__ASTORE;
-			curOp->u1=expr->right->numberInTable;
+			curOp->u1=expr->left->numberInTable;
 			curOp->countByte=2;
 		}
 		oper.push_back(curOp);
