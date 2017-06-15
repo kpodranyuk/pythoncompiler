@@ -345,7 +345,6 @@ void TreeTraversal::initializeConstTable()
 	// Запись имён функций
 	// Главная функция
 	struct MethodTable_Elem* curElem=new MethodTable_Elem;
-	curElem->methodAttr=NULL;
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"main",NULL,NULL,NULL,NULL));
 	curElem->methodName=*(ct_consts->constnumber);
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"([Ljava/lang/String;)V",NULL,NULL,NULL,NULL));

@@ -595,7 +595,6 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 		struct MethodTable_Elem* curElem=new MethodTable_Elem;
 		int mRef=0;
 		appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,funcdefstmt->functionName,NULL,NULL,NULL,NULL));
-		curElem->methodAttr=NULL;
 		curElem->methodName=*(ct_consts->constnumber);
 		// Делаем привязку к типу
 		if(existingDesc==-1)
