@@ -398,7 +398,7 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
 				curElem->fieldDesc=ct_consts->descId;
 				// Делаем fieldRef
-				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->valueType,*(ct_consts->constnumber)));	
+				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,NULL,/*ct_consts->valueType*/prog->classConst,*(ct_consts->constnumber)));	
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
 				expr->locFor=NULL;
@@ -460,7 +460,7 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 					appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),ct_consts->descId));
 				curElem->fieldDesc=ct_consts->descId;
 				// Делаем fieldRef
-				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->valueType,*(ct_consts->constnumber)));	
+				appendToConstTable(makeTableEl(CONST_FIELDREF,ct_consts->constnumber,NULL,NULL,NULL,/*ct_consts->valueType*/prog->classConst,*(ct_consts->constnumber)));	
 				this->varDecls["global"].push_back(opName);
 				appendToFieldTable(curElem);
 				leftE->locFor=NULL;
@@ -615,7 +615,7 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 			appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber),existingDesc));
 		}
 		// Делаем methodRef
-		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->valueType,*(ct_consts->constnumber)));	
+		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,/*ct_consts->valueType*/prog->classConst,*(ct_consts->constnumber)));	
 		mRef=*(ct_consts->constnumber);
 		curElem->methodRef=mRef;
 		appendToMethodTable(curElem);
