@@ -618,6 +618,38 @@ void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 
 void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 {
+	// Запоминаем начало
+	int startLoop=oper.size();
+	//1.Вызываем generateCodeForExpr для выражения
+	generateCodeForExpr(whilestmt->expr,false);// На стеке будет какое то значение Value
+	// Вызываем toIntBool. На стеке будет 0 или 1
+	Operation* toIntBool=new Operation;
+	toIntBool->type=__INVOKESTATIC;
+	toIntBool->u2=___TO_INT_BOOL;
+	toIntBool->countByte=3;
+	oper.push_back(toIntBool);
+
+	//2.Генерим ifeq для перехода в случае лжи, и запоминаем адрес для уточнения смещения
+	Operation* ifeq=new Operation;
+	ifeq->type=__IF_EQ;
+	ifeq->countByte=3;
+	oper.push_back(ifeq);
+	int addrIfeq=oper.size()-1;
+
+	//3.Генерим тело и переход на начало цикла
+	generateCodeForStatementList(whilestmt->stmtlist);
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	int toStart=oper.size()-1;
+	oper[toStart]->s2=calcOffset(toStart, startLoop);
+
+	//4.Генерим ветку else если она есть
+	if(whilestmt->elsestmt!=NULL)
+	{
+		generateCodeForStatementList(whilestmt->elsestmt);
+	}
 }
 
 
