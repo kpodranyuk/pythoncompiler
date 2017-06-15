@@ -26,6 +26,8 @@ private:
 	std::vector<struct Operation> oper;		// Вектор операций, генерируемых для метода
 	int currentLocal;	// Текущий метод(номер методрефа, main==NULL)
 
+	int stackSize;	// Количество элементов на стеке операндов
+
 	/*Данные для записи байт в class файл*/
 	unsigned char u1;
 	unsigned short int u2;

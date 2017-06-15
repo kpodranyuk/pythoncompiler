@@ -7,6 +7,7 @@ CodeGeneration::CodeGeneration(struct ClassTable_Elem* prog, struct ConstTable_L
 	this->ct=ct;
 	this->ct_consts=ct_consts;
 	this->vars=vars;
+	stackSize=0;
 }
 
 CodeGeneration::~CodeGeneration(void)
@@ -269,6 +270,14 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 			if(begining->type==_EXPR)
 			{
 				generateCodeForExpr(begining->expr);
+				if(stackSize>0)
+				{
+					for(int i=0;i<stackSize;i++)
+					{
+						//TODO сделать pop
+					}
+					stackSize=0;
+				}
 			}
 			else if(begining->type==_IF)
 			{
