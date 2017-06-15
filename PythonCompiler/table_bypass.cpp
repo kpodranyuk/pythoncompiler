@@ -240,14 +240,15 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	this->ct_consts=new ConstTable_Consts;
 	this->ct_consts->constnumber=new int(0);
 	this->prog=new ClassTable_Elem;
-	// TODO ÑÎÇÄÀÒÜ ÔÓÍÊÖÈŞ ÃÅÍÅĞÀÖÈÈ ÂÑÒÀÂÊÈ ĞÒË ÒÀÁËÈÖÛ
-	initializeConstTable();
 
 	this->prog->firstField=NULL;
 	this->prog->lastField=NULL;
 
 	this->prog->methodsFirst=NULL;
 	this->prog->methodsLast=NULL;
+
+	// TODO ÑÎÇÄÀÒÜ ÔÓÍÊÖÈŞ ÃÅÍÅĞÀÖÈÈ ÂÑÒÀÂÊÈ ĞÒË ÒÀÁËÈÖÛ
+	initializeConstTable();
 
 	vars=new VariableTable_List;
 	vars->first=NULL;
@@ -613,6 +614,7 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 		// Äåëàåì methodRef
 		appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));	
 		mRef=*(ct_consts->constnumber);
+		curElem->methodRef=mRef;
 		appendToMethodTable(curElem);
 		currentFuncName=std::string(funcdefstmt->functionName);
 		this->vars->count=0;

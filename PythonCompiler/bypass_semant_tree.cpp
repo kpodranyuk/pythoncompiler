@@ -344,10 +344,16 @@ void TreeTraversal::initializeConstTable()
 
 	// Çàïèñü èì¸í ôóíêöèé
 	// Ãëàâíàÿ ôóíêöèÿ
+	struct MethodTable_Elem* curElem=new MethodTable_Elem;
+	curElem->methodAttr=NULL;
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"main",NULL,NULL,NULL,NULL));
+	curElem->methodName=*(ct_consts->constnumber);
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"([Ljava/lang/String;)V",NULL,NULL,NULL,NULL));
+	curElem->methodDesc=*(ct_consts->constnumber);
 	appendToMDescs("([Ljava/lang/String;)V",*(ct_consts->constnumber));
 	ct_consts->nameconstid = *(ct_consts->constnumber) - 1;
+	curElem->methodRef=NULL;
+	appendToMethodTable(curElem);
 	// ÍÓÆÍÎ ËÈ ÏÈÑÀÒÜ ÌÅÒÎÄÐÅÔ ÄËß ÌÅÉÍÀ?
 
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"rtl/Value",NULL,NULL,NULL,NULL));
