@@ -240,14 +240,15 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	this->ct_consts=new ConstTable_Consts;
 	this->ct_consts->constnumber=new int(0);
 	this->prog=new ClassTable_Elem;
-	// TODO ÑÎÇÄÀÒÜ ÔÓÍÊÖÈÞ ÃÅÍÅÐÀÖÈÈ ÂÑÒÀÂÊÈ ÐÒË ÒÀÁËÈÖÛ
-	initializeConstTable();
 
 	this->prog->firstField=NULL;
 	this->prog->lastField=NULL;
 
 	this->prog->methodsFirst=NULL;
 	this->prog->methodsLast=NULL;
+
+	// TODO ÑÎÇÄÀÒÜ ÔÓÍÊÖÈÞ ÃÅÍÅÐÀÖÈÈ ÂÑÒÀÂÊÈ ÐÒË ÒÀÁËÈÖÛ
+	initializeConstTable();
 
 	vars=new VariableTable_List;
 	vars->first=NULL;
