@@ -269,7 +269,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 		{
 			if(begining->type==_EXPR)
 			{
-				generateCodeForExpr(begining->expr, true);
+				generateCodeForExpr(begining->expr);
 				if(stackSize>0)
 				{
 					for(int i=0;i<stackSize;i++)
@@ -315,7 +315,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 }
 
 
-void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool inStmt)
+void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr)
 {
 }
 
@@ -323,6 +323,10 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool inStmt)
 void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 {
 	//Вызываем generateCodeForExpr для выражения
+	generateCodeForExpr(ifstmt->expr);// На стеке будет какое то значение Value
+	// Вызывает toIntBool. На стеке будет 0 или 1
+	Operation toIntBool;
+	toIntBool.type
 	//Генерим ifeq для перехода в случае лжи, и запоминаем адрес для уточнения смещения
 	//Генерим тело
 	//Если есть ветка иначе, то генерим безусловный переход и запоминаем адрес для уточнения смещения
