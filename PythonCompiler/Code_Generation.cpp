@@ -322,17 +322,49 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr)
 
 void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 {
-	//Вызываем generateCodeForExpr для выражения
+	//1.Вызываем generateCodeForExpr для выражения
 	generateCodeForExpr(ifstmt->expr);// На стеке будет какое то значение Value
-	// Вызывает toIntBool. На стеке будет 0 или 1
-	Operation toIntBool;
-	toIntBool.type
-	//Генерим ifeq для перехода в случае лжи, и запоминаем адрес для уточнения смещения
-	//Генерим тело
-	//Если есть ветка иначе, то генерим безусловный переход и запоминаем адрес для уточнения смещения
-	//Вычисляем смещение для ifeq
-	//Генерим ветку else если она есть
-	//Вычислем смещение
+	// Вызываем toIntBool. На стеке будет 0 или 1
+	Operation* toIntBool=new Operation;
+	toIntBool->type=__INVOKESTATIC;
+	toIntBool->u2=___TO_INT_BOOL;
+	toIntBool->countByte=3;
+	oper.push_back(toIntBool);
+
+	//2.Генерим ifeq для перехода в случае лжи, и запоминаем адрес для уточнения смещения
+	Operation* ifeq=new Operation;
+	ifeq->type=__IF_EQ;
+	ifeq->countByte=3;
+	oper.push_back(ifeq);
+	int addrIfeq=oper.size()-1;
+
+	//3.Генерим тело
+	generateCodeForStatementList(ifstmt->stmtlist);
+	//4.Если есть ветка иначе, то генерим безусловный переход и запоминаем адрес для уточнения смещения
+	int addrGoto=0;
+	if(ifstmt->elsestmtlist!=NULL)
+	{
+		Operation* go_to=new Operation;
+		go_to->type=__GOTO;
+		go_to->countByte=3;
+		oper.push_back(go_to);
+	}
+	addrGoto=oper.size()-1;
+
+	//5.Вычисляем смещение для ifeq(п.2)
+	int offset=calcOffset(addrIfeq,addrGoto);
+	oper[addrIfeq]->s2=offset;
+
+	//6.Генерим ветку else если она есть
+	if(ifstmt->elsestmtlist!=NULL)
+	{
+		generateCodeForStatementList(ifstmt->elsestmtlist);
+
+		//7.Вычисляем смещение для п.4
+		int finish=oper.size()-1;
+		offset=calcOffset(addrGoto,finish);
+		oper[addrGoto]->s2=offset;
+	}
 }
 
 
@@ -370,7 +402,7 @@ int CodeGeneration::getCodeLengthMethod()
 	int length=0;
 
 	for(int i=0; i<oper.size(); i++)
-		length+=oper[i].countByte;
+		length+=oper[i]->countByte;
 
 	return length;
 }
@@ -380,11 +412,11 @@ void CodeGeneration::writeByteCode()
 	for(int i=0; i<oper.size(); i++)
 	{
 		// Пишем код операции
-		u1=oper[i].type;
+		u1=oper[i]->type;
 		_write(this->fileDesc,(void*)&u1, 1);
 
 		// Пишем аргументы операции
-		switch(oper[i].type)
+		switch(oper[i]->type)
 		{
 			case __LDC:
 			case __LDC_W:
@@ -394,23 +426,42 @@ void CodeGeneration::writeByteCode()
 			case __ISTORE:
 			case __FSTORE:
 			case __ASTORE:
-				u1=htons(oper[i].u1);
+				u1=htons(oper[i]->u1);
 				_write(this->fileDesc,(void*)&u1, 1);
 				break;
 			case __GET_STATIC:
 			case __PUT_STATIC:
 			case __INVOKESTATIC:
-				u2=htons(oper[i].u2);
+				u2=htons(oper[i]->u2);
 				_write(this->fileDesc,(void*)&u2, 2);
 				break;
 			case __IF_EQ:
 			case __GOTO:
-				s2=htons(oper[i].s2);
+				s2=htons(oper[i]->s2);
 				_write(this->fileDesc,(void*)&s2, 2);
 				break;
 		}
 	}
 }
+
+
+int CodeGeneration::calcOffset(int start, int finish)
+{
+	int offset=0;
+	if(start<finish)
+	{
+		for(int i=start; i<=finish; i++)
+			offset+=oper[i]->countByte;
+	}
+	else
+	{
+		for(int i=finish; i<=start; i++)
+			offset+=oper[i]->countByte;
+		offset=(-1)*offset;
+	}
+	return offset;
+}
+
 
 float CodeGeneration::reverseFloatBytes(float f)
 {
