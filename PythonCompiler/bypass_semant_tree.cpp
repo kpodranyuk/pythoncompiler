@@ -352,6 +352,7 @@ void TreeTraversal::initializeConstTable()
 	appendToMDescs("([Ljava/lang/String;)V",*(ct_consts->constnumber));
 	ct_consts->nameconstid = *(ct_consts->constnumber) - 1;
 	curElem->methodRef=NULL;
+	curElem->localVarsCount=0;
 	appendToMethodTable(curElem);
 	// мсфмн кх охяюрэ лерндпет дкъ леимю?
 

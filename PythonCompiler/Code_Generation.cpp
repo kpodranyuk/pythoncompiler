@@ -283,6 +283,10 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 					for(int i=0;i<stackSize;i++)
 					{
 						//TODO сделать pop
+						Operation* pop=new Operation;
+						pop->type=__POP;
+						pop->countByte=1;
+						oper.push_back(pop);
 					}
 					stackSize=0;
 				}
@@ -331,19 +335,43 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 	{
 		// генерируем команды, загружающие значение на стек
 		curOp = new struct Operation;
-		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
+		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE)//||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
 		{
 			curOp->type=__LDC;
 			curOp->u1=expr->exprVal->numberInTable;
 			curOp->countByte=2;
+			oper.push_back(curOp);
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
 		}
 		else if (expr->exprVal->type==_FLOAT)
 		{
 			curOp->type=__LDC_W;
 			curOp->u2=expr->exprVal->numberInTable;
 			curOp->countByte=3;
+			oper.push_back(curOp);
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_FLOAT;
+			curOp->countByte=3;
+			oper.push_back(curOp);
 		}
-		oper.push_back(curOp);
+		else if (expr->exprVal->type==_NUMBER)
+		{
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
+			oper.push_back(curOp);
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_INT;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+		}
+		//oper.push_back(curOp);
 	}
 	else if(expr->type==_OPERAND&&!left)
 	{
@@ -406,7 +434,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		generateCodeForExpr(expr->right,false);
 		// загружаем в переменную
 		curOp = new struct Operation;
-		if(expr->right->locFor==NULL)
+		if(expr->left->locFor==NULL)
 		{
 			curOp->type=__PUT_STATIC;
 			curOp->u2=expr->right->numberInTable;
