@@ -80,6 +80,10 @@ public abstract class Value {
     public Value div(Value other) {
         throw new Error("Operation not allowed with these types.");
     }
+    
+    public Value intDiv(Value other) {
+        throw new Error("Operation not allowed with these types.");
+    }
 
     /**
      * Получает остаток от деления первого значения на второе

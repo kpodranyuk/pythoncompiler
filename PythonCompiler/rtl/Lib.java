@@ -112,6 +112,10 @@ public class Lib {
     public static Value div(Value m1, Value m2) {
         return m1.div(m2);
     }
+    
+    public static Value intDiv(Value m1, Value m2) {
+        return m1.intDiv(m2);
+    }
 
     public static Value mod(Value m1, Value m2) {
         return m1.mod(m2);

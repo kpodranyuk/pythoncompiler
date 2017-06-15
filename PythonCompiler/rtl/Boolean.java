@@ -83,6 +83,23 @@ public class Boolean extends Value {
     }
     
     @Override
+    public Value intDiv(Value other) {
+        if (other instanceof Integer) {
+            return new Integer(this.toIntBool() / ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            int number = ((Boolean) other).toIntBool();
+            if(number==1) {
+                return new Integer(this.toIntBool() / number);
+            } else {
+                throw new Error("Division by zero.");
+            }
+        } else if(other instanceof Float) {
+            return new Integer(this.toIntBool() / ((Integer) other).value);
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
+    
+    @Override
     public Value mod(Value other) {
         if (other instanceof Integer) {
             return new Integer(this.toIntBool() % ((Integer) other).value);
