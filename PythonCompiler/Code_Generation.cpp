@@ -662,7 +662,6 @@ void CodeGeneration::writeByteCode()
 		switch(oper[i]->type)
 		{
 			case __LDC:
-			case __LDC_W:
 			case __ILOAD:
 			case __FLOAD:
 			case __ALOAD:
@@ -680,6 +679,7 @@ void CodeGeneration::writeByteCode()
 				_write(this->fileDesc,(void*)&u2, 2);
 				break;*/
 			case __INVOKESTATIC:
+			case __LDC_W:
 				u2=htons(oper[i]->u2);
 				_write(this->fileDesc,(void*)&u2, 2);
 				break;
