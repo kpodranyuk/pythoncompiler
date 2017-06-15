@@ -372,12 +372,13 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp = new struct Operation;
 		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE)//||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
 		{
-			curOp->type=__SIPUSH;
-			if(expr->exprVal->type==_TRUE)
+			curOp->type=__LDC;
+			/*if(expr->exprVal->type==_TRUE)
 				curOp->s2=1;
 			else
-				curOp->s2=0;
-			curOp->countByte=3;
+				curOp->s2=0;*/
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
@@ -399,9 +400,9 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_NUMBER)
 		{
-			curOp->type=__SIPUSH;
-			curOp->s2=expr->exprVal->intVal;
-			curOp->countByte=3;
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
