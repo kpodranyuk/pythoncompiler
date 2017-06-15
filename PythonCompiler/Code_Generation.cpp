@@ -26,9 +26,9 @@ void CodeGeneration::generateCode(struct StmtListInfo* treeRoot)
 	_write(this->fileDesc, (void*)&u4, 4);
 
 	/*Запись подверсии и версии*/
-	u2=htons(0);
+	u2=htons(3);
 	_write(this->fileDesc, (void*)&u2, 2);
-	u2=htons(52);
+	u2=htons(45);
 	_write(this->fileDesc, (void*)&u2, 2);
 
 	/*Генерация таблицы констант*/
@@ -83,7 +83,7 @@ void CodeGeneration::generateConstsTable()
 
 	// Для каждой константы сгенерировать байт-код
 	elem=this->ct->first;
-	while(elem!=this->ct->last)
+	while(elem!=NULL)
 	{
 		// Пишем тип константы
 		u1=elem->type;
@@ -132,7 +132,7 @@ void CodeGeneration::generateFieldsTable()
 
 	FieldTable_Elem* field=prog->firstField;
 	// Для каждого поля
-	while(field!=prog->lastField)
+	while(field!=NULL)
 	{
 		u2=htons(field->access);
 		_write(this->fileDesc,(void*)&u2, 2);// флаги доступа
@@ -153,6 +153,59 @@ void CodeGeneration::generateFieldsTable()
 
 void CodeGeneration::generateMethodsTable()
 {
+	// Записываем кол-во методов класса
+	u2=htons(prog->methodCount);
+	_write(this->fileDesc,(void*)&u2, 2);
+
+	// Для кадого метода генерим байт-код
+	MethodTable_Elem* method = prog->methodsFirst;
+	while(method!=NULL)
+	{
+		currentLocal=method->methodRef;
+
+		u2=htons(method->access);
+		_write(this->fileDesc,(void*)&u2, 2);// флаги доступа
+
+		u2=htons(method->methodName);
+		_write(this->fileDesc,(void*)&u2, 2);// номер константы utf-8, содержащей имя метода
+
+		u2=htons(method->methodDesc);
+		_write(this->fileDesc,(void*)&u2, 2);// номер константы utf-8, содержащей дескриптор метода
+
+		u2=htons(method->attrs);
+		_write(this->fileDesc,(void*)&u2, 2);// кол-во атрибутов(1)
+
+		/* Далее вычисляем и записываем атрибут Code метода*/
+		u2=htons(1); //1я константа Code(имя атрибута)
+		_write(this->fileDesc,(void*)&u2, 2);
+
+		// Генерим в массив весь байт-код метода(операции)
+		generateCodeForStatementList(this->treeRoot);
+		// Получаем размер сгенериного байт-кода
+		int length=getCodeLengthMethod();
+
+		u4=htonl(length+12);
+		_write(this->fileDesc,(void*)&u4, 4);// Длина атрибута
+
+		u2=htons(1200);
+		_write(this->fileDesc,(void*)&u2, 2);// Размер стека операндов
+
+		u2=htons(0);// пока что 0, поскольку сруктуры еще не исправлены
+		_write(this->fileDesc,(void*)&u2, 2);// Количество локальных переменных
+
+		u4=htonl(length);
+		_write(this->fileDesc,(void*)&u4, 4);// Длина байт-кода
+		writeByteCode();// Сам байт-код  
+
+		u2=htons(0);
+		_write(this->fileDesc,(void*)&u2, 2);// Количество исключений
+
+		u2=htons(0);
+		_write(this->fileDesc,(void*)&u2, 2);// Количество атрибутов
+
+
+		method=method->next;
+	}
 }
 
 

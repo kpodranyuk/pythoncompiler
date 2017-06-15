@@ -6,6 +6,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include "tables_structs.h"
+#include <vector>
 
 #include <winsock2.h>
 #pragma comment(lib, "Ws2_32.lib")
@@ -21,6 +22,8 @@ private:
 	struct StmtListInfo* treeRoot;			// Указатель на дерево
 
 	int fileDesc;	// Дескриптор class файла
+	std::vector<struct Operation> oper;		// Вектор операций, генерируемых для метода
+	int currentLocal;	// Текущий метод(номер методрефа, в случае с main-ом - будет битое значение)
 
 	/*Данные для записи байт в class файл*/
 	unsigned char u1;
@@ -85,6 +88,7 @@ private:
 	*/
 	void generateCodeForFuncDef(struct FuncDefInfo * funcDef);
 
+	/*---ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ГЕНЕРАЦИИ---*/
 
 
 public:
