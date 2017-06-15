@@ -31,6 +31,7 @@ private:
 	unsigned int u4;
 	short int s2;
 	int s4;
+	float sf4;
 
 
 	/*---ОСНОВНЫЕ МЕТОДЫ ДЛЯ ГЕНЕРАЦИИ---*/
@@ -89,6 +90,7 @@ private:
 	void generateCodeForFuncDef(struct FuncDefInfo * funcDef);
 
 	/*---ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ГЕНЕРАЦИИ---*/
+	float reverseFloatBytes(float f);
 
 	/* Получить длину байт кода метода
 	* \return длина байт-кода

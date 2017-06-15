@@ -100,7 +100,16 @@ int main(int argc, char** argv) {
 
 		/*Генерация кода*/
 		CodeGeneration* generate = new CodeGeneration(treeWalker->getClassTable(), treeWalker->getConstTableList(), treeWalker->getConstTableConsts(), treeWalker->getVariableTableList());
-		generate->generateCode(root);
+		try{
+			generate->generateCode(root);
+		}
+		catch (char* message)
+		{
+			printf("\nMessage while code_gen: %s\n",message);
+			_getch();
+			return 0;
+		}
+		puts("Code generated");
 
 	/*}*/
 	_getch();

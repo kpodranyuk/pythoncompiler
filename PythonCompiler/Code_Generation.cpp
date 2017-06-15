@@ -83,7 +83,7 @@ void CodeGeneration::generateConstsTable()
 
 	// Для каждой константы сгенерировать байт-код
 	elem=this->ct->first;
-	while(elem!=NULL)
+	for(int i = 0; i < count; ++i)
 	{
 		// Пишем тип константы
 		u1=elem->type;
@@ -104,7 +104,8 @@ void CodeGeneration::generateConstsTable()
 		// На будущее
 		else if(elem->type==CONST_FLOAT)
 		{
-
+			sf4 = reverseFloatBytes(elem->value.val_float);
+            _write(this->fileDesc,(void *)&sf4, 4);
 		}
 		else if(elem->type==CONST_CLASS || elem->type==CONST_STRING)
 		{
@@ -118,6 +119,8 @@ void CodeGeneration::generateConstsTable()
 			u2=htons(elem->value.args.arg2);
 			_write(this->fileDesc,(void*)&u2, 2);// номер константы utf-8, содержащей дескриптор
 		}
+		else
+			throw "UNKNOWN CONSTANT TYPE";
 
 		elem=elem->next;
 	}
@@ -132,7 +135,7 @@ void CodeGeneration::generateFieldsTable()
 
 	FieldTable_Elem* field=prog->firstField;
 	// Для каждого поля
-	while(field!=NULL)
+	for (int i = 0; i < prog->fieldCount; ++i)
 	{
 		u2=htons(field->access);
 		_write(this->fileDesc,(void*)&u2, 2);// флаги доступа
@@ -259,4 +262,17 @@ int CodeGeneration::getCodeLengthMethod()
 void CodeGeneration::writeByteCode()
 {
 
+float CodeGeneration::reverseFloatBytes(float f)
+{
+	float retVal;
+	char *floatToConvert = ( char* ) & f;
+	char *returnFloat = ( char* ) & retVal;
+
+	// swap the bytes into a temporary buffer
+	returnFloat[0] = floatToConvert[3];
+	returnFloat[1] = floatToConvert[2];
+	returnFloat[2] = floatToConvert[1];
+	returnFloat[3] = floatToConvert[0];
+
+	return retVal;
 }
