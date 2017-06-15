@@ -721,6 +721,22 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 
 void CodeGeneration::generateCodeForContinueBreakStmt(struct StmtInfo* contBreakStmt)
 {
+	//Сгенерировать безусловный переход
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	int addrGoto=oper.size()-1;
+
+	//Записть этот стейтмент в массив
+	ContinueBreak* conBr=new ContinueBreak;
+	if(contBreakStmt->type==_BREAK)
+		conBr->type=BR;
+	else
+		conBr->type=CON;
+
+	conBr->indexGoTo=addrGoto;
+	loops[currentLoop]->contBreak.push_back(conBr);
 }
 
 
