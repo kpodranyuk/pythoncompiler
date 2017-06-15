@@ -260,7 +260,48 @@ void CodeGeneration::generateMethodsTable()
 
 void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 {
+	StmtInfo* begining = stmtList->first;
+	// Пока текущий элемент списка не последний..
+	while(begining!=NULL)
+	{
+		if(begining->localFor==currentLocal)
+		{
+			if(begining->type==_EXPR)
+			{
+				generateCodeForExpr(begining->expr);
+			}
+			else if(begining->type==_IF)
+			{
+				generateCodeForIfStmt(begining->ifstmt);
+			}
+			else if(begining->type==_FOR)
+			{
+				generateCodeForForStmt(begining->forstmt);
+			}
+			else if(begining->type==_WHILE)
+			{
+				generateCodeForWhileStmt(begining->whilestmt);
+			}
+			else if(begining->type==_FUNC_DEF)
+			{
+				generateCodeForFuncDef(begining->funcdefstmt);
+			}
+			else if(begining->type==_RETURN)
+			{
+				generateCodeForReturnStmt(begining->expr);
+			}
+			else if(begining->type==_BREAK || begining->type==_CONTINUE)
+			{
+				generateCodeForContinueBreakStmt(begining);
+			}
+			else if(begining->type==_DEL)
+			{
+				generateCodeForDelStmt(begining->expr);
+			}
+		}
 
+		// Считаем следующий элемент списка новым текущим
+		begining = begining->next;
 }
 
 

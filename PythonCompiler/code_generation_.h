@@ -6,6 +6,7 @@
 #include <io.h>
 #include <fcntl.h>
 #include "tables_structs.h"
+#include "tree_structs.h"
 #include <vector>
 
 #include <winsock2.h>
@@ -89,7 +90,14 @@ private:
 	*/
 	void generateCodeForFuncDef(struct FuncDefInfo * funcDef);
 
+	/* Сгенерировать код для ретерна
+	* \param[in] expr выражение
+	*/
+	void generateCodeForReturnStmt(struct ExprInfo * expr);
+
+
 	/*---ДОПОЛНИТЕЛЬНЫЕ МЕТОДЫ ДЛЯ ГЕНЕРАЦИИ---*/
+
 	float reverseFloatBytes(float f);
 
 	/* Получить длину байт кода метода
