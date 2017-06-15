@@ -246,6 +246,7 @@ struct Operation
 	/*Аргументы операции(каждая имеет свое значение или вовсе не имеет)*/
 	unsigned char u1;		// 1 байт
 	unsigned short int u2;	// 2 байта
+	unsigned short int u22;
 	short int s2;			// 2 байта знаковое
 
 	int countByte; // Сколько данная операция вместе с ее аргументом занимает байт
