@@ -102,6 +102,8 @@ int main(int argc, char** argv) {
 		CodeGeneration* generate = new CodeGeneration(treeWalker->getClassTable(), treeWalker->getConstTableList(), treeWalker->getConstTableConsts(), treeWalker->getVariableTableList());
 		generate->generateCode(root);
 
+		puts("Code generated");
+
 	/*}*/
 	_getch();
 	return 0;

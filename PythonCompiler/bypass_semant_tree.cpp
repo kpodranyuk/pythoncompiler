@@ -560,6 +560,22 @@ void TreeTraversal::initializeConstTable()
 
 struct ClassTable_Elem* TreeTraversal::getClassTable()
 {
+	int fieldsC=0;
+	struct FieldTable_Elem* elem=prog->firstField;
+	while(elem!=NULL)
+	{
+		fieldsC++;
+		elem=elem->next;
+	}
+	prog->fieldCount=fieldsC;
+	int methodsC=0;
+	struct MethodTable_Elem* mElem=prog->methodsFirst;
+	while(mElem!=NULL)
+	{
+		methodsC++;
+		mElem=mElem->next;
+	}
+	prog->methodCount=methodsC;
 	return this->prog;
 }
 
