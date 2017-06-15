@@ -23,7 +23,7 @@ private:
 	struct StmtListInfo* treeRoot;			// Указатель на дерево
 
 	int fileDesc;	// Дескриптор class файла
-	std::vector<struct Operation> oper;		// Вектор операций, генерируемых для метода
+	std::vector<struct Operation*> oper;		// Вектор операций, генерируемых для метода
 	int currentLocal;	// Текущий метод(номер методрефа, main==NULL)
 
 	int stackSize;	// Количество элементов на стеке операндов
@@ -60,7 +60,7 @@ private:
 	/* Сгенерировать код для выражения
 	* \param[in] expr выражение
 	*/
-	void generateCodeForExpr(struct ExprInfo * expr);
+	void generateCodeForExpr(struct ExprInfo * expr, bool left);
 
 	/* Сгенерировать код для узла развилки
 	* \param[in] ifstmt узел развилки
@@ -110,6 +110,8 @@ private:
 	/* Записать байт код в файл
 	*/
 	void writeByteCode();
+
+	enum LibOperations getLibOperationNumber(struct ExprInfo * expr);
 
 public:
 
