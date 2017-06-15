@@ -261,6 +261,7 @@ int CodeGeneration::getCodeLengthMethod()
 
 void CodeGeneration::writeByteCode()
 {
+}
 
 float CodeGeneration::reverseFloatBytes(float f)
 {
