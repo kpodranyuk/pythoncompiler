@@ -786,7 +786,7 @@ enum LibOperations CodeGeneration::getLibOperationNumber(struct ExprInfo * expr)
 	case _ADD:
 		return ___ADD;
 	case _INT:
-		return ___DIV;	// ядекюрэ б прк лернд жекни вюярх нр декемхъ
+		return ___INT_DIV;	// ядекюрэ б прк лернд жекни вюярх нр декемхъ
 	case _MOD:
 		return ___MOD;
 	case _DIV:
