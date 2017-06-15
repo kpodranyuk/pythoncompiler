@@ -561,6 +561,11 @@ void TreeTraversal::initializeConstTable()
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(F)Lrtl/Value;",NULL,NULL,NULL,NULL));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
+
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"valueFromString",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Ljava/lang/String;)Lrtl/Value;",NULL,NULL,NULL,NULL));
+	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
+	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 }
 
 

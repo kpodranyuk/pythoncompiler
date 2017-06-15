@@ -410,6 +410,18 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->countByte=3;
 			oper.push_back(curOp);
 		}
+		else if (expr->exprVal->type==_STRING)
+		{
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
+			oper.push_back(curOp);
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_STRING;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+		}
 		//oper.push_back(curOp);
 	}
 	else if(expr->type==_OPERAND&&!left)
