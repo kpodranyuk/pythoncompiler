@@ -243,7 +243,8 @@ void CodeGeneration::generateMethodsTable()
 
 		u4=htonl(length);
 		_write(this->fileDesc,(void*)&u4, 4);// Длина байт-кода
-		writeByteCode();// Сам байт-код  
+		writeByteCode();// Сам байт-код 
+		oper.clear();
 
 		u2=htons(0);
 		_write(this->fileDesc,(void*)&u2, 2);// Количество исключений
@@ -301,11 +302,47 @@ int CodeGeneration::getCodeLengthMethod()
 {
 	int length=0;
 
+	for(int i=0; i<oper.size(); i++)
+		length+=oper[i].countByte;
+
 	return length;
 }
 
 void CodeGeneration::writeByteCode()
 {
+	for(int i=0; i<oper.size(); i++)
+	{
+		// Пишем код операции
+		u1=oper[i].type;
+		_write(this->fileDesc,(void*)&u1, 1);
+
+		// Пишем аргументы операции
+		switch(oper[i].type)
+		{
+			case __LDC:
+			case __LDC_W:
+			case __ILOAD:
+			case __FLOAD:
+			case __ALOAD:
+			case __ISTORE:
+			case __FSTORE:
+			case __ASTORE:
+				u1=htons(oper[i].u1);
+				_write(this->fileDesc,(void*)&u1, 1);
+				break;
+			case __GET_STATIC:
+			case __PUT_STATIC:
+			case __INVOKESTATIC:
+				u2=htons(oper[i].u2);
+				_write(this->fileDesc,(void*)&u2, 2);
+				break;
+			case __IF_EQ:
+			case __GOTO:
+				s2=htons(oper[i].s2);
+				_write(this->fileDesc,(void*)&s2, 2);
+				break;
+		}
+	}
 }
 
 float CodeGeneration::reverseFloatBytes(float f)

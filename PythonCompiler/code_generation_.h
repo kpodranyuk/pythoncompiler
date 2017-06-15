@@ -23,7 +23,7 @@ private:
 
 	int fileDesc;	// Дескриптор class файла
 	std::vector<struct Operation> oper;		// Вектор операций, генерируемых для метода
-	int currentLocal;	// Текущий метод(номер методрефа, в случае с main-ом - будет битое значение)
+	int currentLocal;	// Текущий метод(номер методрефа, main==NULL)
 
 	/*Данные для записи байт в class файл*/
 	unsigned char u1;
