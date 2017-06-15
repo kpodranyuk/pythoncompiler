@@ -632,6 +632,19 @@ void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 
 void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 {
+	//Проверяем, есть ли брейк или континью в данном цикле
+	findBreakContinue=false;
+	findInStmtList(whilestmt->stmtlist);
+	//Если есть, то создаем структуру данного цикла
+	int indexInLoops=-1;
+	if(findBreakContinue)
+	{
+		LoopData* curLoop=new LoopData;
+		loops.push_back(curLoop);
+		indexInLoops=loops.size()-1;
+		currentLoop=indexInLoops;
+	}
+
 	//1.Генерим безусловный переход
 	Operation* go_to=new Operation;
 	go_to->type=__GOTO;
@@ -641,6 +654,8 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 
 	//2.Генерим тело
 	generateCodeForStatementList(whilestmt->stmtlist);
+	if(indexInLoops!=-1)
+		currentLoop=indexInLoops;
 	oper[addrGoto]->s2=calcOffset(addrGoto,oper.size()-1);
 
 	//3.Генерим выражение
@@ -662,9 +677,39 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 	int offset=calcOffset(if_ne,addrGoto+1);
 	oper[if_ne]->s2=offset;
 
+	if(indexInLoops!=-1)
+	{
+		loops[indexInLoops]->startLoop=addrGoto+1;
+		loops[indexInLoops]->finishLoop=if_ne;
+	}
+
 	//5.Сгенерировать else блок если он есть
 	if(whilestmt->elsestmt!=NULL)
+	{
 		generateCodeForStatementList(whilestmt->elsestmt);
+		if(indexInLoops!=-1)
+			loops[indexInLoops]->finishLoop=oper.size()-1;
+	}
+
+
+	//Для каждого брейка или континью определить смещения
+	if(indexInLoops!=-1)
+	{
+		LoopData* curLoop=loops[indexInLoops];
+		for(int i=0; i<curLoop->contBreak.size(); i++)
+		{
+			if(curLoop->contBreak[i]->type==BR)
+			{
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo, curLoop->finishLoop);
+				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
+			}
+			else if(curLoop->contBreak[i]->type==CON)
+			{
+				int off=calcOffset(curLoop->startLoop, curLoop->contBreak[i]->indexGoTo);
+				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
+			}
+		}
+	}
 
 }
 
@@ -825,5 +870,27 @@ enum LibOperations CodeGeneration::getLibOperationNumber(struct ExprInfo * expr)
 		return ___MUL;
 	case _POW:
 		return ___POW;
+	}
+}
+
+
+void CodeGeneration::findInIf(struct IfStmtInfo * ifstmt)
+{
+	findInStmtList(ifstmt->stmtlist);
+	if(ifstmt->elsestmtlist!=NULL)
+		findInStmtList(ifstmt->elsestmtlist);
+}
+
+void CodeGeneration::findInStmtList(struct StmtListInfo* stmtList)
+{
+	StmtInfo* begining = stmtList->first;
+	while(begining!=NULL)
+	{
+		if(begining->type==_IF)
+			findInIf(begining->ifstmt);
+		else if(begining->type==_BREAK || begining->type==_CONTINUE)
+			findBreakContinue=true;
+
+		begining=begining->next;
 	}
 }

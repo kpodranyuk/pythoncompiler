@@ -36,6 +36,30 @@ private:
 	int s4;
 	float sf4;
 
+	bool findBreakContinue;
+	int currentLoop;
+	enum Oper
+	{
+		BR,
+		CON
+	};
+
+	struct ContinueBreak
+	{
+		Oper type;// тип операции
+		int indexGoTo;// индекс безусловного перехода в массиве операций
+	};
+
+	struct LoopData
+	{
+		int startLoop;//Индекс начала тела цикла в массиве операций
+		int finishLoop;//Индекс конца цикла(либо тело либо else блок) в массиве операций
+		std::vector<struct ContinueBreak*> contBreak;
+	};
+
+	std::vector<struct LoopData*> loops;// Все циклы
+
+
 
 	/*---ОСНОВНЫЕ МЕТОДЫ ДЛЯ ГЕНЕРАЦИИ---*/
 
@@ -117,6 +141,10 @@ private:
 	* \param[in] finish индекс последней операции, где заканчиваем(включительно)
 	*/
 	int calcOffset(int start, int finish);
+
+	// Функции для поиска break-а или continue
+	void findInIf(struct IfStmtInfo * ifstmt);
+	void findInStmtList(struct StmtListInfo* stmtList);
 
 public:
 
