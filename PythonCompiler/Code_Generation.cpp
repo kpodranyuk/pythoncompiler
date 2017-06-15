@@ -302,6 +302,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 
 		// —читаем следующий элемент списка новым текущим
 		begining = begining->next;
+	}
 }
 
 
@@ -336,6 +337,10 @@ void CodeGeneration::generateCodeForDelStmt(struct ExprInfo * expr)
 
 
 void CodeGeneration::generateCodeForFuncDef(struct FuncDefInfo * funcDef)
+{
+}
+
+void CodeGeneration::generateCodeForReturnStmt(struct ExprInfo * expr)
 {
 }
 
