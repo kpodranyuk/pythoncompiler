@@ -88,6 +88,8 @@ private:
 	int valClassDesc;	// —сылка на константу класса Value в таблице констант
 	int typeDesc;		// —сылка на константу дескриптора типа LValue;
 
+	int currentMR;
+
 	struct ClassTable_Elem* prog;			// ”казатель на таблицу класса
 	struct ConstTable_List* ct;				// ”казатель на таблицу констант
 	struct ConstTable_Consts* ct_consts;	// ”казатель на константы таблицы констант
