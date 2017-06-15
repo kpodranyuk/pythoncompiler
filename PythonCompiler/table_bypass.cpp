@@ -412,7 +412,13 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 		}	
 	}
 	else if(expr->type==_OPERAND)
+	{
+		expr->locFor=NULL;
+		expr->numberInTable=NULL;
 		findOpInCT(expr, local);
+		if(expr->locFor==NULL&&expr->numberInTable==NULL)
+			findOpInCT(expr, NULL);
+	}
 	else if(expr->type==_ASSIGN)
 	{
 		struct ExprInfo* leftE=expr->left;

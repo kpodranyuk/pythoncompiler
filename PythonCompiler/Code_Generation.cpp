@@ -340,7 +340,8 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 			}
 			else if(begining->type==_FUNC_DEF)
 			{
-				generateCodeForFuncDef(begining->funcdefstmt);
+				//generateCodeForFuncDef(begining->funcdefstmt);
+				generateCodeForStatementList(begining->funcdefstmt->body);
 			}
 			else if(begining->type==_RETURN)
 			{
@@ -655,6 +656,21 @@ void CodeGeneration::generateCodeForFuncDef(struct FuncDefInfo * funcDef)
 
 void CodeGeneration::generateCodeForReturnStmt(struct ExprInfo * expr)
 {
+	if(expr->type==_VARVAL&&expr->exprVal->type==_NONE)
+	{
+		Operation* curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=___VALUE_FROM_NONE;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+	}
+	else
+		generateCodeForExpr(expr, false);
+	Operation* retOp = new struct Operation;
+	retOp->type=__ARETURN;
+	retOp->countByte=1;
+	oper.push_back(retOp);
+
 }
 
 
