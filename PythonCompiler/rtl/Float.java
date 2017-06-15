@@ -104,6 +104,24 @@ public class Float extends Value{
         }
         throw new Error("Operation not allowed with these types.");
     }
+    
+    @Override
+     public Value intDiv(Value other) {
+        if ((other instanceof Float)) {
+            return new Integer((int)this.value / ((Integer) other).value);
+        }
+        if (other instanceof Integer) {
+            return new Integer((int)this.value / ((Integer) other).value);
+        } else if(other instanceof Boolean) {
+            int number = ((Boolean) other).toIntBool();
+            if(number==1) {
+                return new Integer((int)this.value / number);
+            } else {
+                throw new Error("Division by zero.");
+            }
+        }
+        throw new Error("Operation not allowed with these types.");
+    }
 
     @Override
     public Value mod(Value other) {
