@@ -208,6 +208,7 @@ void CodeGeneration::generateMethodsTable()
 
 	// Для кадого метода генерим байт-код
 	MethodTable_Elem* method = prog->methodsFirst;
+
 	while(method!=NULL)
 	{
 		currentLocal=method->methodRef;
@@ -233,16 +234,17 @@ void CodeGeneration::generateMethodsTable()
 		// Для мейна надо вызвать ретерн для завершения выполнения текущего метода
 		if(method->methodRef==NULL)
 		{
-			/*Operation* ret=new Operation;
-			ret->type=__LDC;
-			ret->u1=119;
-			ret->countByte=2;
-			oper.push_back(ret);
+			/* */
 
-			ret=new Operation;
+			Operation* /*ret=new Operation;
 			ret->type=__LDC;
 			ret->u1=122;
 			ret->countByte=2;
+			oper.push_back(ret);*/
+
+			ret=new Operation;
+			ret->type=_ICONST;
+			ret->countByte=1;
 			oper.push_back(ret);
 
 			ret=new Operation;
@@ -251,15 +253,23 @@ void CodeGeneration::generateMethodsTable()
 			ret->countByte=3;
 			oper.push_back(ret);
 
+			/*ret=new Operation;
+			ret->type=__LDC;
+			ret->u1=119;
+			ret->countByte=2;
+			oper.push_back(ret);*/
+
 			ret=new Operation;
 			ret->type=__PUT_STATIC;
-			ret->u2=121;
+			ret->u2=121;//119
+			//ret->u22=119;
 			ret->countByte=3;
+			oper.push_back(ret);
 
 			ret=new Operation;
 			ret->type=__RETURN;
 			ret->countByte=1;
-			oper.push_back(ret);*/
+			oper.push_back(ret);
 		}
 		// Получаем размер сгенериного байт-кода
 		int length=getCodeLengthMethod();
@@ -664,6 +674,11 @@ void CodeGeneration::writeByteCode()
 				break;
 			case __GET_STATIC:
 			case __PUT_STATIC:
+				/*u2=htons(oper[i]->u2);
+				_write(this->fileDesc,(void*)&u2, 2);
+				u2=htons(oper[i]->u22);
+				_write(this->fileDesc,(void*)&u2, 2);
+				break;*/
 			case __INVOKESTATIC:
 				u2=htons(oper[i]->u2);
 				_write(this->fileDesc,(void*)&u2, 2);
