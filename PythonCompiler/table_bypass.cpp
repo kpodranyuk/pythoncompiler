@@ -253,7 +253,7 @@ void TreeTraversal::makeTables(const struct StmtListInfo* treeRoot)
 	vars=new VariableTable_List;
 	vars->first=NULL;
 	vars->last=NULL;
-
+	currentMR=NULL;
 	parseStmtListForTable(treeRoot,NULL);
 	//std::vector<struct TableElement*>::iterator iter;  // Îáúÿâëÿåì èòåðàòîð äëÿ ñïèñêà ñòðîê
 	// TODO ÑÎÇÄÀÒÜ ÔÓÍÊÖÈÞ ÎÁÕÎÄÀ ÒÀÁËÈÖ ÄËß ÏÅ×ÀÒÈ
@@ -336,12 +336,16 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int l
 		{
 			//checkFuncDefStmt(begining->funcdefstmt);
 			parseFuncDefForTable(begining->funcdefstmt,local);
+			begining->localFor=currentMR;
+			currentMR=NULL;
 		}
 		else if(begining->type==_RETURN)
 		{
 			//checkReturnStmt(begining,begining->expr);
 			parseExprForTable(begining->expr, local, begining->expr->type);
 		}
+		if(begining->type!=_FUNC_DEF)
+			begining->localFor=currentMR;
 		// Ñ÷èòàåì ñëåäóþùèé ýëåìåíò ñïèñêà íîâûì òåêóùèì
 		begining = begining->next;
 	}
@@ -616,6 +620,7 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 		mRef=*(ct_consts->constnumber);
 		curElem->methodRef=mRef;
 		appendToMethodTable(curElem);
+		currentMR=mRef;
 		currentFuncName=std::string(funcdefstmt->functionName);
 		this->vars->count=0;
 		struct DefFuncParamInfo* el = curHeader->params->first;
