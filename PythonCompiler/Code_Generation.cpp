@@ -157,8 +157,53 @@ void CodeGeneration::generateFieldsTable()
 void CodeGeneration::generateMethodsTable()
 {
 	// Записываем кол-во методов класса
-	u2=htons(prog->methodCount);
+	u2=htons(prog->methodCount+1);
 	_write(this->fileDesc,(void*)&u2, 2);
+
+	// КОНСТРУКТОР
+	u2=htons(1); // Флаг acc_public
+	_write(this->fileDesc,(void*)&u2, 2);
+
+	u2=htons(this->ct_consts->objectClass + 1);
+	_write(this->fileDesc,(void*)&u2, 2);// Имя метода
+
+	u2=htons(this->ct_consts->objectClass + 2);
+	_write(this->fileDesc,(void*)&u2, 2);// Дескриптор
+
+	u2=htons(1); // 1 
+	_write(this->fileDesc,(void*)&u2, 2);// Количество атрибутов
+
+	u2=htons(1); //1я константа Code
+	_write(this->fileDesc,(void*)&u2, 2);// Имя атрибута
+
+	u4=htonl(5 + 12);
+	_write(this->fileDesc,(void*)&u4, 4);// Длина атрибута
+
+	u2=htons(1);
+	_write(this->fileDesc,(void*)&u2, 2);// Максимальный размер стека операндов
+
+	u2=htons(1);
+	_write(this->fileDesc,(void*)&u2, 2);// Количество локальных переменных
+
+	u4=htonl(5);
+	_write(this->fileDesc,(void*)&u4, 4);// Длина кода
+
+	// Код
+	u1=42;
+	_write(this->fileDesc,(void*)&u1, 1);
+	u1=183;
+	_write(this->fileDesc,(void*)&u1, 1);
+	u2=htons(this->ct_consts->objectClass + 4);
+	_write(this->fileDesc,(void*)&u2, 2);
+	u1=177;
+	_write(this->fileDesc,(void*)&u1, 1);
+
+	u2=0;
+	_write(this->fileDesc,(void*)&u2, 2);// Длина таблицы обработчиков исключений
+
+	u2=0;
+	_write(this->fileDesc,(void*)&u2, 2);// Количество атрибутов
+
 
 	// Для кадого метода генерим байт-код
 	MethodTable_Elem* method = prog->methodsFirst;
