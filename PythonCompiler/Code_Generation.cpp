@@ -230,7 +230,7 @@ void CodeGeneration::generateMethodsTable()
 		_write(this->fileDesc,(void*)&u2, 2);
 
 		// Генерим в массив весь байт-код метода
-		//generateCodeForStatementList(this->treeRoot);
+		generateCodeForStatementList(this->treeRoot);
 		// Для мейна надо вызвать ретерн для завершения выполнения текущего метода
 		if(method->methodRef==NULL)
 		{
@@ -247,24 +247,26 @@ void CodeGeneration::generateMethodsTable()
 			ret->countByte=1;
 			oper.push_back(ret);
 
-			ret=new Operation;
-			ret->type=__INVOKESTATIC;
-			ret->u2=___VALUE_FROM_INT;
-			ret->countByte=3;
-			oper.push_back(ret);
-
+			
 			/*ret=new Operation;
 			ret->type=__LDC;
 			ret->u1=119;
 			ret->countByte=2;
 			oper.push_back(ret);*/
 
+			/*ret=new Operation;
+			ret->type=__INVOKESTATIC;
+			ret->u2=___VALUE_FROM_INT;
+			ret->countByte=3;
+			oper.push_back(ret);
+
+
 			ret=new Operation;
 			ret->type=__PUT_STATIC;
 			ret->u2=121;//119
 			//ret->u22=119;
 			ret->countByte=3;
-			oper.push_back(ret);
+			oper.push_back(ret);*/
 
 			ret=new Operation;
 			ret->type=__RETURN;
@@ -370,9 +372,12 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp = new struct Operation;
 		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE)//||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
 		{
-			curOp->type=__LDC;
-			curOp->u1=expr->exprVal->numberInTable;
-			curOp->countByte=2;
+			curOp->type=__SIPUSH;
+			if(expr->exprVal->type==_TRUE)
+				curOp->s2=1;
+			else
+				curOp->s2=0;
+			curOp->countByte=3;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
@@ -382,8 +387,8 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_FLOAT)
 		{
-			curOp->type=__LDC_W;
-			curOp->u2=expr->exprVal->numberInTable;
+			curOp->type=__SIPUSH;
+			//curOp->u2=expr->exprVal->numberInTable;
 			curOp->countByte=3;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
@@ -394,9 +399,9 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_NUMBER)
 		{
-			curOp->type=__LDC;
-			curOp->u1=expr->exprVal->numberInTable;
-			curOp->countByte=2;
+			curOp->type=__SIPUSH;
+			curOp->s2=expr->exprVal->intVal;
+			curOp->countByte=3;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
@@ -684,6 +689,7 @@ void CodeGeneration::writeByteCode()
 				_write(this->fileDesc,(void*)&u2, 2);
 				break;
 			case __IF_EQ:
+			case __SIPUSH:
 			case __GOTO:
 				s2=htons(oper[i]->s2);
 				_write(this->fileDesc,(void*)&s2, 2);
