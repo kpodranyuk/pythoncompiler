@@ -387,9 +387,9 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_FLOAT)
 		{
-			curOp->type=__SIPUSH;
-			//curOp->u2=expr->exprVal->numberInTable;
-			curOp->countByte=3;
+			curOp->type=__LDC;
+			curOp->u1=expr->exprVal->numberInTable;
+			curOp->countByte=2;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
@@ -417,7 +417,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		// если операнд - глобальный, то гетстатик
 		// если локальный - алоад
 		curOp = new struct Operation;
-		if(expr->locFor=NULL)
+		if(expr->locFor==NULL)
 		{
 			curOp->type=__GET_STATIC;
 			curOp->u2=expr->numberInTable;
@@ -673,7 +673,7 @@ void CodeGeneration::writeByteCode()
 			case __ISTORE:
 			case __FSTORE:
 			case __ASTORE:
-				u1=htons(oper[i]->u1);
+				u1=(oper[i]->u1);
 				_write(this->fileDesc,(void*)&u1, 1);
 				break;
 			case __GET_STATIC:
