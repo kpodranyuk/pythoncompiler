@@ -46,13 +46,18 @@ public class Lib {
         return new None();
     }
 
-    public static Value tonumber(Value e, Value base) {
-        throw new Error("[ERROR] tonumber: base not supported.");
+    public static Value tonumberBase(Value e, Value base) {
+        //throw new Error("[ERROR] tonumber: base not supported.");
+        if ((e instanceof Integer)) {
+            return e;
+        }
+        if ((e instanceof String)) {
+            return new Integer(java.lang.Integer.parseInt(((String) e).value, ((Integer)base).value));
+        }
+        return new None();
     }
 
-    public static java.lang.String tostring(Value e) {
-        return new java.lang.String(e.toString());
-    }
+    
 
     public static void print(Value val) {
         System.out.println(val.toString());
@@ -91,6 +96,10 @@ public class Lib {
     
     public static Value valueFromBoolean(int val) {
         return new Boolean(val!=0);
+    }
+    
+    public static Value toString(Value e) {
+        return valueFromString(e.toString());
     }
 
     public static Value sub(Value m1, Value m2) {

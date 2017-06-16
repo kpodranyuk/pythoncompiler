@@ -189,6 +189,8 @@ void TreeTraversal::findMInMT(struct ExprInfo* expr)
 	{
 		if(strcmp((*it)->name,expr->idName)==0)
 		{
+			//if(strcmp(expr->idName,"int")==0)
+				//___TO_NUMBER_base
 			expr->locFor=NULL;
 			expr->numberInTable=(*it)->MR;
 			break;
@@ -485,10 +487,28 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 	// Выражение, состоящие из списка выражений
 	else if(expr->type==_ARRINIT||expr->type==_FUNCCALL)
 	{
-		if(expr->type==_FUNCCALL)
-			findMInMT(expr);
 		// Создаем локальный указатель на элемент списка
 		struct ExprInfo* curExpr;
+		int paramsCount=0;
+		// Считаем первый элемент списка начальным
+		curExpr = expr->arglist->first;
+		// Пока текущий элемент списка не последний..
+		while(curExpr!=NULL)
+		{
+			paramsCount++;
+			//parseExprForTable(curExpr, local, expr->type);
+			curExpr = curExpr->next;
+		}
+		if(expr->type==_FUNCCALL&&strcmp(expr->idName,"int")==0)
+		{
+			expr->locFor=NULL;
+			if(paramsCount==1)
+				expr->numberInTable=30;
+			else
+				expr->numberInTable=34;
+		}
+		else if(expr->type==_FUNCCALL&&strcmp(expr->idName,"int")!=0)
+			findMInMT(expr);
 		// Считаем первый элемент списка начальным
 		curExpr = expr->arglist->first;
 		// Пока текущий элемент списка не последний..
@@ -497,6 +517,8 @@ void TreeTraversal::parseExprForTable(struct ExprInfo * expr, int local, enum Ex
 			parseExprForTable(curExpr, local, expr->type);
 			curExpr = curExpr->next;
 		}
+
+
 	}	
 	// Унарное выражение
 	else if(expr->type==_NOT || expr->type==_UMINUS)
