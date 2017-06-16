@@ -1,4 +1,6 @@
 %{
+#include <stdio.h>
+#include <string>
 #include <conio.h>
 #include <locale.h>
 #include "parser.tab.h"
@@ -12,6 +14,9 @@ int indent_level = 0;          /* indentation level passed to the parser */
 void yyerror(const char* s);
 extern int yylex();
 int stringIndex=1, charIndex=0;			/**<Перменные, хранящие идексы лексемы*/
+float fff;
+double ddd;
+int step;
 /*!
 * Функция для определения координат лексемы
 * \param[in] index1 Начальное положение лексемы в строке
@@ -388,7 +393,56 @@ del	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("FLEX:\tНашел число: %s\n", yytext);			
 				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
+				fff=atof(yytext);
+				ddd=strtod (yytext,NULL);
 				yylval.Float=atof(yytext); 
+				if(strchr(yytext,'.')!=NULL&&strchr(yytext,'e')!=NULL)
+				{
+					strcpy(bufStr,"");
+					strncpy(bufStr,yytext,strchr(yytext,'e')-yytext);
+					bufStr[strchr(yytext,'e')-yytext]='\0';
+					yylval.Float=atof(bufStr); 
+					fff=atof(strchr(bufStr,'.')+1);
+					step=strlen(bufStr)-(strchr(bufStr,'.')-bufStr)-1;
+					while(step!=0)
+					{
+						fff/=10;
+						step--;
+					}
+					yylval.Float+=fff;
+					strcpy(bufStr,"");
+					strcpy(bufStr,strchr(yytext,'e')+1);
+					step=atoi(bufStr);
+					while(step!=0)
+					{
+						if(step<0)
+						{
+							yylval.Float/=10;
+							step++;
+						}
+						else if(step>0)
+						{
+							yylval.Float*=10;
+							step--;
+						}
+						
+					}
+					//bufStr[strchr(yytext,'e')-yytext]='\0';
+
+				}
+				else if(strchr(yytext,'.')!=NULL&&strchr(yytext,'e')==NULL)
+				{
+					yylval.Float=atof(yytext);
+					fff=atof(strchr(yytext,'.')+1);
+					step=strlen(yytext)-(strchr(yytext,'.')-yytext)-1;
+					while(step!=0)
+					{
+						fff/=10;
+						step--;
+					}
+					yylval.Float+=fff;
+				}
+				
 				return FFLOAT;	
 			}
 {DIGIT}+	{

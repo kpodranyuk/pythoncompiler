@@ -180,7 +180,7 @@ void CodeGeneration::generateMethodsTable()
 	u4=htonl(5 + 12);
 	_write(this->fileDesc,(void*)&u4, 4);// Длина атрибута
 
-	u2=htons(1);
+	u2=htons(2);
 	_write(this->fileDesc,(void*)&u2, 2);// Максимальный размер стека операндов
 
 	u2=htons(1);
@@ -282,7 +282,7 @@ void CodeGeneration::generateMethodsTable()
 		u2=htons(1000);
 		_write(this->fileDesc,(void*)&u2, 2);// Размер стека операндов
 
-		u2=htons(method->localVarsCount);
+		u2=htons(method->localVarsCount+1);
 		_write(this->fileDesc,(void*)&u2, 2);// Количество локальных переменных
 
 		u4=htonl(length);
@@ -389,9 +389,10 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		else if (expr->exprVal->type==_FLOAT)
 		{
-			curOp->type=__LDC;
-			curOp->u1=expr->exprVal->numberInTable;
-			curOp->countByte=2;
+
+			curOp->type=__LDC_W;
+			curOp->u2=expr->exprVal->numberInTable;
+			curOp->countByte=3;
 			oper.push_back(curOp);
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;

@@ -50,8 +50,8 @@ public class Lib {
         throw new Error("[ERROR] tonumber: base not supported.");
     }
 
-    public static Value tostring(Value e) {
-        return new String(e.toString());
+    public static java.lang.String tostring(Value e) {
+        return new java.lang.String(e.toString());
     }
 
     public static void print(Value val) {
