@@ -234,41 +234,7 @@ void CodeGeneration::generateMethodsTable()
 		// Для мейна надо вызвать ретерн для завершения выполнения текущего метода
 		if(method->methodRef==NULL)
 		{
-			/* */
-
-			Operation* /*ret=new Operation;
-			ret->type=__LDC;
-			ret->u1=122;
-			ret->countByte=2;
-			oper.push_back(ret);*/
-
-			ret=new Operation;
-			ret->type=_ICONST;
-			ret->countByte=1;
-			oper.push_back(ret);
-
-			
-			/*ret=new Operation;
-			ret->type=__LDC;
-			ret->u1=119;
-			ret->countByte=2;
-			oper.push_back(ret);*/
-
-			/*ret=new Operation;
-			ret->type=__INVOKESTATIC;
-			ret->u2=___VALUE_FROM_INT;
-			ret->countByte=3;
-			oper.push_back(ret);
-
-
-			ret=new Operation;
-			ret->type=__PUT_STATIC;
-			ret->u2=121;//119
-			//ret->u22=119;
-			ret->countByte=3;
-			oper.push_back(ret);*/
-
-			ret=new Operation;
+			Operation* ret=new Operation;
 			ret->type=__RETURN;
 			ret->countByte=1;
 			oper.push_back(ret);
