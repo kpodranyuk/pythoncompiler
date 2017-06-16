@@ -27,6 +27,7 @@ private:
 	int currentLocal;	// Текущий метод(номер методрефа, main==NULL)
 
 	int stackSize;	// Количество элементов на стеке операндов
+	int needCountInStack; // Количество значений, которые надо оставить на стеке
 
 	/*Данные для записи байт в class файл*/
 	unsigned char u1;
