@@ -8,6 +8,7 @@ CodeGeneration::CodeGeneration(struct ClassTable_Elem* prog, struct ConstTable_L
 	this->ct_consts=ct_consts;
 	this->vars=vars;
 	stackSize=0;
+	needCountInStack=0;
 }
 
 CodeGeneration::~CodeGeneration(void)
@@ -279,17 +280,12 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 			if(begining->type==_EXPR)
 			{
 				generateCodeForExpr(begining->expr,false);
-				if(stackSize>0)
+				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN && begining->expr->type!=_ARRACT)
 				{
-					/*for(int i=0;i<stackSize;i++)
-					{
-						//TODO сделать pop
-						Operation* pop=new Operation;
-						pop->type=__POP;
-						pop->countByte=1;
-						oper.push_back(pop);
-					}
-					stackSize=0*/
+					Operation* pop=new Operation;
+					pop->type=__POP;
+					pop->countByte=1;
+					oper.push_back(pop);
 				}
 			}
 			else if(begining->type==_IF)
@@ -431,7 +427,6 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->u2=___NOT;
 			curOp->countByte=3;
 			oper.push_back(curOp);
-			stackSize--;
 		}
 
 	}
@@ -471,7 +466,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->type=__PUT_STATIC;
 			curOp->u2=expr->left->numberInTable;
 			curOp->countByte=3;
-			stackSize--;
+			stackSize-=2;
 		}
 		else 
 		{
@@ -662,7 +657,7 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 	ifne->countByte=3;
 	oper.push_back(ifne);
 	int if_ne=oper.size()-1;
-	int offset=calcOffset(if_ne,addrGoto+1);
+	int offset=calcOffset(if_ne,addrGoto+2);
 	oper[if_ne]->s2=offset;
 
 	if(indexInLoops!=-1)
@@ -698,7 +693,10 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 			}
 		}
 	}
-	currentLoop--;
+	findBreakContinue=false;
+	findInStmtList(whilestmt->stmtlist);
+	if(findBreakContinue)
+		currentLoop--;
 
 }
 
