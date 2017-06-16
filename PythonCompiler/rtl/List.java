@@ -114,10 +114,10 @@ public class List extends Value {
 
     @Override
     public java.lang.String toString() {
-        java.lang.String res = "[\n";
+        java.lang.String res = "[ ";
         for (Value val : this.value) {
           res = res + val.toString();
-          res = res + ",\n";
+          res = res + ", ";
         }
         return res + "]";
     }

@@ -280,7 +280,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 			if(begining->type==_EXPR)
 			{
 				generateCodeForExpr(begining->expr,false);
-				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN && begining->expr->type!=_ARRACT)
+				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN && begining->expr->type!=_ARRACT /*&& begining->expr->type!=_FUNCCALL*/)
 				{
 					Operation* pop=new Operation;
 					pop->type=__POP;
@@ -446,6 +446,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		// генерируем команду для вызова метода (инвок статик)
 		curOp = new struct Operation;
 		curOp->type=__INVOKESTATIC;
+
 		curOp->u2=expr->numberInTable;
 		curOp->countByte=3;
 		oper.push_back(curOp);

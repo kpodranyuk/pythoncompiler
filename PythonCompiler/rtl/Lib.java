@@ -191,14 +191,18 @@ public class Lib {
     }
 
     public static void ListSet(Value list, Value index, Value val) {
-        if (((list instanceof List)) && ((index instanceof Integer))) {
-            int newIndex = ((Integer) index).value;
+        if(!(list instanceof List)){
+            throw new Error("No list.");
+        } 
+        if(!(index instanceof Integer)) {
+            throw new Error("Wrong index.");
+        }
+        
+        int newIndex = ((Integer) index).value;
             if(newIndex<0) {
                 newIndex=flipIndex(newIndex, ((List) list).value.size());
             }
             ((List) list).value.set(newIndex, val);
-        }
-        throw new Error("The index must be an integer and the operation must occur over the array.");
     }
 
     public static Value ListAppend(Value list, Value val) {
