@@ -281,7 +281,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 				generateCodeForExpr(begining->expr,false);
 				if(stackSize>0)
 				{
-					for(int i=0;i<stackSize;i++)
+					/*for(int i=0;i<stackSize;i++)
 					{
 						//TODO сделать pop
 						Operation* pop=new Operation;
@@ -289,7 +289,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 						pop->countByte=1;
 						oper.push_back(pop);
 					}
-					stackSize=0;
+					stackSize=0*/
 				}
 			}
 			else if(begining->type==_IF)
@@ -340,13 +340,11 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		if(expr->exprVal->type==_TRUE||expr->exprVal->type==_FALSE)//||expr->exprVal->type==_NUMBER||expr->exprVal->type==_STRING)
 		{
 			curOp->type=__LDC;
-			/*if(expr->exprVal->type==_TRUE)
-				curOp->s2=1;
-			else
-				curOp->s2=0;*/
 			curOp->u1=expr->exprVal->numberInTable;
 			curOp->countByte=2;
 			oper.push_back(curOp);
+			stackSize++;
+
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
 			curOp->u2=___VALUE_FROM_BOOLEAN;
@@ -360,6 +358,8 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->u2=expr->exprVal->numberInTable;
 			curOp->countByte=3;
 			oper.push_back(curOp);
+			stackSize++;
+
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
 			curOp->u2=___VALUE_FROM_FLOAT;
@@ -372,6 +372,8 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->u1=expr->exprVal->numberInTable;
 			curOp->countByte=2;
 			oper.push_back(curOp);
+			stackSize++;
+
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
 			curOp->u2=___VALUE_FROM_INT;
@@ -384,6 +386,8 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->u1=expr->exprVal->numberInTable;
 			curOp->countByte=2;
 			oper.push_back(curOp);
+			stackSize++;
+
 			curOp = new struct Operation;
 			curOp->type=__INVOKESTATIC;
 			curOp->u2=___VALUE_FROM_STRING;
@@ -403,12 +407,14 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->type=__GET_STATIC;
 			curOp->u2=expr->numberInTable;
 			curOp->countByte=3;
+			stackSize++;
 		}
 		else
 		{
 			curOp->type=__ALOAD;
 			curOp->u1=expr->numberInTable;
 			curOp->countByte=2;
+			stackSize++;
 		}
 		oper.push_back(curOp);
 	}
@@ -425,6 +431,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->u2=___NOT;
 			curOp->countByte=3;
 			oper.push_back(curOp);
+			stackSize--;
 		}
 
 	}
@@ -432,12 +439,14 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 	// экспр - вызов метода
 	else if(expr->type==_FUNCCALL)
 	{
+		int parCount=0;
 		// рекурсивные вызовы для загрузки аргументов на стек
 		struct ExprInfo* elem = expr->arglist->first;
 		while(elem!=NULL)
 		{
 			generateCodeForExpr(elem,false);
 			elem=elem->next;
+			parCount++;
 		}
 		// генерируем команду для вызова метода (инвок статик)
 		curOp = new struct Operation;
@@ -445,6 +454,10 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp->u2=expr->numberInTable;
 		curOp->countByte=3;
 		oper.push_back(curOp);
+		stackSize-=parCount;
+		// все положат на стек что-то
+		stackSize++;
+
 	}
 	// эспр - присваивание
 	else if(expr->type==_ASSIGN)
@@ -458,12 +471,14 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->type=__PUT_STATIC;
 			curOp->u2=expr->left->numberInTable;
 			curOp->countByte=3;
+			stackSize--;
 		}
 		else 
 		{
 			curOp->type=__ASTORE;
 			curOp->u1=expr->left->numberInTable;
 			curOp->countByte=2;
+			stackSize--;
 		}
 		oper.push_back(curOp);
 	}
@@ -480,6 +495,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp->u2=___LIST_SET;
 		curOp->countByte=3;
 		oper.push_back(curOp);
+		stackSize-=3;
 	}
 	// экспр - взятие по индексу массива
 	else if(expr->type==_ARRID)
@@ -493,6 +509,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp->u2=___LIST_GET;
 		curOp->countByte=3;
 		oper.push_back(curOp);
+		stackSize-=1;
 	}
 	// экспр - аппенд или ремув
 	else if(expr->type==_ARRACT)
@@ -509,6 +526,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->u2=___LIST_REMOVE;
 		curOp->countByte=3;
 		oper.push_back(curOp);
+		stackSize--;
 	}
 	else if(expr->type==_ARRINIT)
 	{
@@ -518,6 +536,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp->u2=___VALUE_FROM_LIST;
 		curOp->countByte=3;
 		oper.push_back(curOp);
+		stackSize++;
 		// Для каждого элемента списка..
 		struct ExprInfo* elem = expr->arglist->first;
 		while(elem!=NULL)
@@ -531,6 +550,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			curOp->countByte=3;
 			oper.push_back(curOp);
 			elem=elem->next;
+			stackSize--;
 		}
 	}
 	// Иначе идут уже обычные двуместные операции
@@ -545,6 +565,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		curOp->u2=getLibOperationNumber(expr);
 		curOp->countByte=3;
 		oper.push_back(curOp);
+		stackSize--;
 	}
 }
 
@@ -710,6 +731,31 @@ void CodeGeneration::generateCodeForContinueBreakStmt(struct StmtInfo* contBreak
 
 void CodeGeneration::generateCodeForDelStmt(struct ExprInfo * expr)
 {
+	// Поместить на стек значение Ноун и записать в текущий экспр
+	Operation* curOp = new struct Operation;
+	curOp->type=__INVOKESTATIC;
+	curOp->u2=___VALUE_FROM_NONE;
+	curOp->countByte=3;
+	oper.push_back(curOp);
+	stackSize++;
+	// загружаем в переменную
+	curOp = new struct Operation;
+	if(expr->locFor==NULL)
+	{
+		curOp->type=__PUT_STATIC;
+		curOp->u2=expr->numberInTable;
+		curOp->countByte=3;
+		stackSize--;
+	}
+	else 
+	{
+		curOp->type=__ASTORE;
+		curOp->u1=expr->numberInTable;
+		curOp->countByte=2;
+		stackSize--;
+	}
+	oper.push_back(curOp);
+
 }
 
 

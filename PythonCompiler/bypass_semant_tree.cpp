@@ -376,8 +376,8 @@ void TreeTraversal::initializeConstTable()
 	appendMToMT("repr", *(ct_consts->constnumber));
 	// print
 	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"print",NULL,NULL,NULL,NULL));
-	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)V",NULL,NULL,NULL,NULL));
-	appendToMDescs("(Lrtl/Value;)V",*(ct_consts->constnumber));
+	appendToConstTable(makeTableEl(CONST_UTF8,ct_consts->constnumber,"(Lrtl/Value;)Lrtl/Value;",NULL,NULL,NULL,NULL));
+	//appendToMDescs("(Lrtl/Value;)V",*(ct_consts->constnumber));
 	appendToConstTable(makeTableEl(CONST_NAMETYPE,ct_consts->constnumber,NULL,NULL,NULL,*(ct_consts->constnumber)-1,*(ct_consts->constnumber)));
 	appendToConstTable(makeTableEl(CONST_METHODREF,ct_consts->constnumber,NULL,NULL,NULL,ct_consts->rtlClass,*(ct_consts->constnumber)));
 	appendMToMT("print", *(ct_consts->constnumber));

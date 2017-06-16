@@ -346,6 +346,8 @@ void TreeTraversal::parseStmtListForTable(const struct StmtListInfo* root, int l
 			//checkReturnStmt(begining,begining->expr);
 			parseExprForTable(begining->expr, local, begining->expr->type);
 		}
+		else if(begining->type==_DEL)
+			findOpInCT(begining->expr, local);
 		if(begining->type!=_FUNC_DEF)
 			begining->localFor=currentMR;
 		// —читаем следующий элемент списка новым текущим
