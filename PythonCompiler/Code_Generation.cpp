@@ -234,41 +234,7 @@ void CodeGeneration::generateMethodsTable()
 		// Для мейна надо вызвать ретерн для завершения выполнения текущего метода
 		if(method->methodRef==NULL)
 		{
-			/* */
-
-			Operation* /*ret=new Operation;
-			ret->type=__LDC;
-			ret->u1=122;
-			ret->countByte=2;
-			oper.push_back(ret);*/
-
-			ret=new Operation;
-			ret->type=_ICONST;
-			ret->countByte=1;
-			oper.push_back(ret);
-
-			
-			/*ret=new Operation;
-			ret->type=__LDC;
-			ret->u1=119;
-			ret->countByte=2;
-			oper.push_back(ret);*/
-
-			/*ret=new Operation;
-			ret->type=__INVOKESTATIC;
-			ret->u2=___VALUE_FROM_INT;
-			ret->countByte=3;
-			oper.push_back(ret);
-
-
-			ret=new Operation;
-			ret->type=__PUT_STATIC;
-			ret->u2=121;//119
-			//ret->u22=119;
-			ret->countByte=3;
-			oper.push_back(ret);*/
-
-			ret=new Operation;
+			Operation* ret=new Operation;
 			ret->type=__RETURN;
 			ret->countByte=1;
 			oper.push_back(ret);
@@ -633,6 +599,86 @@ void CodeGeneration::generateCodeForIfStmt(struct IfStmtInfo * ifstmt)
 
 void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 {
+	//Проверяем, есть ли брейк или континью в данном цикле
+	findBreakContinue=false;
+	findInStmtList(whilestmt->stmtlist);
+	//Если есть, то создаем структуру данного цикла
+	int indexInLoops=-1;
+	if(findBreakContinue)
+	{
+		LoopData* curLoop=new LoopData;
+		loops.push_back(curLoop);
+		indexInLoops=loops.size()-1;
+		currentLoop=indexInLoops;
+	}
+
+	//1.Генерим безусловный переход
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	int addrGoto=oper.size()-1;
+
+	//2.Генерим тело
+	generateCodeForStatementList(whilestmt->stmtlist);
+	if(indexInLoops!=-1)
+		currentLoop=indexInLoops;
+	oper[addrGoto]->s2=calcOffset(addrGoto,oper.size()-1);
+
+	//3.Генерим выражение
+	generateCodeForExpr(whilestmt->expr,false);// На стеке будет какое то значение Value
+	// Вызываем toIntBool. На стеке будет 0 или 1
+	Operation* toIntBool=new Operation;
+	toIntBool->type=__INVOKESTATIC;
+	toIntBool->u2=___TO_INT_BOOL;
+	toIntBool->countByte=3;
+	oper.push_back(toIntBool);
+
+
+	//4.Генерим операцию ifne для перехода к началу тела цикла
+	Operation* ifne=new Operation;
+	ifne->type=__IF_NE;
+	ifne->countByte=3;
+	oper.push_back(ifne);
+	int if_ne=oper.size()-1;
+	int offset=calcOffset(if_ne,addrGoto+1);
+	oper[if_ne]->s2=offset;
+
+	if(indexInLoops!=-1)
+	{
+		loops[indexInLoops]->startLoop=addrGoto+1;
+		loops[indexInLoops]->finishLoop=if_ne;
+	}
+
+	//5.Сгенерировать else блок если он есть
+	if(whilestmt->elsestmt!=NULL)
+	{
+		generateCodeForStatementList(whilestmt->elsestmt);
+		if(indexInLoops!=-1)
+			loops[indexInLoops]->finishLoop=oper.size()-1;
+	}
+
+
+	//Для каждого брейка или континью определить смещения
+	if(indexInLoops!=-1)
+	{
+		LoopData* curLoop=loops[indexInLoops];
+		for(int i=0; i<curLoop->contBreak.size(); i++)
+		{
+			if(curLoop->contBreak[i]->type==BR)
+			{
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo, curLoop->finishLoop);
+				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
+			}
+			else if(curLoop->contBreak[i]->type==CON)
+			{
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo, curLoop->startLoop);
+				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
+			}
+		}
+	}
+	currentLoop--;
+
 }
 
 
@@ -643,6 +689,22 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 
 void CodeGeneration::generateCodeForContinueBreakStmt(struct StmtInfo* contBreakStmt)
 {
+	//Сгенерировать безусловный переход
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	int addrGoto=oper.size()-1;
+
+	//Записть этот стейтмент в массив
+	ContinueBreak* conBr=new ContinueBreak;
+	if(contBreakStmt->type==_BREAK)
+		conBr->type=BR;
+	else
+		conBr->type=CON;
+
+	conBr->indexGoTo=addrGoto;
+	loops[currentLoop]->contBreak.push_back(conBr);
 }
 
 
@@ -708,17 +770,13 @@ void CodeGeneration::writeByteCode()
 				break;
 			case __GET_STATIC:
 			case __PUT_STATIC:
-				/*u2=htons(oper[i]->u2);
-				_write(this->fileDesc,(void*)&u2, 2);
-				u2=htons(oper[i]->u22);
-				_write(this->fileDesc,(void*)&u2, 2);
-				break;*/
 			case __INVOKESTATIC:
 			case __LDC_W:
 				u2=htons(oper[i]->u2);
 				_write(this->fileDesc,(void*)&u2, 2);
 				break;
 			case __IF_EQ:
+			case __IF_NE:
 			case __SIPUSH:
 			case __GOTO:
 				s2=htons(oper[i]->s2);
@@ -796,5 +854,27 @@ enum LibOperations CodeGeneration::getLibOperationNumber(struct ExprInfo * expr)
 		return ___MUL;
 	case _POW:
 		return ___POW;
+	}
+}
+
+
+void CodeGeneration::findInIf(struct IfStmtInfo * ifstmt)
+{
+	findInStmtList(ifstmt->stmtlist);
+	if(ifstmt->elsestmtlist!=NULL)
+		findInStmtList(ifstmt->elsestmtlist);
+}
+
+void CodeGeneration::findInStmtList(struct StmtListInfo* stmtList)
+{
+	StmtInfo* begining = stmtList->first;
+	while(begining!=NULL)
+	{
+		if(begining->type==_IF)
+			findInIf(begining->ifstmt);
+		else if(begining->type==_BREAK || begining->type==_CONTINUE)
+			findBreakContinue=true;
+
+		begining=begining->next;
 	}
 }

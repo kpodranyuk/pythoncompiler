@@ -494,7 +494,13 @@ void TreeTraversal::checkWhileStmt(struct WhileStmtInfo * whilestmt) throw(char*
 	checkExpr(whilestmt->expr,false);//проверка условного выражения продолжения цикла
 	checkStatementList(whilestmt->stmtlist);//проверка тела цикла
 	if(whilestmt->elsestmt!=NULL)
+	{
+		findBreakContinue=false;
+		findInStmtList(whilestmt->elsestmt);
+		if(findBreakContinue)
+			throw makeStringForException("Continue or Break in else block.",whilestmt->expr->loc);
 		checkStatementList(whilestmt->elsestmt);//проверка блока else цикла
+	}
 
 	// Установка состояний при выходе из цикла
 	if(cycle==true)
@@ -571,12 +577,39 @@ void TreeTraversal::checkForStmt(struct ForStmtInfo * forstmt) throw(char*)
 	checkExpr(forstmt->expr,false);//проверка выражения, по чем проходит цикл
 	checkStatementList(forstmt->stmtlist);//проверка тела цикла
 	if(forstmt->elsestmt!=NULL)
+	{
+		findBreakContinue=false;
+		findInStmtList(forstmt->elsestmt);
+		if(findBreakContinue)
+			throw makeStringForException("Continue or Break in else block.",forstmt->expr->loc);
 		checkStatementList(forstmt->elsestmt);//проверка блока else цикла
+	}
 
 	// Установка состояний при выходе из цикла
 	if(cycle==true)
 	{
 		lc_state = _REGULAR_STATE;
+	}
+}
+
+void TreeTraversal::findInIf(struct IfStmtInfo * ifstmt)
+{
+	findInStmtList(ifstmt->stmtlist);
+	if(ifstmt->elsestmtlist!=NULL)
+		findInStmtList(ifstmt->elsestmtlist);
+}
+
+void TreeTraversal::findInStmtList(struct StmtListInfo* stmtList)
+{
+	StmtInfo* begining = stmtList->first;
+	while(begining!=NULL)
+	{
+		if(begining->type==_IF)
+			findInIf(begining->ifstmt);
+		else if(begining->type==_BREAK || begining->type==_CONTINUE)
+			findBreakContinue=true;
+
+		begining=begining->next;
 	}
 }
 
