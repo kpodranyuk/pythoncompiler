@@ -705,11 +705,12 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 			}
 			else if(curLoop->contBreak[i]->type==CON)
 			{
-				int off=calcOffset(curLoop->startLoop, curLoop->contBreak[i]->indexGoTo);
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo, curLoop->startLoop);
 				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
 			}
 		}
 	}
+	currentLoop--;
 
 }
 
