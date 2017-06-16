@@ -174,6 +174,12 @@ private:
 	*/
 	void checkForStmt(struct ForStmtInfo * forstmt) throw(char*);
 
+	// Функции для поиска break-а или continue
+	void findInIf(struct IfStmtInfo * ifstmt);
+	void findInStmtList(struct StmtListInfo* stmtList);
+
+	bool findBreakContinue;
+
 	/* Проверить узел определения функции дерева
 	* @author Kate
 	* \param[in|out] funcdefstmt узел определения функции дерева
