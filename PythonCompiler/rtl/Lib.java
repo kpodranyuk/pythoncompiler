@@ -36,14 +36,14 @@ public class Lib {
         error(msg, new Integer(0));
     }*/
 
-    public static Value tonumber(Value e) {
+    public static Value toNumber(Value e) {
         if ((e instanceof Integer)) {
             return e;
         }
         if ((e instanceof String)) {
             return new Integer(java.lang.Integer.parseInt(((String) e).value));
         }
-        return new None();
+        return valueFromNone();
     }
 
     public static Value tonumberBase(Value e, Value base) {
@@ -54,7 +54,7 @@ public class Lib {
         if ((e instanceof String)) {
             return new Integer(java.lang.Integer.parseInt(((String) e).value, ((Integer)base).value));
         }
-        return new None();
+        return valueFromNone();
     }
 
     
@@ -65,7 +65,8 @@ public class Lib {
 
     public static Value input(Value toPrint) {
         // Печатаем передаваемое содержимое
-        Lib.print(toPrint);
+        if (!(toPrint instanceof None))
+            Lib.print(toPrint);
         // Создаем сканнер
         Scanner scan = new Scanner(System.in);
         // Считываем строку

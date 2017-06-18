@@ -467,6 +467,16 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			elem=elem->next;
 			parCount++;
 		}
+		if(strcmp(expr->idName,"input")==0&&parCount==0)
+		{
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+
+			curOp->u2=___VALUE_FROM_NONE;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+			stackSize++;
+		}
 		// генерируем команду для вызова метода (инвок статик)
 		curOp = new struct Operation;
 		curOp->type=__INVOKESTATIC;
