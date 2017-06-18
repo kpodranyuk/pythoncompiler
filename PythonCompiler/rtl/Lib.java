@@ -16,41 +16,40 @@ import java.util.Scanner;
 public class Lib {
     private static final java.lang.String EXCEPTION_TYPE_MISMATCH = "[ERROR] Type mismatch.";
 
-    /*public static Value lassert(Value v, Value msg) {
-        if (v.equals(new Boolean(false))) {
-            error(msg);
-            return null;
-        }
-        return new String("assertion " + msg.toString() + " passed");
-    }
-
-    public static Value lassert(Value v) {
-        return lassert(v, new String("assertion failed!"));
-    }
-
-    public static void error(Value msg, Value level) {
-        throw new Error(msg.toString());
-    }
-
-    public static void error(Value msg) {
-        error(msg, new Integer(0));
-    }*/
-
     public static Value toNumber(Value e) {
-        if ((e instanceof Integer)) {
+        if ((e instanceof Integer)) {   // Целое возвращает себя
             return e;
         }
-        if ((e instanceof String)) {
+        if ((e instanceof Float)) {     // Флоат - только целая часть
+            return valueFromInt((int)((Float) e).value);
+        }
+        if ((e instanceof String)) {    // Строка - перевод
             return new Integer(java.lang.Integer.parseInt(((String) e).value));
+        }
+        if ((e instanceof Boolean)) {   // Булеан - 0 или 1
+            return new Integer(toIntBool(((Boolean) e)));
+        }
+        if ((e instanceof None)) {      // None - 0
+            return new Integer(0);
         }
         return valueFromNone();
     }
 
     public static Value tonumberBase(Value e, Value base) {
         //throw new Error("[ERROR] tonumber: base not supported.");
-        if ((e instanceof Integer)) {
+        /*if ((e instanceof Integer)) {
             return e;
+        }*/
+        if (!(e instanceof String)) {   // e - может быть только строкой
+            throw new Error("Can't use int(x,base) function with first argument that is not a string");
         }
+        if(!(base instanceof Integer)){ // base - может быть только целым числом
+            throw new Error("Can't use int(x,base) function with second argument that is not an integer");
+        }
+        // Мы принимаем все основания кроме 0, 1 и больше 36
+        int baseI = ((Integer)base).value;
+        if(baseI<2||baseI>36)
+            throw new Error("Incorrect base in int(x,base) call: "+base.toString());
         if ((e instanceof String)) {
             return new Integer(java.lang.Integer.parseInt(((String) e).value, ((Integer)base).value));
         }
