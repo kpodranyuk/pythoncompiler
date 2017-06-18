@@ -740,6 +740,18 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 
 void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 {
+	//1. Генерируем выражение для листа или строки
+	//2. Кладем на стек значение счетчика
+	//3. Вызывем newIterator
+	//4. Кладем в счетчик итератор
+	//5. Снова кладем на стек значение счетчика(начало цикла)
+	//6. Вызываем hasNext
+	//7. Делаем ifeq
+	//8. Кладем на стек значение счетчика
+	//9. Вызываем next
+	//10. Генерим тело цикла
+	//11. Делаем goto на п. 5 
+	//12. Если есть else, генерим его
 }
 
 
