@@ -756,6 +756,20 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 
 void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 {
+	//Проверяем, есть ли брейк или континью в данном цикле
+	findBreakContinue=false;
+	findInStmtList(forstmt->stmtlist);
+	//Если есть, то создаем структуру данного цикла
+	int indexInLoops=-1;
+	if(findBreakContinue)
+	{
+		LoopData* curLoop=new LoopData;
+		loops.push_back(curLoop);
+		indexInLoops=loops.size()-1;
+		currentLoop=indexInLoops;
+	}
+
+
 	//1. Генерируем выражение для листа или строки
 	generateCodeForExpr(forstmt->expr,false);
 	//2. Кладем на стек значение счетчика
@@ -831,6 +845,8 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 
 	//8. Генерим тело цикла
 	generateCodeForStatementList(forstmt->stmtlist);
+	if(indexInLoops!=-1)
+		currentLoop=indexInLoops;
 	oper[addrGotoStart]->s2=calcOffset(addrGotoStart,oper.size()-1);
 
 	//9. Снова кладем на стек значение счетчика
@@ -865,11 +881,44 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 	int offset=calcOffset(if_ne-1,addrGotoStart+1);
 	oper[if_ne]->s2=offset;
 
+
+	if(indexInLoops!=-1)
+	{
+		loops[indexInLoops]->startLoop=addrGotoStart;
+		loops[indexInLoops]->finishLoop=if_ne;
+	}
+
 	//12. Если есть else, генерим его(конец цикла)
 	if(forstmt->elsestmt!=NULL)
 	{
 		generateCodeForStatementList(forstmt->elsestmt);
+		if(indexInLoops!=-1)
+			loops[indexInLoops]->finishLoop=oper.size()-1;
 	}
+
+
+	//Для каждого брейка или континью определить смещения
+	if(indexInLoops!=-1)
+	{
+		LoopData* curLoop=loops[indexInLoops];
+		for(int i=0; i<curLoop->contBreak.size(); i++)
+		{
+			if(curLoop->contBreak[i]->type==BR)
+			{
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo, curLoop->finishLoop);
+				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
+			}
+			else if(curLoop->contBreak[i]->type==CON)
+			{
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo-1, curLoop->startLoop);
+				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
+			}
+		}
+	}
+	findBreakContinue=false;
+	findInStmtList(forstmt->stmtlist);
+	if(findBreakContinue)
+		currentLoop--;
 }
 
 
