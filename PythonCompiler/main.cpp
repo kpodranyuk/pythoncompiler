@@ -19,24 +19,24 @@ extern StmtListInfo* root;
 
 int main(int argc, char** argv) {
 	setlocale(LC_ALL, "RUS");
-	/*if(argc<2)
+	if(argc<2)
 	{
 		printf("Недостаточно параметров для вызова программы");
 		return -1;
 	}
-	else if(argc>3)
+	else if(argc>2)
 	{
 		printf("Слишком много параметров для вызова программы");
 		return -1;
 	}
 	else
-	{*/
+	{
 		// set flex to read from it instead of defaulting to STDIN:
 		yyin = fopen(argv[1], "rt");//("test1.py","rt");//
 		if(yyin==NULL)
 		{
-			//printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);
-			printf("Ошибка! Невозможно открыть файл на чтение!");
+			printf("Ошибка! Невозможно открыть файл %s на чтение!", argv[1]);
+			//printf("Ошибка! Невозможно открыть файл на чтение!");
 			exit(-1);
 		}
 		// parse through the input until there is no more:
@@ -114,7 +114,7 @@ int main(int argc, char** argv) {
 			puts("Code generated");
 		}
 
-	/*}*/
+	}
 	_getch();
 	return 0;
 }
