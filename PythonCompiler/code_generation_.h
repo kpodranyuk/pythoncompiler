@@ -25,7 +25,7 @@ private:
 	int fileDesc;	// Дескриптор class файла
 	std::vector<struct Operation*> oper;		// Вектор операций, генерируемых для метода
 	int currentLocal;	// Текущий метод(номер методрефа, main==NULL)
-
+	bool wasMainRet;
 	int stackSize;	// Количество элементов на стеке операндов
 	int needCountInStack; // Количество значений, которые надо оставить на стеке
 
