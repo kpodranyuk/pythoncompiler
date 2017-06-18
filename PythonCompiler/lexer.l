@@ -51,7 +51,7 @@ WHITE_SPACE[ \t]
 			if(indent_level>0)
 			{indent_level--;}
 		   /*current_line_indent+=INDNT;*/
-		   printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");
+		   fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");//printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		
 		   return DEDENT;
 		}
 		/*puts("FLEX:\tВернул конец файла");
@@ -68,7 +68,7 @@ WHITE_SPACE[ \t]
 			if(indent_level>0)
 			{indent_level--;}
 		   /*current_line_indent+=INDNT;*/
-		   printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");
+		   fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");//printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		
 		   return DEDENT;
 		}
 	}
@@ -77,7 +77,7 @@ WHITE_SPACE[ \t]
 		yyterminate();
 	}
 %}
-#[^\n]*/\n	{printf("FLEX:\tКомментарий\n");	fprintf(logFile,"FLEX:\tКомментарий\n"); }
+#[^\n]*/\n	{/*printf("FLEX:\tКомментарий\n");*/	fprintf(logFile,"FLEX:\tКомментарий\n"); }
 <INDENT_>" "      	{ charIndex+=1; current_line_indent++; }
 <INDENT_>"\t"     	{ charIndex+=4; current_line_indent+=4;}
 <INDENT_>"\n"     	{ charIndex=0; stringIndex++; current_line_indent = 0; /*ignoring blank line */ }
@@ -95,7 +95,7 @@ WHITE_SPACE[ \t]
 						   indent_level++;
 						   /*current_line_indent-=INDNT;*/
 						   BEGIN(INITIAL);
-						   printf("FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");
+						   fprintf(logFile,"FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");//printf("FLEX:\tУВЕЛИЧЕНИЕ ОТСТУПА\n");		
 						   return INDENT;
 						}
 						else if (current_line_indent < indent_level*INDNT)
@@ -104,7 +104,7 @@ WHITE_SPACE[ \t]
 						   dedents_count=(indent_level*INDNT-current_line_indent)/INDNT;
 						   BEGIN(INITIAL);
 						   /*current_line_indent+=INDNT;*/
-						   printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");
+						   fprintf(logFile,"FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");//printf("FLEX:\tУМЕНЬШЕНИЕ ОТСТУПА\n");		
 						   return DEDENT;
 						} 
 						else
@@ -114,79 +114,79 @@ WHITE_SPACE[ \t]
 					}
 [*]{2}			{
 					charIndex=findLexemLocation(charIndex,stringIndex);  
-					printf("FLEX:\t%s - операция\n", yytext);		
+					//printf("FLEX:\t%s - операция\n", yytext);		
 					fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 					return POW;
 				} 
 \*	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - операция\n", yytext);		
+		//printf("FLEX:\t%s - операция\n", yytext);		
 		fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 		return MUL;
 	} 
 \%	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("%s - операция\n", yytext);		
+		//printf("%s - операция\n", yytext);		
 		fprintf(logFile,"%s - операция\n", yytext);	
 		return MOD;
 	} 
 [/]	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - операция\n", yytext);		
+		//printf("FLEX:\t%s - операция\n", yytext);		
 		fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 		return DIV;
 	} 
 [/]{2}	{
 			charIndex=findLexemLocation(charIndex,stringIndex);
-			printf("FLEX:\t%s - операция\n", yytext);		
+			//printf("FLEX:\t%s - операция\n", yytext);		
 			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 			return IINT;
 		} 
 \+ 		{
 			charIndex=findLexemLocation(charIndex,stringIndex);
-			printf("FLEX:\t%s - операция\n", yytext);		
+			//printf("FLEX:\t%s - операция\n", yytext);		
 			fprintf(logFile,"FLEX:\t%s - операция\n", yytext); 
 			return '+';
 		}
 -		{
 			charIndex=findLexemLocation(charIndex,stringIndex);
-			printf("FLEX:\t%s - операция\n", yytext);		
+			//printf("FLEX:\t%s - операция\n", yytext);		
 			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 			return '-';
 		}
 \>	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		//printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return '>';
 	}
 \<	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		//printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return '<';
 	}
 \<=	{	
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		//printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return LESS_OR_EQUAL;
 	}
 \>=	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		//printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return GREATER_OR_EQUAL;
 	}
 ==	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		//printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return EQUAL;
 	}
 !=	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
+		//printf("FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		fprintf(logFile,"FLEX:\tНашел оператор сравнения: %s\n", yytext);	
 		return NOT_EQUAL;
 	}
@@ -196,24 +196,24 @@ WHITE_SPACE[ \t]
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\n	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\n");}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\"|(\\\")	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\"");}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\\\\	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\\");}
-<MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{charIndex=findLexemLocation(charIndex,stringIndex); printf("FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
+<MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr);*/	fprintf(logFile,"FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 (\'){3}				{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("Нашел многострочный текст через одинарную кавычку\n");	fprintf(logFile,"Нашел многострочный текст через одинарную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(MULTILINE_SINGLE_QUOTED_STRING);}
-<MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{charIndex=findLexemLocation(charIndex,stringIndex); printf("FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
+<MULTILINE_SINGLE_QUOTED_STRING>(\'){3}	{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr);*/	fprintf(logFile,"FLEX:\tВывел многострочный текст через одинарную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 \'				{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("Нашел одинарную кавычку\n");	fprintf(logFile,"Нашел одинарную кавычку\n"); strcpy(bufStr,"");*/ BEGIN(SINGLE_QUOTED_STRING);}
 <SINGLE_QUOTED_STRING>\"|(\\\")	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\"");}
 <SINGLE_QUOTED_STRING>\\\'	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\'");}
-<SINGLE_QUOTED_STRING>\'	{charIndex=findLexemLocation(charIndex,stringIndex); printf("FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
+<SINGLE_QUOTED_STRING>\'	{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr);*/	fprintf(logFile,"FLEX:\tВывел строку в одинарных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 \"				{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("Нашел кавычку\n");	fprintf(logFile,"Нашел кавычку\n"); strcpy(bufStr,"");*/ BEGIN(DOUBLE_QUOTED_STRING);}
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>[^\\\n\"']+	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,yytext);}
 <DOUBLE_QUOTED_STRING>\'|(\\\')	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\'");}
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>\\n	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\n");}
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>\\\\	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\\");}
 <DOUBLE_QUOTED_STRING>\\\"	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\"");}
-<DOUBLE_QUOTED_STRING>\"	{ charIndex=findLexemLocation(charIndex,stringIndex); printf("FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr);	fprintf(logFile,"FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
+<DOUBLE_QUOTED_STRING>\"	{ charIndex=findLexemLocation(charIndex,stringIndex); /*printf("FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr);*/	fprintf(logFile,"FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING><<EOF>>	{printf("FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n");	fprintf(logFile,"FLEX:\tНашел незакрытую кавычку. Конец парсинга.\n"); return -1;}
 <<EOF>> {
-			puts("FLEX:\tНашел конец файла");				
+			//puts("FLEX:\tНашел конец файла");				
 			fprintf(logFile,"FLEX:\tНашел конец файла\n"); 
 			if(indent_level!=0)
 			{
@@ -233,156 +233,155 @@ WHITE_SPACE[ \t]
 		}
 =		{
 			charIndex=findLexemLocation(charIndex,stringIndex);
-			printf("FLEX:\t%s - операция\n", yytext);		
+			//printf("FLEX:\t%s - операция\n", yytext);		
 			fprintf(logFile,"FLEX:\t%s - операция\n", yytext);	
 			return '=';
-		}
-([%]=)|([/]{1,2}[=])|([-][=])|([+][=])|([*]{1,2}[=])	{
+		}/*([%]=)|([/]{1,2}[=])|([-][=])|([+][=])|([*]{1,2}[=])	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
 				printf("%s - операция\n", yytext);		
 				fprintf(logFile,"%s - операция\n", yytext);
-			}
+			}*/
 True		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return TTRUE;
 			}
 False		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"%FLEX:\ts - ключевое слово\n", yytext);	
 				return FFALSE;
 			}
 not			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return NOT;
 			}
 and			{	
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);		
 				return AND;
 			}
 or			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 			
 				return OR;
 			}
 while		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return WHILE;
 			} 
 for			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return FOR;
 			}
 in			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return IIN;
 			}
 continue	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);	
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return CONTINUE;
 			} 
 break		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return BREAK;
 			} 
 if			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return IF;
 			} 
 elif		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return ELIF;
 			} 
 else		{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return ELSE;
 			} 
 "return"	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - ключевое слово\n", yytext);		
+				//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 				fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 				return RETURN;
 			}
 :	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - ключевое слово\n", yytext);		
+		//printf("FLEX:\t%s - ключевое слово\n", yytext);		
 		fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 		return ':';
 	}
 def	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - ключевое слово\n", yytext);	
+		//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 		fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 		return DEF;
 	}
 del	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - ключевое слово\n", yytext);	
+		//printf("FLEX:\t%s - ключевое слово\n", yytext);	
 		fprintf(logFile,"FLEX:\t%s - ключевое слово\n", yytext);	
 		return DEL;
 	}
 \[ 	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - открывающаяся квадратная скобка\n", yytext);	
+		//printf("FLEX:\t%s - открывающаяся квадратная скобка\n", yytext);	
 		fprintf(logFile,"FLEX:\t%s - открывающаяся квадратная скобка\n", yytext);	
 		return '[';
 	}
 \] 	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - закрывающаяся квадратная скобка\n", yytext);	
+		//printf("FLEX:\t%s - закрывающаяся квадратная скобка\n", yytext);	
 		fprintf(logFile,"FLEX:\t%s - закрывающаяся квадратная скобка\n", yytext);	
 		return ']';
 	}
 \( 	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - открывающаяся круглая скобка\n", yytext);	
+		//printf("FLEX:\t%s - открывающаяся круглая скобка\n", yytext);	
 		fprintf(logFile,"FLEX:\t%s - открывающаяся круглая скобка\n", yytext);	
 		return '(';
 	}
 \) 	{
 		charIndex=findLexemLocation(charIndex,stringIndex);
-		printf("FLEX:\t%s - закрывающаяся круглая скобка\n", yytext);	
+		//printf("FLEX:\t%s - закрывающаяся круглая скобка\n", yytext);	
 		fprintf(logFile,"FLEX:\t%s - закрывающаяся круглая скобка\n", yytext);	
 		return ')';
 	}
 ,			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - запятая\n", yytext);	
+				//printf("FLEX:\t%s - запятая\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - запятая\n", yytext);	
 				return ',';
 			}
 \. 			{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\t%s - точка\n", yytext);	
+				//printf("FLEX:\t%s - точка\n", yytext);	
 				fprintf(logFile,"FLEX:\t%s - точка\n", yytext);	
 				return '.';
 			}
 {VAR}		{
-				printf("FLEX:\tНашел идентификатор: %s\n", yytext);	
+				//printf("FLEX:\tНашел идентификатор: %s\n", yytext);	
 				fprintf(logFile,"FLEX:\tНашел идентификатор: %s\n", yytext);	
 				yylval.StringVal=(char*)memset(malloc(strlen(yytext)+1),'\0',strlen(yytext)+1);	
 				strcpy(yylval.StringVal, yytext); 
@@ -391,7 +390,7 @@ del	{
 			}
 {DIGIT}+((\.{DIGIT}+)|(e\-?{DIGIT}+)|(\.{DIGIT}+e\-?{DIGIT}+)) {
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\tНашел число: %s\n", yytext);			
+				//printf("FLEX:\tНашел число: %s\n", yytext);			
 				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
 				fff=atof(yytext);
 				ddd=strtod (yytext,NULL);
@@ -447,7 +446,7 @@ del	{
 			}
 {DIGIT}+	{
 				charIndex=findLexemLocation(charIndex,stringIndex);
-				printf("FLEX:\tНашел число: %s\n", yytext);			
+				//printf("FLEX:\tНашел число: %s\n", yytext);			
 				fprintf(logFile,"FLEX:\tНашел число: %s\n", yytext); 
 				yylval.Int=atoi(yytext); 
 				return NUMBER;
@@ -456,7 +455,7 @@ del	{
 \n			{
 				charIndex=0; 
 				stringIndex++;
-				puts("FLEX:\tНовая строка");					
+				//puts("FLEX:\tНовая строка");					
 				fprintf(logFile,"FLEX:\tНовая строка\n"); 
 				current_line_indent = 0; 
 				BEGIN(INDENT_);
