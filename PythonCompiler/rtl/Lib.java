@@ -176,12 +176,18 @@ public class Lib {
             if(newIndex<0) {
                 newIndex=flipIndex(newIndex, ((List) list).value.size());
             }
+            if(newIndex >= ((List) list).value.size()) {
+                throw new Error("Going beyond the array.");
+            }
             
             return ((List)list).value.get(newIndex);
         } else if (((list instanceof String)) && ((index instanceof Integer))) {
             int newIndex = ((Integer) index).value;
             if(newIndex<0) {
                 newIndex=flipIndex(newIndex, ((String) list).value.length());
+            }
+            if(newIndex >= ((List) list).value.size()) {
+                throw new Error("Going beyond the array.");
             }
             
             return ((String)list).charAt(new Integer(newIndex));
@@ -198,10 +204,13 @@ public class Lib {
         }
         
         int newIndex = ((Integer) index).value;
-            if(newIndex<0) {
-                newIndex=flipIndex(newIndex, ((List) list).value.size());
-            }
-            ((List) list).value.set(newIndex, val);
+        if(newIndex<0) {
+            newIndex=flipIndex(newIndex, ((List) list).value.size());
+        }
+        if(newIndex >= ((List) list).value.size()) {
+            throw new Error("Going beyond the array.");
+        }
+        ((List) list).value.set(newIndex, val);
     }
 
     public static Value ListAppend(Value list, Value val) {

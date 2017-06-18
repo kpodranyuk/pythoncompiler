@@ -115,9 +115,11 @@ public class List extends Value {
     @Override
     public java.lang.String toString() {
         java.lang.String res = "[ ";
-        for (Value val : this.value) {
-          res = res + val.toString();
-          res = res + ", ";
+        for (int i=0; i<this.value.size(); i++) {
+          res = res + this.value.get(i).toString();
+          if(i!=this.value.size()-1) {
+              res = res + ", ";
+          }
         }
         return res + "]";
     }
