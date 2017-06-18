@@ -416,7 +416,7 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		}
 		//oper.push_back(curOp);
 	}
-	else if(expr->type==_OPERAND&&!left)
+	else if((expr->type==_OPERAND||expr->type==__COUNTER)&&!left)
 	{
 		// генерируем команды, загружающие значение на стек
 		// если операнд - глобальный, то гетстатик
@@ -437,6 +437,14 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			stackSize++;
 		}
 		oper.push_back(curOp);
+		if(expr->type==__COUNTER)
+		{
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VAL_ITER;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+		}
 	}
 	// экспр - унарная операция
 	else if(expr->type==_NOT||expr->type==_UMINUS)
@@ -513,6 +521,14 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			stackSize--;
 		}
 		oper.push_back(curOp);
+		if(expr->left->type==__COUNTER)
+		{
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___SET_ITER;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+		}
 	}
 	// экспр - присваивание элементу массива
 	else if(expr->type==_ARRID_AND_ASSIGN)
