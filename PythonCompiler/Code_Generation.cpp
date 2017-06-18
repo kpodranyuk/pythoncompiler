@@ -699,7 +699,7 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 
 	if(indexInLoops!=-1)
 	{
-		loops[indexInLoops]->startLoop=addrGoto+1;
+		loops[indexInLoops]->startLoop=addrGoto;
 		loops[indexInLoops]->finishLoop=if_ne;
 	}
 
@@ -725,7 +725,7 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 			}
 			else if(curLoop->contBreak[i]->type==CON)
 			{
-				int off=calcOffset(curLoop->contBreak[i]->indexGoTo, curLoop->startLoop);
+				int off=calcOffset(curLoop->contBreak[i]->indexGoTo-1, curLoop->startLoop);
 				oper[curLoop->contBreak[i]->indexGoTo]->s2=off;
 			}
 		}
