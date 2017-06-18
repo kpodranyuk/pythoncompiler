@@ -105,119 +105,266 @@ public class Lib {
     }
 
     public static Value sub(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.sub(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.sub(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.sub(((Iterator)m2).currentValue);
+        }
         return m1.sub(m2);
     }
 
     public static Value add(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.add(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.add(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.add(((Iterator)m2).currentValue);
+        }
         return m1.add(m2);
     }
 
     public static Value mul(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.mul(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.mul(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.mul(((Iterator)m2).currentValue);
+        } 
         return m1.mul(m2);
     }
     
     public static Value pow(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.pow(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.pow(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.pow(((Iterator)m2).currentValue);
+        }
         return m1.pow(m2);
     }
 
     public static Value div(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.div(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.div(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.div(((Iterator)m2).currentValue);
+        }
         return m1.div(m2);
     }
     
     public static Value intDiv(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.intDiv(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.intDiv(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.intDiv(((Iterator)m2).currentValue);
+        }
         return m1.intDiv(m2);
     }
 
     public static Value mod(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.mod(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.mod(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.mod(((Iterator)m2).currentValue);
+        }
         return m1.mod(m2);
     }
 
     public static int toIntBool(Value m1) {
+        if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.toIntBool();
+        }
         return m1.toIntBool();
     }
 
     public static Value eq(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.eq(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.eq(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.eq(((Iterator)m2).currentValue);
+        }
         return m1.eq(m2);
     }
 
     public static Value less(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.less(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.less(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.less(((Iterator)m2).currentValue);
+        }
         return m1.less(m2);
     }
 
     public static Value more(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.more(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.more(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.more(((Iterator)m2).currentValue);
+        }
         return m1.more(m2);
     }
 
     public static Value lessOrEq(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.lessOrEq(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.lessOrEq(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.lessOrEq(((Iterator)m2).currentValue);
+        }
         return m1.lessOrEq(m2);
     }
 
     public static Value moreOrEq(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.moreOrEq(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.moreOrEq(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.moreOrEq(((Iterator)m2).currentValue);
+        }
         return m1.moreOrEq(m2);
     }
 
     public static Value notEq(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.eq(((Iterator)m2).currentValue).not();
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.eq(m2).not();
+        } else if (m2 instanceof Iterator) {
+            return m1.eq(((Iterator)m2).currentValue).not();
+        }
         return m1.eq(m2).not();
     }
 
     public static Value not(Value m) {
+        if(m instanceof Iterator) {
+            return ((Iterator)m).currentValue.not();
+        }
         return m.not();
     }
 
     public static Value or(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.or(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.or(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.or(((Iterator)m2).currentValue);
+        }
         return m1.or(m2);
     }
 
     public static Value and(Value m1, Value m2) {
+        if ((m1 instanceof Iterator) && (m2 instanceof Iterator)) {
+            return ((Iterator)m1).currentValue.and(((Iterator)m2).currentValue);
+        } else if(m1 instanceof Iterator) {
+            return ((Iterator)m1).currentValue.and(m2);
+        } else if (m2 instanceof Iterator) {
+            return m1.and(((Iterator)m2).currentValue);
+        }
         return m1.and(m2);
     }
 
     public static Value ListGet(Value list, Value index) {
-        if (((list instanceof List)) && ((index instanceof Integer))) {
-            int newIndex = ((Integer) index).value;
+        Value listM = list;
+        Value indexM = index;
+        
+        if(list instanceof Iterator) {
+            listM = ((Iterator)list).currentValue;
+        } 
+        if (index instanceof Iterator) {
+            indexM = ((Iterator)index).currentValue;
+        }
+        
+        if (((listM instanceof List)) && ((indexM instanceof Integer))) {
+            int newIndex = ((Integer) indexM).value;
             if(newIndex<0) {
-                newIndex=flipIndex(newIndex, ((List) list).value.size());
+                newIndex=flipIndex(newIndex, ((List) listM).value.size());
             }
-            if(newIndex >= ((List) list).value.size()) {
+            if(newIndex >= ((List) listM).value.size()) {
                 throw new Error("Going beyond the array.");
             }
             
-            return ((List)list).value.get(newIndex);
-        } else if (((list instanceof String)) && ((index instanceof Integer))) {
-            int newIndex = ((Integer) index).value;
+            return ((List)listM).value.get(newIndex);
+        } else if (((listM instanceof String)) && ((indexM instanceof Integer))) {
+            int newIndex = ((Integer) indexM).value;
             if(newIndex<0) {
-                newIndex=flipIndex(newIndex, ((String) list).value.length());
+                newIndex=flipIndex(newIndex, ((String) listM).value.length());
             }
-            if(newIndex >= ((List) list).value.size()) {
+            if(newIndex >= ((List) listM).value.size()) {
                 throw new Error("Going beyond the array.");
             }
             
-            return ((String)list).charAt(new Integer(newIndex));
+            return ((String)listM).charAt(new Integer(newIndex+1));
         }
         throw new Error("The index must be an integer and the operation must occur over the array.");
     }
 
     public static void ListSet(Value list, Value index, Value val) {
-        if(!(list instanceof List)){
+        Value listM = list;
+        Value indexM = index;
+        Value valM = val;
+        
+        if(list instanceof Iterator) {
+            listM = ((Iterator)list).currentValue;
+        } 
+        if (index instanceof Iterator) {
+            indexM = ((Iterator)index).currentValue;
+        }
+        if (val instanceof Iterator) {
+            val = ((Iterator)val).currentValue;
+        }
+        
+        
+        if(!(listM instanceof List)){
             throw new Error("Can't use ListSet operation without List.");
         } 
-        if(!(index instanceof Integer)) {
+        if(!(indexM instanceof Integer)) {
             throw new Error("Can't use ListSet operation when [index] isn't integer.");
         }
         
-        int newIndex = ((Integer) index).value;
+        int newIndex = ((Integer) indexM).value;
         if(newIndex<0) {
-            newIndex=flipIndex(newIndex, ((List) list).value.size());
+            newIndex=flipIndex(newIndex, ((List) listM).value.size());
         }
-        if(newIndex >= ((List) list).value.size()) {
+        if(newIndex >= ((List) listM).value.size()) {
             throw new Error("Going beyond the array.");
         }
-        ((List) list).value.set(newIndex, val);
+        ((List) listM).value.set(newIndex, valM);
     }
 
     public static Value ListAppend(Value list, Value val) {
-        if ((list instanceof List)) {
-            ((List) list).value.add(val);
+        Value listM = list;
+        Value valM = val;
+        
+        if(list instanceof Iterator) {
+            listM = ((Iterator)list).currentValue;
+        } 
+        if (val instanceof Iterator) {
+            valM = ((Iterator)val).currentValue;
+        }
+        
+        
+        if ((listM instanceof List)) {
+            ((List) listM).value.add(valM);
         } else {
             throw new Error("The operation is not applicable to an array.");
         }
@@ -225,18 +372,40 @@ public class Lib {
     }
     
     public static Value ListAddInitialize(Value list, Value val) {
-        if ((list instanceof List)) {
-            ((List) list).value.add(val);
+        Value listM = list;
+        Value valM = val;
+        
+        if(list instanceof Iterator) {
+            listM = ((Iterator)list).currentValue;
+        } 
+        if (val instanceof Iterator) {
+            valM = ((Iterator)val).currentValue;
+        }
+        
+        
+        if ((listM instanceof List)) {
+            ((List) listM).value.add(valM);
         } else {
             throw new Error("The operation is not applicable to an array.");
         }
-        return list;
+        return listM;
     }
     
     public static Value ListRemove(Value list, Value val) {
-        if ((list instanceof List)) {
-            if(val instanceof None || val instanceof Integer || val instanceof Boolean || val instanceof String || val instanceof Float) {
-               ((List) list).value.remove(val); 
+        Value listM = list;
+        Value valM = val;
+        
+        if(list instanceof Iterator) {
+            listM = ((Iterator)list).currentValue;
+        } 
+        if (val instanceof Iterator) {
+            valM = ((Iterator)val).currentValue;
+        }
+        
+        
+        if ((listM instanceof List)) {
+            if(valM instanceof None || valM instanceof Integer || valM instanceof Boolean || valM instanceof String || valM instanceof Float) {
+               ((List) listM).value.remove(valM); 
             } else {
                 throw new Error("Value must be a standard type.");
             }
@@ -259,6 +428,7 @@ public class Lib {
         
         if(iter==null) {
             iter = new Iterator();
+            ((Iterator) iter).newIterator(listOrStr);
         } else if(iter!=null) {
             if(iter instanceof Iterator) {
                 return ((Iterator) iter).newIterator(listOrStr);
@@ -275,7 +445,7 @@ public class Lib {
         if(!(iter instanceof Iterator)) {
             throw new Error("No iterator.");
         }
-        
+
         return ((Iterator)iter).next();
     }
     

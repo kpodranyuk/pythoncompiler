@@ -760,7 +760,7 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 	generateCodeForExpr(forstmt->expr,false);
 	//2. Кладем на стек значение счетчика
 	Operation* curOp = new struct Operation;
-	if(forstmt->counter->locFor==NULL)
+	if(forstmt->counter->locFor<=NULL)
 	{
 		curOp->type=__GET_STATIC;
 		curOp->u2=forstmt->counter->numberInTable;
@@ -781,7 +781,7 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 	oper.push_back(newIter);
 	//4. Кладем в счетчик итератор
 	curOp = new struct Operation;
-	if(forstmt->counter->locFor==NULL)
+	if(forstmt->counter->locFor<=NULL)
 	{
 		curOp->type=__PUT_STATIC;
 		curOp->u2=forstmt->counter->numberInTable;
@@ -804,7 +804,7 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 
 	//6. Кладем на стек значение счетчика
 	curOp = new struct Operation;
-	if(forstmt->counter->locFor==NULL)
+	if(forstmt->counter->locFor<=NULL)
 	{
 		curOp->type=__GET_STATIC;
 		curOp->u2=forstmt->counter->numberInTable;
@@ -835,7 +835,7 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 
 	//9. Снова кладем на стек значение счетчика
 	curOp = new struct Operation;
-	if(forstmt->counter->locFor==NULL)
+	if(forstmt->counter->locFor<=NULL)
 	{
 		curOp->type=__GET_STATIC;
 		curOp->u2=forstmt->counter->numberInTable;
