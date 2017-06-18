@@ -299,7 +299,7 @@ public class Lib {
             if(newIndex<0) {
                 newIndex=flipIndex(newIndex, ((List) listM).value.size());
             }
-            if(newIndex >= ((List) listM).value.size()) {
+            if(newIndex >= ((List) listM).value.size() || newIndex <0) {
                 throw new Error("Going beyond the array.");
             }
             
@@ -309,7 +309,7 @@ public class Lib {
             if(newIndex<0) {
                 newIndex=flipIndex(newIndex, ((String) listM).value.length());
             }
-            if(newIndex >= ((List) listM).value.size()) {
+            if(newIndex >= ((List) listM).value.size() || newIndex <0) {
                 throw new Error("Going beyond the array.");
             }
             
@@ -345,7 +345,7 @@ public class Lib {
         if(newIndex<0) {
             newIndex=flipIndex(newIndex, ((List) listM).value.size());
         }
-        if(newIndex >= ((List) listM).value.size()) {
+        if(newIndex >= ((List) listM).value.size() || newIndex <0) {
             throw new Error("Going beyond the array.");
         }
         ((List) listM).value.set(newIndex, valM);
