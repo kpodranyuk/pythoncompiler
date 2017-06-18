@@ -249,4 +249,59 @@ public class Lib {
         newIndex+=size;
         return newIndex;
     }
+    
+    public static Value newIterator(Value listOrStr, Value iter) {
+        if(!(listOrStr instanceof List)){
+            throw new Error("No list in FOR.");
+        } 
+        if(!(listOrStr instanceof String)) {
+            throw new Error("No string in FOR.");
+        }
+        
+        if(iter==null) {
+            iter = new Iterator();
+        } else if(iter!=null) {
+            if(iter instanceof Iterator) {
+                return ((Iterator) iter).newIterator(listOrStr);
+            } else {
+                iter = new Iterator();
+                return ((Iterator) iter).newIterator(listOrStr);
+            }
+        }
+        
+        return iter;
+    }
+    
+    public static Value next(Value iter) {
+        if(!(iter instanceof Iterator)) {
+            throw new Error("No iterator.");
+        }
+        
+        return ((Iterator)iter).next();
+    }
+    
+    public static int hasNext(Value iter) {
+        if(!(iter instanceof Iterator)) {
+            throw new Error("No iterator.");
+        }
+        
+        return ((Iterator)iter).hasNext();
+    }
+    
+    public static Value valueIterator(Value iter) {
+        if(!(iter instanceof Iterator)) {
+            throw new Error("No iterator.");
+        }
+        
+        return ((Iterator)iter).currentValue;
+    }
+    
+    public static void setValueIterator(Value iter, Value value) {
+        if(!(iter instanceof Iterator)) {
+            throw new Error("No iterator.");
+        }
+        
+        ((Iterator)iter).currentValue=value;
+    }
+    
 }
