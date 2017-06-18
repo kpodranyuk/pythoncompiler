@@ -280,12 +280,25 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 			if(begining->type==_EXPR)
 			{
 				generateCodeForExpr(begining->expr,false);
-				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN && begining->expr->type!=_ARRACT /*&& begining->expr->type!=_FUNCCALL*/)
+				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN && begining->expr->type!=_ARRACT)
 				{
-					Operation* pop=new Operation;
-					pop->type=__POP;
-					pop->countByte=1;
-					oper.push_back(pop);
+					if (begining->expr->type==_FUNCCALL)
+					{
+						if(strcmp(begining->expr->idName,"print")!=0)
+						{
+							Operation* pop=new Operation;
+							pop->type=__POP;
+							pop->countByte=1;
+							oper.push_back(pop);
+						}
+					}
+					else
+					{
+						Operation* pop=new Operation;
+						pop->type=__POP;
+						pop->countByte=1;
+						oper.push_back(pop);
+					}
 				}
 			}
 			else if(begining->type==_IF)
