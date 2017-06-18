@@ -465,7 +465,9 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 		oper.push_back(curOp);
 		stackSize-=parCount;
 		// все положат на стек что-то
-		stackSize++;
+		// кроме print
+		if(strcmp(expr->idName,"print")!=0)
+			stackSize++;
 
 	}
 	// эспр - присваивание
