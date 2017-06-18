@@ -757,17 +757,115 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 {
 	//1. Генерируем выражение для листа или строки
+	generateCodeForExpr(forstmt->expr,false);
 	//2. Кладем на стек значение счетчика
+	Operation* curOp = new struct Operation;
+	if(forstmt->counter->locFor==NULL)
+	{
+		curOp->type=__GET_STATIC;
+		curOp->u2=forstmt->counter->numberInTable;
+		curOp->countByte=3;
+	}
+	else
+	{
+		curOp->type=__ALOAD;
+		curOp->u1=forstmt->counter->numberInTable;
+		curOp->countByte=2;
+	}
+	oper.push_back(curOp);
 	//3. Вызывем newIterator
+	Operation* newIter=new Operation;
+	newIter->type=__INVOKESTATIC;
+	newIter->u2=___NEW_ITER;
+	newIter->countByte=3;
+	oper.push_back(newIter);
 	//4. Кладем в счетчик итератор
-	//5. Снова кладем на стек значение счетчика(начало цикла)
-	//6. Вызываем hasNext
-	//7. Делаем ifeq
-	//8. Кладем на стек значение счетчика
-	//9. Вызываем next
-	//10. Генерим тело цикла
-	//11. Делаем goto на п. 5 
-	//12. Если есть else, генерим его
+	curOp = new struct Operation;
+	if(forstmt->counter->locFor==NULL)
+	{
+		curOp->type=__PUT_STATIC;
+		curOp->u2=forstmt->counter->numberInTable;
+		curOp->countByte=3;
+	}
+	else 
+	{
+		curOp->type=__ASTORE;
+		curOp->u1=forstmt->counter->numberInTable;
+		curOp->countByte=2;
+	}
+	oper.push_back(curOp);
+
+	//5. Делаем goto на п. 9(этот готу-начало цикла)
+	Operation* go_to_start=new Operation;
+	go_to_start->type=__GOTO;
+	go_to_start->countByte=3;
+	oper.push_back(go_to_start);
+	int addrGotoStart=oper.size()-1;
+
+	//6. Кладем на стек значение счетчика
+	curOp = new struct Operation;
+	if(forstmt->counter->locFor==NULL)
+	{
+		curOp->type=__GET_STATIC;
+		curOp->u2=forstmt->counter->numberInTable;
+		curOp->countByte=3;
+	}
+	else
+	{
+		curOp->type=__ALOAD;
+		curOp->u1=forstmt->counter->numberInTable;
+		curOp->countByte=2;
+	}
+	oper.push_back(curOp);
+
+	//7. Вызываем next
+	Operation* next=new Operation;
+	next->type=__INVOKESTATIC;
+	next->u2=___NEXT;
+	next->countByte=3;
+	oper.push_back(next);
+
+	//8. Генерим тело цикла
+	generateCodeForStatementList(forstmt->stmtlist);
+	oper[addrGotoStart]->s2=calcOffset(addrGotoStart,oper.size()-1);
+
+	//9. Снова кладем на стек значение счетчика
+	Operation* curOp = new struct Operation;
+	if(forstmt->counter->locFor==NULL)
+	{
+		curOp->type=__GET_STATIC;
+		curOp->u2=forstmt->counter->numberInTable;
+		curOp->countByte=3;
+	}
+	else
+	{
+		curOp->type=__ALOAD;
+		curOp->u1=forstmt->counter->numberInTable;
+		curOp->countByte=2;
+	}
+	oper.push_back(curOp);
+
+	//10. Вызываем hasNext
+	Operation* hasnext=new Operation;
+	hasnext->type=__INVOKESTATIC;
+	hasnext->u2=___HAS_NEXT;
+	hasnext->countByte=3;
+	oper.push_back(hasnext);
+
+	//11. Делаем ifne(смещение на-п.6)(конец цикла)
+	Operation* ifne=new Operation;
+	ifne->type=__IF_NE;
+	ifne->countByte=3;
+	oper.push_back(ifne);
+	int if_ne=oper.size()-1;
+	int offset=calcOffset(if_ne-1,addrGotoStart+1);
+	oper[if_ne]->s2=offset;
+
+	//12. Если есть else, генерим его(конец цикла)
+	if(forstmt->elsestmt!=NULL)
+	{
+		generateCodeForStatementList(forstmt->elsestmt);
+	}
 }
 
 
