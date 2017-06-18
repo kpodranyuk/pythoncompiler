@@ -59,9 +59,8 @@ public class Lib {
 
     
 
-    public static Value print(Value val) {
+    public static void print(Value val) {
         System.out.println(val.toString());
-        return new None();
     }
 
     public static Value input(Value toPrint) {
