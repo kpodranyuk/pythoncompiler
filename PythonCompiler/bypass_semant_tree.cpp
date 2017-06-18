@@ -214,27 +214,27 @@ bool TreeTraversal::isEqualVarVals(struct ValInfo* first, struct ValInfo* second
 	return false;
 }
 
-bool TreeTraversal::containsFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func) const
+bool TreeTraversal::containsFuncHeader(std::vector<struct FunctionHeader>& vec, struct FunctionHeader func) const
 {
-	std::vector<struct FunctionHeader*>::const_iterator iter;  // Объявляем итератор для списка функций
+	std::vector<struct FunctionHeader>::iterator iter;  // Объявляем итератор для списка функций
 	bool contains = false;							// Объявляем флаг того, что функция не найдена в списке
 	// Для каждого элемента списка и пока не найдено значение..
 	for(iter=vec.begin(); iter<vec.end()&&!contains; iter++) 
 	{
 		// Проверяем, равна ли текущая функция нужной
-		contains=isEqualFuncHeaders((*iter),func);
+		contains=isEqualFuncHeaders(&(*iter),&func);
 	}
 	return contains;
 }
 
-void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func)
+void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader>& vec, struct FunctionHeader func)
 {
-	std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
+	std::vector<struct FunctionHeader>::iterator iter;  // Объявляем итератор для списка функций
 	// Для каждого элемента списка и пока не найдено значение..
 	for(iter=vec.begin(); iter<vec.end(); iter++) 
 	{
 		// Проверяем, равна ли текущая функция нужной
-		if(isEqualFuncHeaders((*iter),func))
+		if(isEqualFuncHeaders(&(*iter),&func))
 		{
 			// Удаляем нужное значение
 			vec.erase(iter);
@@ -244,14 +244,14 @@ void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, s
 	}
 }
 
-void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, std::string funcName)
+void TreeTraversal::deleteFuncHeader(std::vector<struct FunctionHeader>& vec, std::string funcName)
 {
-	std::vector<struct FunctionHeader*>::iterator iter;  // Объявляем итератор для списка функций
+	std::vector<struct FunctionHeader>::iterator iter;  // Объявляем итератор для списка функций
 	// Для каждого элемента списка и пока не найдено значение..
 	for(iter=vec.begin(); iter<vec.end(); iter++) 
 	{
 		// Проверяем, равна ли текущая функция нужной
-		if(strcmp((*iter)->functionName,funcName.c_str())==0)
+		if(strcmp((*iter).functionName,funcName.c_str())==0)
 		{
 			// Удаляем нужное значение
 			vec.erase(iter);
@@ -276,17 +276,20 @@ bool TreeTraversal::containsString(std::vector<std::string>& vec, std::string st
 
 void TreeTraversal::deleteString(std::vector<std::string>& vec, std::string str)
 {
-	std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
-	// Для каждого элемента списка и пока не найдено значение..
-	for(iter=vec.begin(); iter<vec.end(); iter++) 
+	if(containsString(vec,str))
 	{
-		// Проверяем, равна ли текущая строка нужной
-		if((*iter).compare(str)==0)
+		std::vector<std::string>::iterator iter;  // Объявляем итератор для списка строк
+		// Для каждого элемента списка и пока не найдено значение..
+		for(iter=vec.begin(); iter<vec.end(); iter++) 
 		{
-			// Удаляем нужное значение
-			vec.erase(iter);
-			// Выходим из цикла
-			break;
+			// Проверяем, равна ли текущая строка нужной
+			if((*iter).compare(str)==0)
+			{
+				// Удаляем нужное значение
+				vec.erase(iter);
+				// Выходим из цикла
+				break;
+			}
 		}
 	}
 }

@@ -603,10 +603,10 @@ void TreeTraversal::parseFuncDefForTable(struct FuncDefInfo * funcdefstmt, int l
 	// И передаем указатель на список параметров
 	curHeader->params=funcdefstmt->params;
 	// Если такая функция еще не была объявлена
-	if(!containsFuncHeader(this->funcHeaders,curHeader))
+	if(!containsFuncHeader(this->funcHeaders,*curHeader))
 	{
 		// Добавляем ее заголовок в массив функций
-		this->funcHeaders.push_back(curHeader);
+		this->funcHeaders.push_back(*curHeader);
 		// Формируем тип
 		std::string type="";
 		if(curHeader->params->first==NULL)
