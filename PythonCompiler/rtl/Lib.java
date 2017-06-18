@@ -41,15 +41,15 @@ public class Lib {
             return e;
         }*/
         if (!(e instanceof String)) {   // e - может быть только строкой
-            throw new Error("Can't use int(x,base) function with first argument that is not a string");
+            throw new Error("Can't use int(x,base) function with first argument that is not a string.");
         }
         if(!(base instanceof Integer)){ // base - может быть только целым числом
-            throw new Error("Can't use int(x,base) function with second argument that is not an integer");
+            throw new Error("Can't use int(x,base) function with second argument that is not an integer.");
         }
         // Мы принимаем все основания кроме 0, 1 и больше 36
         int baseI = ((Integer)base).value;
         if(baseI<2||baseI>36)
-            throw new Error("Incorrect base in int(x,base) call: "+base.toString());
+            throw new Error("Incorrect base in int(x,base) call: "+base.toString()+".");
         if ((e instanceof String)) {
             return new Integer(java.lang.Integer.parseInt(((String) e).value, ((Integer)base).value));
         }
@@ -59,6 +59,8 @@ public class Lib {
     
 
     public static void print(Value val) {
+        if(val==null)
+            throw new Error("Can't print NULL operand");
         System.out.println(val.toString());
     }
 
@@ -191,10 +193,10 @@ public class Lib {
 
     public static void ListSet(Value list, Value index, Value val) {
         if(!(list instanceof List)){
-            throw new Error("No list.");
+            throw new Error("Can't use ListSet operation without List.");
         } 
         if(!(index instanceof Integer)) {
-            throw new Error("Wrong index.");
+            throw new Error("Can't use ListSet operation when [index] isn't integer.");
         }
         
         int newIndex = ((Integer) index).value;
