@@ -830,7 +830,7 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 	oper[addrGotoStart]->s2=calcOffset(addrGotoStart,oper.size()-1);
 
 	//9. Снова кладем на стек значение счетчика
-	Operation* curOp = new struct Operation;
+	curOp = new struct Operation;
 	if(forstmt->counter->locFor==NULL)
 	{
 		curOp->type=__GET_STATIC;
