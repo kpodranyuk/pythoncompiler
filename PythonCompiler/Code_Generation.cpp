@@ -673,7 +673,7 @@ void CodeGeneration::generateCodeForWhileStmt(struct WhileStmtInfo * whilestmt)
 	ifne->countByte=3;
 	oper.push_back(ifne);
 	int if_ne=oper.size()-1;
-	int offset=calcOffset(if_ne,addrGoto+2);
+	int offset=calcOffset(if_ne-1,addrGoto+1);
 	oper[if_ne]->s2=offset;
 
 	if(indexInLoops!=-1)
