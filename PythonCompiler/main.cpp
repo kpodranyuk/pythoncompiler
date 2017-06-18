@@ -65,51 +65,54 @@ int main(int argc, char** argv) {
 		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTree.txt",NULL);
 		// Выводим сообщение о том, что дерево напечатано
 		puts("tree was printed");*/
-		TreeTraversal* treeWalker = new TreeTraversal();
-		try{
-			treeWalker->fixTree(root);
-			puts("Tree fixed successfully");
-			treeWalker->makeTables(root);
-			puts("Tables made successfully");
-		}
-		catch (char* message)
+		if(root!=NULL)
 		{
-			printf("\nMessage while traversing the tree: %s\nPlease, check syntax of python file.",message);
-			_getch();
-			return 0;
-		}
+			TreeTraversal* treeWalker = new TreeTraversal();
+			try{
+				treeWalker->fixTree(root);
+				puts("Tree fixed successfully");
+				treeWalker->makeTables(root);
+				puts("Tables made successfully");
+			}
+			catch (char* message)
+			{
+				printf("\nMessage while traversing the tree: %s\nPlease, check syntax of python file.",message);
+				_getch();
+				return 0;
+			}
 
-		/*Вывод исправленного дерева*/
-		nodeCount=0;
-		dotTree.clear();
-		dotTree.push_back("graph tree{");
-		printStatementList(root,&nodeCount,dotTree,true);
-		dotTree.push_back("}");
-		FILE* dotFileChange = fopen("dotTreeChanged.txt","wt");
-		for each (std::string curStr in dotTree)
-		{
-			fprintf(dotFileChange,"%s\n",curStr.c_str());
-		}
-		fclose(dotFileChange);
-		puts("\ntree changed was created");
-		// Ждем печать дерева
-		spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTreeChanged.txt",NULL);
-		// Выводим сообщение о том, что дерево напечатано
-		puts("tree changed was printed");
+			/*Вывод исправленного дерева*/
+			nodeCount=0;
+			dotTree.clear();
+			dotTree.push_back("graph tree{");
+			printStatementList(root,&nodeCount,dotTree,true);
+			dotTree.push_back("}");
+			FILE* dotFileChange = fopen("dotTreeChanged.txt","wt");
+			for each (std::string curStr in dotTree)
+			{
+				fprintf(dotFileChange,"%s\n",curStr.c_str());
+			}
+			fclose(dotFileChange);
+			puts("\ntree changed was created");
+			// Ждем печать дерева
+			spawnl(_P_WAIT,".\\dot\\dot.exe","dot","-O","-Tpng","dotTreeChanged.txt",NULL);
+			// Выводим сообщение о том, что дерево напечатано
+			puts("tree changed was printed");
 
 
-		/*Генерация кода*/
-		CodeGeneration* generate = new CodeGeneration(treeWalker->getClassTable(), treeWalker->getConstTableList(), treeWalker->getConstTableConsts(), treeWalker->getVariableTableList());
-		try{
-			generate->generateCode(root);
+			/*Генерация кода*/
+			CodeGeneration* generate = new CodeGeneration(treeWalker->getClassTable(), treeWalker->getConstTableList(), treeWalker->getConstTableConsts(), treeWalker->getVariableTableList());
+			try{
+				generate->generateCode(root);
+			}
+			catch (char* message)
+			{
+				printf("\nMessage while code_gen: %s\n",message);
+				_getch();
+				return 0;
+			}
+			puts("Code generated");
 		}
-		catch (char* message)
-		{
-			printf("\nMessage while code_gen: %s\n",message);
-			_getch();
-			return 0;
-		}
-		puts("Code generated");
 
 	/*}*/
 	_getch();
