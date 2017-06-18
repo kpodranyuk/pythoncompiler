@@ -83,10 +83,15 @@ public class List extends Value {
             for(int i=0; i<sizeList; i++) {
                 if((this.value.get(i).less(list.value.get(i))).toIntBool()==1 && !this.value.get(i).equals(list.value.get(i))) {
                     return new Boolean(true);
-                }
+                } else if ((this.value.get(i).less(list.value.get(i))).toIntBool()==0 && !this.value.get(i).equals(list.value.get(i)))
+                    return new Boolean(false);
             }
             
-            return new Boolean(false);
+            if(this.value.size() < list.value.size()) {
+                return new Boolean(true);
+            } else {
+                return new Boolean(false);
+            }
             
         } else {
             throw new Error("Operation not allowed with these types.");
