@@ -124,7 +124,7 @@ private:
 	/*
 	* Хранит в себе список объявленных функций
 	*/
-	std::vector<struct FunctionHeader*> funcHeaders;
+	std::vector<struct FunctionHeader> funcHeaders;
 
 	/*
 	* Хранит в себе список инициализированных переменных
@@ -259,21 +259,21 @@ private:
 	* \param[in|out] vec вектор функций
 	* \param[in] func функция
 	*/
-	void deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func);
+	void deleteFuncHeader(std::vector<struct FunctionHeader>& vec, struct FunctionHeader func);
 
 	/* Удалить функцию из вектора
 	* @author Kate
 	* \param[in|out] vec вектор функций
 	* \param[in] func имя функции
 	*/
-	void deleteFuncHeader(std::vector<struct FunctionHeader*>& vec, std::string funcName);
+	void deleteFuncHeader(std::vector<struct FunctionHeader>& vec, std::string funcName);
 
 	/* Проверить содержит ли вектор функцию
 	* @author Kate
 	* \param[in] vec вектор функций
 	* \param[in] func функция
 	*/
-	bool containsFuncHeader(std::vector<struct FunctionHeader*>& vec, struct FunctionHeader* func) const;
+	bool containsFuncHeader(std::vector<struct FunctionHeader>& vec, struct FunctionHeader func) const;
 
 	/* Удалить строку из вектора
 	* @author Kate
