@@ -230,20 +230,20 @@ void CodeGeneration::generateMethodsTable()
 		u2=htons(1); //1я константа Code(имя атрибута)
 		_write(this->fileDesc,(void*)&u2, 2);
 
-		if(method->methodRef==NULL)
+		/*if(method->methodRef==NULL)
 			wasMainRet=false;
 		else
-			wasMainRet=true;
+			wasMainRet=true;*/
 		// Генерим в массив весь байт-код метода
 		generateCodeForStatementList(this->treeRoot);
 		// Для мейна надо вызвать ретерн для завершения выполнения текущего метода
-		/*if(method->methodRef==NULL)
+		if(method->methodRef==NULL)
 		{
 			Operation* ret=new Operation;
 			ret->type=__RETURN;
 			ret->countByte=1;
 			oper.push_back(ret);
-		}*/
+		}
 		// Получаем размер сгенериного байт-кода
 		int length=getCodeLengthMethod();
 
@@ -337,14 +337,14 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 		}
 		// Считаем следующий элемент списка новым текущим
 		begining = begining->next;
-		if(currentLocal==NULL&&begining==NULL&&!wasMainRet)
+		/*if(currentLocal==NULL&&begining==NULL&&!wasMainRet&&depth<2)
 		{
 			Operation* ret=new Operation;
 			ret->type=__RETURN;
 			ret->countByte=1;
 			oper.push_back(ret);
 			wasMainRet=true;
-		}
+		}*/
 	}
 }
 
