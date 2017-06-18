@@ -284,7 +284,7 @@ void CodeGeneration::generateCodeForStatementList(struct StmtListInfo* stmtList)
 			if(begining->type==_EXPR)
 			{
 				generateCodeForExpr(begining->expr,false);
-				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN && begining->expr->type!=_ARRACT)
+				if(begining->expr->type!=_ASSIGN && begining->expr->type!=_ARRID_AND_ASSIGN)
 				{
 					if (begining->expr->type==_FUNCCALL)
 					{
