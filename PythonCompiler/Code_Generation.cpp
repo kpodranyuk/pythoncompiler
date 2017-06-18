@@ -824,6 +824,10 @@ void CodeGeneration::generateCodeForForStmt(struct ForStmtInfo * forstmt)
 	next->u2=___NEXT;
 	next->countByte=3;
 	oper.push_back(next);
+	Operation* pop=new Operation;
+	pop->type=__POP;
+	pop->countByte=1;
+	oper.push_back(pop);
 
 	//8. Генерим тело цикла
 	generateCodeForStatementList(forstmt->stmtlist);

@@ -253,12 +253,9 @@ public class Lib {
     }
     
     public static Value newIterator(Value listOrStr, Value iter) {
-        if(!(listOrStr instanceof List)){
-            throw new Error("No list in FOR.");
+        if(!(listOrStr instanceof List) && !(listOrStr instanceof String)){
+            throw new Error("No list or string in FOR.");
         } 
-        if(!(listOrStr instanceof String)) {
-            throw new Error("No string in FOR.");
-        }
         
         if(iter==null) {
             iter = new Iterator();
