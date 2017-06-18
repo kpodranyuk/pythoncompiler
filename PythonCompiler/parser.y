@@ -161,9 +161,9 @@ def_param_list:	/*empty*/	{$$ = createDefFuncParamListInfo(NULL,NULL,NULL,NULL);
 | def_param_listE	{$$ = createDefFuncParamListInfo(NULL,NULL,$1,NULL);  /*printf("BISON:\tfound def_param_list: def_param_listE\n");*/ fprintf(logFileB,"BISON:\tfound def_param_list: def_param_listE\n");}
 ;
 def_param_listE: OPERAND	{$$ = createDefFuncParamListInfo($1,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound def_param_listE: OPERAND\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
-| OPERAND '=' var_val {$$ = createDefFuncParamListInfo($1,$3,NULL,createCodeLocation(@1.first_line,@1.first_column,$3->loc->lastLine,$3->loc->lastColumn)); /*printf("BISON:\tfound def_param_listE: OPERAND\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
-| def_param_listE ',' OPERAND '=' var_val {$$ = createDefFuncParamListInfo($3,$5,$1,createCodeLocation(@3.first_line,@3.first_column,$5->loc->lastLine,$5->loc->lastColumn)); /*printf("BISON:\tfound def_param_listE: OPERAND\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
 | def_param_listE ',' OPERAND	{$$ = createDefFuncParamListInfo($3,NULL,$1,createCodeLocation(@3.first_line,@3.first_column,@3.last_line,@3.last_column)); /*printf("BISON:\tfound def_param_listE: ,\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: ,\n");}
+//| def_param_listE ',' OPERAND '=' var_val {$$ = createDefFuncParamListInfo($3,$5,$1,createCodeLocation(@3.first_line,@3.first_column,$5->loc->lastLine,$5->loc->lastColumn)); /*printf("BISON:\tfound def_param_listE: OPERAND\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
+//| OPERAND '=' var_val {$$ = createDefFuncParamListInfo($1,$3,NULL,createCodeLocation(@1.first_line,@1.first_column,$3->loc->lastLine,$3->loc->lastColumn)); /*printf("BISON:\tfound def_param_listE: OPERAND\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
 ;
 
 func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{$$=createFuncDef($2,$4,$9,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); 
