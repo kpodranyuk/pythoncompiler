@@ -194,6 +194,7 @@ WHITE_SPACE[ \t]
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>[^\\\n\"']+	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,yytext);}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\'|(\\\')	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\'");}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\n	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\n");}
+<MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\\t	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\t");}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\"|(\\\")	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\"");}
 <MULTILINE_DOUBLE_QUOTED_STRING,MULTILINE_SINGLE_QUOTED_STRING>\\\\	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\\");}
 <MULTILINE_DOUBLE_QUOTED_STRING>(\"){3}	{charIndex=findLexemLocation(charIndex,stringIndex); /*printf("FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr);*/	fprintf(logFile,"FLEX:\tВывел многострочный текст через двойную кавычку: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
@@ -208,6 +209,7 @@ WHITE_SPACE[ \t]
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>[^\\\n\"']+	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,yytext);}
 <DOUBLE_QUOTED_STRING>\'|(\\\')	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\'");}
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>\\n	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\n");}
+<DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>\\t	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\t");}
 <DOUBLE_QUOTED_STRING,SINGLE_QUOTED_STRING>\\\\	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\\");}
 <DOUBLE_QUOTED_STRING>\\\"	{charIndex=findLexemLocation(charIndex,stringIndex); strcat(bufStr,"\"");}
 <DOUBLE_QUOTED_STRING>\"	{ charIndex=findLexemLocation(charIndex,stringIndex); /*printf("FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr);*/	fprintf(logFile,"FLEX:\tВывел строку в двойных кавычках: %s\n", bufStr); yylval.StringVal = (char*)malloc(strlen(bufStr)+1); strcpy(yylval.StringVal,bufStr); strcpy(bufStr,""); BEGIN(INITIAL); return STRING;}
