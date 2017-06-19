@@ -485,5 +485,6 @@ int findLexemLocation(int index1, int index2)
 void yyerror(const char* s) {
 	printf("Parse error! Message: %s",s);
 	// might as well halt now:
-	//exit(-1);
+	_getch();
+	exit(-1);
 }
