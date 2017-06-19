@@ -163,7 +163,16 @@ expr: expr OR expr				{$$=createExprInfo(_OR,$1,$3, createCodeLocation(@2.first_
 | expr '=' expr					{$$=createExprInfo(_ASSIGN,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); /*printf("BISON:\tfound expr: =\n");*/ fprintf(logFileB,"BISON:\tfound expr: =\n");}
 | expr '[' expr ']'				{$$=createExprInfo(_ARRID,$1,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); /*printf("BISON:\tfound expr: index\n");*/ fprintf(logFileB,"BISON:\tfound expr: index\n");}
 | '[' param_list ']'			{$$=createInitListInfo(_ARRINIT,$2, createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound expr: initialize\n");*/ fprintf(logFileB,"BISON:\tfound expr: initialize\n");}
-| expr '.' OPERAND '(' expr ')'  {$$=createActListInfo(_ARRACT,$1,$5,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); /*printf("BISON:\tfound expr: actMas\n");*/ fprintf(logFileB,"BISON:\tfound expr: actMas\n");}
+| expr '.' OPERAND '(' expr ')' {
+									if(!(strcmp($3,"append")==0 || strcmp($3,"remove")==0))
+									{
+										yyerror("There is no such operation on the list.");
+									}
+									else
+									{
+										$$=createActListInfo(_ARRACT,$1,$5,$3, createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); /*printf("BISON:\tfound expr: actMas\n");*/ fprintf(logFileB,"BISON:\tfound expr: actMas\n");
+									}
+								}
 | var_val					{$$=createSimpleExpr(_VARVAL,NULL,$1,$1->loc); /*printf("BISON:\tfound expr: var_val\n");*/ fprintf(logFileB,"BISON:\tfound expr: var_val\n");}
 | OPERAND 					{$$=createSimpleExpr(_OPERAND,$1,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound expr: OPERAND\t%s\n",$1);*/ fprintf(logFileB,"BISON:\tfound expr: OPERAND\t%s\n",$1);}
 | func_call {$$=$1; /*printf("BISON:\tfound expr: FUNC_CALL\t%s\n",$1);*/ fprintf(logFileB,"BISON:\tfound expr: FUNC_CALL\t%s\n",$1);}
