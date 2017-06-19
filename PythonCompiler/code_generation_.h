@@ -147,6 +147,11 @@ private:
 	void findInIf(struct IfStmtInfo * ifstmt);
 	void findInStmtList(struct StmtListInfo* stmtList);
 
+	void calcBoolValue(struct ExprInfo * expr);
+	void simpleAndOper(struct ExprInfo * expr);
+	void simpleOrOper(struct ExprInfo * expr);
+	void difAndOper(struct ExprInfo * expr);
+
 public:
 
 	//  онструктор, принимающий все таблицы

@@ -601,6 +601,357 @@ void CodeGeneration::generateCodeForExpr(struct ExprInfo * expr, bool left)
 			stackSize--;
 		}
 	}
+	else if(expr->type==_AND)
+	{
+		if((expr->left->type==_OPERAND || expr->left->type==_FUNCCALL || expr->left->type==_VARVAL) && (expr->right->type==_OPERAND || expr->right->type==_FUNCCALL || expr->right->type==_VARVAL))
+		{
+			simpleAndOper(expr);
+		}
+		else if((expr->left->type==_OPERAND || expr->left->type==_FUNCCALL || expr->left->type==_VARVAL) && (expr->right->type!=_OPERAND && expr->right->type!=_FUNCCALL && expr->right->type!=_VARVAL))
+		{
+			generateCodeForExpr(expr->left,false);
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+			Operation* ifeq=new Operation;
+			ifeq->type=__IF_EQ;
+			ifeq->countByte=3;
+			oper.push_back(ifeq);
+			int addrIfeq=oper.size()-1;
+
+			generateCodeForExpr(expr->right,false);
+			//calcBoolValue(expr->right);
+			toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			Operation* curOp1 = new struct Operation;
+			curOp1->type=__INVOKESTATIC;
+			curOp1->u2=___VALUE_FROM_BOOLEAN;
+			curOp1->countByte=3;
+			oper.push_back(curOp1);
+
+			//ѕрыгаем сюда если левый операнд равен 0
+			int addrGoto=0;
+			Operation* go_to=new Operation;
+			go_to->type=__GOTO;
+			go_to->countByte=3;
+			oper.push_back(go_to);
+			addrGoto=oper.size()-1;
+			int offset=calcOffset(addrIfeq,addrGoto);
+			oper[addrIfeq]->s2=offset;
+
+
+			Operation* opLdc= new struct Operation;
+			opLdc->type=_ICONST0;
+			opLdc->countByte=1;
+			oper.push_back(opLdc);
+			Operation* curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+
+			int finish=oper.size()-1;
+			offset=calcOffset(addrGoto,finish);
+			oper[addrGoto]->s2=offset;
+
+		}
+		else if((expr->left->type!=_OPERAND && expr->left->type!=_FUNCCALL && expr->left->type!=_VARVAL) && (expr->right->type==_OPERAND || expr->right->type==_FUNCCALL || expr->right->type==_VARVAL))
+		{
+			generateCodeForExpr(expr->left,false);
+			//calcBoolValue(expr->left);
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+			
+			//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+			Operation* ifeq=new Operation;
+			ifeq->type=__IF_EQ;
+			ifeq->countByte=3;
+			oper.push_back(ifeq);
+			int addrIfeq=oper.size()-1;
+
+			generateCodeForExpr(expr->right,false);
+			//calcBoolValue(expr->right);
+			toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			Operation* curOp1 = new struct Operation;
+			curOp1->type=__INVOKESTATIC;
+			curOp1->u2=___VALUE_FROM_BOOLEAN;
+			curOp1->countByte=3;
+			oper.push_back(curOp1);
+
+			//ѕрыгаем сюда если левый операнд равен 0
+			int addrGoto=0;
+			Operation* go_to=new Operation;
+			go_to->type=__GOTO;
+			go_to->countByte=3;
+			oper.push_back(go_to);
+			addrGoto=oper.size()-1;
+			int offset=calcOffset(addrIfeq,addrGoto);
+			oper[addrIfeq]->s2=offset;
+
+
+			Operation* opLdc= new struct Operation;
+			opLdc->type=_ICONST0;
+			opLdc->countByte=1;
+			oper.push_back(opLdc);
+			Operation* curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+
+			int finish=oper.size()-1;
+			offset=calcOffset(addrGoto,finish);
+			oper[addrGoto]->s2=offset;
+		}
+		else if((expr->left->type!=_OPERAND && expr->left->type!=_FUNCCALL && expr->left->type!=_VARVAL) && (expr->right->type!=_OPERAND && expr->right->type!=_FUNCCALL && expr->right->type!=_VARVAL))
+		{
+			generateCodeForExpr(expr->left,false);
+			//calcBoolValue(expr->left);
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+			
+			//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+			Operation* ifeq=new Operation;
+			ifeq->type=__IF_EQ;
+			ifeq->countByte=3;
+			oper.push_back(ifeq);
+			int addrIfeq=oper.size()-1;
+
+			generateCodeForExpr(expr->right,false);
+			//calcBoolValue(expr->right);
+			toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			Operation* curOp1 = new struct Operation;
+			curOp1->type=__INVOKESTATIC;
+			curOp1->u2=___VALUE_FROM_BOOLEAN;
+			curOp1->countByte=3;
+			oper.push_back(curOp1);
+
+			//ѕрыгаем сюда если левый операнд равен 0
+			int addrGoto=0;
+			Operation* go_to=new Operation;
+			go_to->type=__GOTO;
+			go_to->countByte=3;
+			oper.push_back(go_to);
+			addrGoto=oper.size()-1;
+			int offset=calcOffset(addrIfeq,addrGoto);
+			oper[addrIfeq]->s2=offset;
+
+
+			Operation* opLdc= new struct Operation;
+			opLdc->type=_ICONST0;
+			opLdc->countByte=1;
+			oper.push_back(opLdc);
+			Operation* curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+
+			int finish=oper.size()-1;
+			offset=calcOffset(addrGoto,finish);
+			oper[addrGoto]->s2=offset;
+		}
+		
+	}
+	else if(expr->type==_OR)
+	{
+		if((expr->left->type==_OPERAND || expr->left->type==_FUNCCALL || expr->left->type==_VARVAL) && (expr->right->type==_OPERAND || expr->right->type==_FUNCCALL || expr->right->type==_VARVAL))
+		{
+			simpleOrOper(expr);
+		}
+		else if((expr->left->type==_OPERAND || expr->left->type==_FUNCCALL || expr->left->type==_VARVAL) && (expr->right->type!=_OPERAND && expr->right->type!=_FUNCCALL && expr->right->type!=_VARVAL))
+		{
+			generateCodeForExpr(expr->left,false);
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+			Operation* ifeq=new Operation;
+			ifeq->type=__IF_NE;
+			ifeq->countByte=3;
+			oper.push_back(ifeq);
+			int addrIfeq=oper.size()-1;
+
+			generateCodeForExpr(expr->right,false);
+			//calcBoolValue(expr->right);
+			toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			Operation* curOp1 = new struct Operation;
+			curOp1->type=__INVOKESTATIC;
+			curOp1->u2=___VALUE_FROM_BOOLEAN;
+			curOp1->countByte=3;
+			oper.push_back(curOp1);
+
+			//ѕрыгаем сюда если левый операнд равен 0
+			int addrGoto=0;
+			Operation* go_to=new Operation;
+			go_to->type=__GOTO;
+			go_to->countByte=3;
+			oper.push_back(go_to);
+			addrGoto=oper.size()-1;
+			int offset=calcOffset(addrIfeq,addrGoto);
+			oper[addrIfeq]->s2=offset;
+
+
+			Operation* opLdc= new struct Operation;
+			opLdc->type=_ICONST1;
+			opLdc->countByte=1;
+			oper.push_back(opLdc);
+			Operation* curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+
+			int finish=oper.size()-1;
+			offset=calcOffset(addrGoto,finish);
+			oper[addrGoto]->s2=offset;
+
+		}
+		else if((expr->left->type!=_OPERAND && expr->left->type!=_FUNCCALL && expr->left->type!=_VARVAL) && (expr->right->type==_OPERAND || expr->right->type==_FUNCCALL || expr->right->type==_VARVAL))
+		{
+			generateCodeForExpr(expr->left,false);
+			//calcBoolValue(expr->left);
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+			
+			//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+			Operation* ifeq=new Operation;
+			ifeq->type=__IF_NE;
+			ifeq->countByte=3;
+			oper.push_back(ifeq);
+			int addrIfeq=oper.size()-1;
+
+			generateCodeForExpr(expr->right,false);
+			//calcBoolValue(expr->right);
+			toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			Operation* curOp1 = new struct Operation;
+			curOp1->type=__INVOKESTATIC;
+			curOp1->u2=___VALUE_FROM_BOOLEAN;
+			curOp1->countByte=3;
+			oper.push_back(curOp1);
+
+			//ѕрыгаем сюда если левый операнд равен 0
+			int addrGoto=0;
+			Operation* go_to=new Operation;
+			go_to->type=__GOTO;
+			go_to->countByte=3;
+			oper.push_back(go_to);
+			addrGoto=oper.size()-1;
+			int offset=calcOffset(addrIfeq,addrGoto);
+			oper[addrIfeq]->s2=offset;
+
+
+			Operation* opLdc= new struct Operation;
+			opLdc->type=_ICONST1;
+			opLdc->countByte=1;
+			oper.push_back(opLdc);
+			Operation* curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+
+			int finish=oper.size()-1;
+			offset=calcOffset(addrGoto,finish);
+			oper[addrGoto]->s2=offset;
+		}
+		else if((expr->left->type!=_OPERAND && expr->left->type!=_FUNCCALL && expr->left->type!=_VARVAL) && (expr->right->type!=_OPERAND && expr->right->type!=_FUNCCALL && expr->right->type!=_VARVAL))
+		{
+			generateCodeForExpr(expr->left,false);
+			//calcBoolValue(expr->left);
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+			
+			//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+			Operation* ifeq=new Operation;
+			ifeq->type=__IF_NE;
+			ifeq->countByte=3;
+			oper.push_back(ifeq);
+			int addrIfeq=oper.size()-1;
+
+			generateCodeForExpr(expr->right,false);
+			//calcBoolValue(expr->right);
+			toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+
+			Operation* curOp1 = new struct Operation;
+			curOp1->type=__INVOKESTATIC;
+			curOp1->u2=___VALUE_FROM_BOOLEAN;
+			curOp1->countByte=3;
+			oper.push_back(curOp1);
+
+			//ѕрыгаем сюда если левый операнд равен 0
+			int addrGoto=0;
+			Operation* go_to=new Operation;
+			go_to->type=__GOTO;
+			go_to->countByte=3;
+			oper.push_back(go_to);
+			addrGoto=oper.size()-1;
+			int offset=calcOffset(addrIfeq,addrGoto);
+			oper[addrIfeq]->s2=offset;
+
+
+			Operation* opLdc= new struct Operation;
+			opLdc->type=_ICONST1;
+			opLdc->countByte=1;
+			oper.push_back(opLdc);
+			Operation* curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+			curOp->u2=___VALUE_FROM_BOOLEAN;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+
+			int finish=oper.size()-1;
+			offset=calcOffset(addrGoto,finish);
+			oper[addrGoto]->s2=offset;
+		}
+	}
 	// »наче идут уже обычные двуместные операции
 	else
 	{
@@ -1136,5 +1487,229 @@ void CodeGeneration::findInStmtList(struct StmtListInfo* stmtList)
 			findBreakContinue=true;
 
 		begining=begining->next;
+	}
+}
+
+void CodeGeneration::calcBoolValue(struct ExprInfo * expr)
+{
+	Operation* curOp = new struct Operation;
+	if(expr->type==_OPERAND)
+	{
+		if(expr->locFor==NULL)
+		{
+			curOp->type=__GET_STATIC;
+			curOp->u2=expr->numberInTable;
+			curOp->countByte=3;
+			stackSize++;
+		}
+		else
+		{
+			curOp->type=__ALOAD;
+			curOp->u1=expr->numberInTable;
+			curOp->countByte=2;
+			stackSize++;
+		}
+		oper.push_back(curOp);
+
+		//ƒелаем toIntBool
+		Operation* toIntBool=new Operation;
+		toIntBool->type=__INVOKESTATIC;
+		toIntBool->u2=___TO_INT_BOOL;
+		toIntBool->countByte=3;
+		oper.push_back(toIntBool);
+	}
+	else if(expr->type==_FUNCCALL)
+	{
+		int parCount=0;
+		// рекурсивные вызовы дл€ загрузки аргументов на стек
+		struct ExprInfo* elem = expr->arglist->first;
+		while(elem!=NULL)
+		{
+			generateCodeForExpr(elem,false);
+			elem=elem->next;
+			parCount++;
+		}
+		if(strcmp(expr->idName,"input")==0&&parCount==0)
+		{
+			curOp = new struct Operation;
+			curOp->type=__INVOKESTATIC;
+
+			curOp->u2=___VALUE_FROM_NONE;
+			curOp->countByte=3;
+			oper.push_back(curOp);
+			stackSize++;
+		}
+		// генерируем команду дл€ вызова метода (инвок статик)
+		curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=expr->numberInTable;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+
+		if(strcmp(expr->idName,"print")!=0)
+		{
+			//ƒелаем toIntBool
+			Operation* toIntBool=new Operation;
+			toIntBool->type=__INVOKESTATIC;
+			toIntBool->u2=___TO_INT_BOOL;
+			toIntBool->countByte=3;
+			oper.push_back(toIntBool);
+		}
+	}
+	else if(expr->type==_VARVAL)
+	{
+		generateCodeForExpr(expr,false);
+		Operation* toIntBool=new Operation;
+		toIntBool->type=__INVOKESTATIC;
+		toIntBool->u2=___TO_INT_BOOL;
+		toIntBool->countByte=3;
+		oper.push_back(toIntBool);
+	}
+}
+
+void CodeGeneration::simpleAndOper(struct ExprInfo * expr)
+{
+	//вычисл€ем выражение дл€ левого операнда
+	calcBoolValue(expr->left);
+	//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+	Operation* ifeq=new Operation;
+	ifeq->type=__IF_EQ;
+	ifeq->countByte=3;
+	oper.push_back(ifeq);
+	int addrIfeq=oper.size()-1;
+
+	//3. √енерим дл€ правого операнда
+	calcBoolValue(expr->right);
+	Operation* curOp1 = new struct Operation;
+	curOp1->type=__INVOKESTATIC;
+	curOp1->u2=___VALUE_FROM_BOOLEAN;
+	curOp1->countByte=3;
+	oper.push_back(curOp1);
+
+	//ѕрыгаем сюда если левый операнд равен 0
+	int addrGoto=0;
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	addrGoto=oper.size()-1;
+	int offset=calcOffset(addrIfeq,addrGoto);
+	oper[addrIfeq]->s2=offset;
+
+
+	Operation* opLdc= new struct Operation;
+	opLdc->type=_ICONST0;
+	opLdc->countByte=1;
+	oper.push_back(opLdc);
+	Operation* curOp = new struct Operation;
+	curOp->type=__INVOKESTATIC;
+	curOp->u2=___VALUE_FROM_BOOLEAN;
+	curOp->countByte=3;
+	oper.push_back(curOp);
+
+	int finish=oper.size()-1;
+	offset=calcOffset(addrGoto,finish);
+	oper[addrGoto]->s2=offset;
+}
+
+void CodeGeneration::simpleOrOper(struct ExprInfo * expr)
+{
+	//вычисл€ем выражение дл€ левого операнда
+	calcBoolValue(expr->left);
+	//2.√енерим ifne дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+	Operation* ifne=new Operation;
+	ifne->type=__IF_NE;
+	ifne->countByte=3;
+	oper.push_back(ifne);
+	int addrIfne=oper.size()-1;
+
+	//3. √енерим дл€ правого операнда
+	calcBoolValue(expr->right);
+	Operation* curOp1 = new struct Operation;
+	curOp1->type=__INVOKESTATIC;
+	curOp1->u2=___VALUE_FROM_BOOLEAN;
+	curOp1->countByte=3;
+	oper.push_back(curOp1);
+
+	//ѕрыгаем сюда если левый операнд равен 0
+	int addrGoto=0;
+	Operation* go_to=new Operation;
+	go_to->type=__GOTO;
+	go_to->countByte=3;
+	oper.push_back(go_to);
+	addrGoto=oper.size()-1;
+	int offset=calcOffset(addrIfne,addrGoto);
+	oper[addrIfne]->s2=offset;
+
+
+	Operation* opLdc= new struct Operation;
+	opLdc->type=_ICONST1;
+	opLdc->countByte=1;
+	oper.push_back(opLdc);
+	Operation* curOp = new struct Operation;
+	curOp->type=__INVOKESTATIC;
+	curOp->u2=___VALUE_FROM_BOOLEAN;
+	curOp->countByte=3;
+	oper.push_back(curOp);
+
+	int finish=oper.size()-1;
+	offset=calcOffset(addrGoto,finish);
+	oper[addrGoto]->s2=offset;
+}
+
+void CodeGeneration::difAndOper(struct ExprInfo * expr)
+{
+	if(expr->left->type==_AND)
+	{
+		difAndOper(expr->left);
+	}
+	else
+	{
+		generateCodeForExpr(expr->left, false);
+
+		//вычисл€ем выражение дл€ левого операнда
+		calcBoolValue(expr->left);
+		//2.√енерим ifeq дл€ перехода в случае лжи, и запоминаем адрес дл€ уточнени€ смещени€
+		Operation* ifeq=new Operation;
+		ifeq->type=__IF_EQ;
+		ifeq->countByte=3;
+		oper.push_back(ifeq);
+		int addrIfeq=oper.size()-1;
+
+		//3. √енерим дл€ правого операнда
+		generateCodeForExpr(expr->right,false);
+		calcBoolValue(expr->right);
+		Operation* curOp1 = new struct Operation;
+		curOp1->type=__INVOKESTATIC;
+		curOp1->u2=___VALUE_FROM_BOOLEAN;
+		curOp1->countByte=3;
+		oper.push_back(curOp1);
+
+
+
+		//ѕрыгаем сюда если левый операнд равен 0
+		int addrGoto=0;
+		Operation* go_to=new Operation;
+		go_to->type=__GOTO;
+		go_to->countByte=3;
+		oper.push_back(go_to);
+		addrGoto=oper.size()-1;
+		int offset=calcOffset(addrIfeq,addrGoto);
+		oper[addrIfeq]->s2=offset;
+
+
+		Operation* opLdc= new struct Operation;
+		opLdc->type=_ICONST0;
+		opLdc->countByte=1;
+		oper.push_back(opLdc);
+		Operation* curOp = new struct Operation;
+		curOp->type=__INVOKESTATIC;
+		curOp->u2=___VALUE_FROM_BOOLEAN;
+		curOp->countByte=3;
+		oper.push_back(curOp);
+
+		int finish=oper.size()-1;
+		offset=calcOffset(addrGoto,finish);
+		oper[addrGoto]->s2=offset;
 	}
 }
