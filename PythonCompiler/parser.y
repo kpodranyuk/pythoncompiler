@@ -34,7 +34,9 @@ struct StmtListInfo* root;
 %type <whilestmt> while_stmt
 %type <var_valinfo> var_val
 %type <stmtinfo> stmt
+%type <stmtinfo> func_stmt
 %type <stmtlist> stmt_list
+%type <stmtlist> func_stmt_list
 %type <exprinfo> expr
 %type <exprlist> param_list
 %type <exprlist> param_listE
@@ -107,15 +109,31 @@ stmt_list: stmt_list line_sep {$$ = createStatementList(NULL, $1); /*printf("BIS
 | stmt_list stmt {$$ = createStatementList($2, $1); /*printf("BISON:\tfound stmt_list:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_list stmt\t\n");}
 ;
 
+func_stmt_list: func_stmt_list line_sep {$$ = createStatementList(NULL, $1); /*printf("BISON:\tconcatenated 2 strings\n");*/ fprintf(logFileB,"BISON:\tconcatenated 2 strings\n");}
+| func_stmt {$$ = createStatementList($1, NULL); /*printf("BISON:\tfound stmt_list:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_list:\t\n");}
+| func_stmt_list func_stmt {$$ = createStatementList($2, $1); /*printf("BISON:\tfound stmt_list:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_list stmt\t\n");}
+;
+
 stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); /*printf("BISON:\tfound expr stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
 | CONTINUE line_sep {$$ = createFromContinueBreakStatement(_CONTINUE,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound stmt continue:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
 | BREAK line_sep {$$ = createFromContinueBreakStatement(_BREAK,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound stmt break:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
-| RETURN expr line_sep {$$=createFromReturnStatement(_RETURN, $2,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound stmt return:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
 | DEL OPERAND line_sep {$$=createFromDelStatement(_DEL, $2, createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column), createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column));  /*printf("BISON:\tfound expr: DEL_stmt\n");*/ fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
 | if_stmt {$$ = createFromIfStatement(_IF, $1); /*printf("BISON:\tfound if_stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
 | func_def {$$ = createFromFuncDefStatement(_FUNC_DEF,$1); /*printf("BISON:\tfound func_def:\t\n");*/ fprintf(logFileB,"BISON:\tfound func_def:\t\n");}
 | for_stmt {$$ = createFromForStatement(_FOR, $1); /*printf("BISON:\tfound for_stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
 | while_stmt {$$ = createFromWhileStatement(_WHILE, $1); /*printf("BISON:\tfound while_stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
+| RETURN expr line_sep {yyerror("Can't use return in global code.");}
+;
+
+func_stmt: expr line_sep {$$ = createFromExprStatement(_EXPR,$1); /*printf("BISON:\tfound expr stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound expr_stmt:\t\n");}
+| CONTINUE line_sep {$$ = createFromContinueBreakStatement(_CONTINUE,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound stmt continue:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_continue:\t\n");}
+| BREAK line_sep {$$ = createFromContinueBreakStatement(_BREAK,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound stmt break:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_break:\t\n");}
+| RETURN expr line_sep {$$=createFromReturnStatement(_RETURN, $2,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column)); /*printf("BISON:\tfound stmt return:\t\n");*/ fprintf(logFileB,"BISON:\tfound stmt_return:\t\n");}
+| DEL OPERAND line_sep {$$=createFromDelStatement(_DEL, $2, createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column), createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column));  /*printf("BISON:\tfound expr: DEL_stmt\n");*/ fprintf(logFileB,"BISON:\tfound expr: DEL_stmt\n");}
+| if_stmt {$$ = createFromIfStatement(_IF, $1); /*printf("BISON:\tfound if_stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound if_stmt:\t\n");}
+| for_stmt {$$ = createFromForStatement(_FOR, $1); /*printf("BISON:\tfound for_stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound for_stmt:\t\n");}
+| while_stmt {$$ = createFromWhileStatement(_WHILE, $1); /*printf("BISON:\tfound while_stmt:\t\n");*/ fprintf(logFileB,"BISON:\tfound while_stmt:\t\n");}
+| func_def {yyerror("Can't define function inside function.");}
 ;
 
 var_val: TTRUE	{$$=createValNode(_TRUE,true,NULL,NULL,NULL,createCodeLocation(@1.first_line,@1.first_column,@1.last_line,@1.last_column));			/*printf("BISON:\tfound var_val: TRUE\n");*/ fprintf(logFileB,"BISON:\tfound var_val: TRUE\n");}
@@ -166,7 +184,7 @@ def_param_listE: OPERAND	{$$ = createDefFuncParamListInfo($1,NULL,NULL,createCod
 //| OPERAND '=' var_val {$$ = createDefFuncParamListInfo($1,$3,NULL,createCodeLocation(@1.first_line,@1.first_column,$3->loc->lastLine,$3->loc->lastColumn)); /*printf("BISON:\tfound def_param_listE: OPERAND\n");*/ fprintf(logFileB,"BISON:\tfound def_param_listE: expr\n");}
 ;
 
-func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT stmt_list DEDENT	{$$=createFuncDef($2,$4,$9,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); 
+func_def: DEF OPERAND '(' def_param_list ')' ':' NEWLINE INDENT func_stmt_list DEDENT	{$$=createFuncDef($2,$4,$9,createCodeLocation(@2.first_line,@2.first_column,@2.last_line,@2.last_column)); 
 //printf("BISON:\tfound func_def: %s\nLocation: (%d.%d-%d.%d)\n defLoc: (%d.%d-%d.%d)\n",$2,@2.first_line,@2.first_column,@2.last_line,@2.last_column,@1.first_line,@1.first_column,@1.last_line,@1.last_column); 
 fprintf(logFileB,"BISON:\tfound func_def: %s\n",$2);}
 ;
